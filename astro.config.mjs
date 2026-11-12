@@ -9,6 +9,7 @@ export default defineConfig({
       title: site.name,
       defaultLocale: 'root',
       locales: { root: { label: '简体中文', lang: 'zh-CN' } },
+      disable404Route: true,
       components: { Head: './src/components/starlight/Head.astro' },
     }),
   ],

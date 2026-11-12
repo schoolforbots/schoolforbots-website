@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { distExists, readDist, readPage } from '../helpers'
 
-const routes = ['/', '/docs/enroll/']
+const routes = ['/', '/docs/enroll/', '/404.html']
 
 describe('preview build', () => {
   it('preview pages are noindex', () => {
