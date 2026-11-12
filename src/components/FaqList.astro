@@ -1,0 +1,103 @@
+---
+// The FAQ from src/content/faq/, in `order`: every question on the FAQ page,
+// the featured ones on the homepage. Each question opens to its answer, which
+// is written in Markdown. No script: <details> opens and closes by itself.
+import { getCollection, render } from 'astro:content'
+import ChevronDown from '@lucide/astro/icons/chevron-down'
+
+interface Props {
+  featuredOnly?: boolean
+}
+
+const { featuredOnly = false } = Astro.props
+
+const entries = (await getCollection('faq', ({ data }) => !featuredOnly || data.featured)).sort(
+  (a, b) => a.data.order - b.data.order || a.id.localeCompare(b.id),
+)
+const items = await Promise.all(entries.map(async (entry) => ({ entry, Content: (await render(entry)).Content })))
+---
+
+<div class="faq not-content" data-faq-list>
+  {
+    items.map(({ entry, Content }) => (
+      <details id={`faq-${entry.id}`}>
+        <summary>
+          <span class="question">{entry.data.question}</span>
+          <ChevronDown class="chevron" size={20} aria-hidden="true" />
+        </summary>
+        <div class="answer">
+          <Content />
+        </div>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .faq {
+    border: 1px solid var(--sfb-line);
+    border-radius: 0.875rem;
+    background: var(--sfb-surface);
+  }
+
+  details + details {
+    border-top: 1px solid var(--sfb-line);
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 3.5rem;
+    padding: 0.875rem 1.25rem;
+    color: var(--sfb-ink);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.5;
+    list-style: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary:hover .question {
+    color: var(--sfb-link);
+  }
+  summary:focus-visible {
+    outline-offset: -2px;
+    border-radius: 0.875rem;
+  }
+  /* The chevron turns over in place when the answer opens; the site keeps its one animation for the hero. */
+  .chevron {
+    flex: none;
+    color: var(--sfb-mute);
+  }
+  details[open] .chevron {
+    transform: rotate(180deg);
+  }
+
+  .answer {
+    padding: 0 1.25rem 1.25rem;
+    color: var(--sfb-mute);
+    font-size: 0.9375rem;
+    line-height: 1.8;
+  }
+  .answer :global(p) {
+    margin: 0;
+    max-width: 40em;
+  }
+  .answer :global(p + p) {
+    margin-top: 0.75rem;
+  }
+  .answer :global(a) {
+    color: var(--sfb-link);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+  }
+  .answer :global(a:hover) {
+    text-decoration-thickness: 2px;
+  }
+</style>

@@ -1,0 +1,18 @@
+---
+// The featured questions from the FAQ, then the way to all of them.
+import FaqList from '../FaqList.astro'
+import HomeSection from './HomeSection.astro'
+---
+
+<HomeSection data-faq-preview titleId="faq-title" title="常见问题" more={{ label: '所有常见问题', href: '/docs/faq/' }}>
+  <div class="column">
+    <FaqList featuredOnly />
+  </div>
+</HomeSection>
+
+<style>
+  .column {
+    max-width: 46rem;
+    margin: var(--home-title-gap) auto 0;
+  }
+</style>

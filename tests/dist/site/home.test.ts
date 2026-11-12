@@ -1,3 +1,4 @@
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { site } from '../../../src/config/site'
 import { readDist, readPage } from '../helpers'
@@ -45,6 +46,36 @@ function homepageCss(): string {
   return [...linked, ...inline].join('\n')
 }
 
+// The questions in src/content/faq/, in their `order`.
+function faqSource(): { question: string; order: number; featured: boolean }[] {
+  const dir = new URL('../../../src/content/faq/', import.meta.url)
+  return readdirSync(dir)
+    .filter((f) => f.endsWith('.md'))
+    .map((f) => {
+      const front = readFileSync(new URL(f, dir), 'utf8').match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? ''
+      const field = (name: string) => front.match(new RegExp(`^${name}:\\s*(.+)$`, 'm'))?.[1].trim() ?? ''
+      return {
+        question: field('question').replace(/^(['"])(.*)\1$/, '$2'),
+        order: Number(field('order')),
+        featured: field('featured') === 'true',
+      }
+    })
+    .sort((a, b) => a.order - b.order)
+}
+
+// The notices in src/content/docs/docs/notices/, not counting the list page itself.
+const noticesDir = new URL('../../../src/content/docs/docs/notices/', import.meta.url)
+const noticeFiles = existsSync(noticesDir)
+  ? readdirSync(noticesDir).filter((f) => /\.mdx?$/.test(f) && !/^index\./.test(f))
+  : []
+
+// The section's last link: [text, href].
+function lastLink(section: ReturnType<typeof part>): [string, string | null] {
+  const links = section.querySelectorAll('a')
+  const a = links[links.length - 1]
+  return [text(a), a?.getAttribute('href') ?? null]
+}
+
 const lines = [
   ['王老师', '今天讲“为什么秋天叶子会变黄”。'],
   ['小鱼', '是不是叶子也要过冬？'],
@@ -53,8 +84,18 @@ const lines = [
 ]
 
 describe('homepage', () => {
-  it('runs hero, status strip, a day at school, then enrolment', () => {
-    const parts = ['[data-home-hero]', '[data-status-strip]', '[data-school-day]', '[data-enroll]'].map(part)
+  it('runs from the hero to the notices in the design order, then the footer', () => {
+    const parts = [
+      '[data-home-hero]',
+      '[data-status-strip]',
+      '[data-school-day]',
+      '[data-enroll]',
+      '[data-rules]',
+      '[data-open-source]',
+      '[data-faq-preview]',
+      '[data-latest-notices]',
+      '[data-site-footer]',
+    ].map(part)
     for (let i = 1; i < parts.length; i++) {
       // DOCUMENT_POSITION_FOLLOWING
       expect(parts[i - 1].compareDocumentPosition(parts[i]) & 4, `part ${i}`).toBe(4)
@@ -164,5 +205,100 @@ describe('homepage', () => {
       .flatMap(rules)
       .filter((r) => targetsLine(r.selector) && /animation\s*:\s*none/.test(r.body))
     expect(still.length).toBeGreaterThan(0)
+  })
+
+  it('every section title is a large title', () => {
+    const titles = [...readPage('/').querySelectorAll('section > h2')]
+    expect(titles.map((h) => [text(h), h.hasAttribute('data-display-title')])).toEqual(
+      ['机器人在学校的一天', '三步入学', '规矩写在明处', '开源', '常见问题', '最新公告'].map((t) => [t, true]),
+    )
+  })
+
+  it('the rules section links to /docs/rules/ and has no digits', () => {
+    const rules = part('[data-rules]')
+    expect(text(rules.querySelector('h2'))).toBe('规矩写在明处')
+    const items = [...rules.querySelectorAll('li')].map((li) => [text(li.querySelector('h3')), text(li.querySelector('p'))])
+    expect(items).toEqual([
+      ['校规公开', '报名前要读校规并同意。每一版都公开，改了什么也看得到。'],
+      ['内容审核', '课堂上的话都会经过内容审核。'],
+      ['机器人的主人说了算', '机器人的主人随时可以给 AI 办退学。'],
+    ])
+    expect(rules.querySelectorAll('a')).toHaveLength(1)
+    expect(lastLink(rules)).toEqual(['读校规', '/docs/rules/'])
+    expect(text(rules)).not.toMatch(/[0-9０-９]/)
+  })
+
+  it('open source cards come from the config', () => {
+    const open = part('[data-open-source]')
+    expect(text(open.querySelector('h2'))).toBe('开源')
+    expect(text(open.querySelector('h2 + p'))).toBe('学校和插件的代码都公开在 GitHub 上。')
+    const cards = [...open.querySelectorAll('[data-repo]')]
+    expect(cards.map((c) => c.getAttribute('data-repo'))).toEqual(['server', ...site.frameworks.map((f) => f.id)])
+
+    const server = cards[0]
+    expect(text(server.querySelector('h3'))).toBe('学校服务器')
+    expect(text(server.querySelector('p'))).toBe('报名、分班和上课都在这里。')
+    expect([...server.querySelectorAll('a')].map((a) => a.getAttribute('href'))).toEqual([site.repos.server])
+
+    site.frameworks.forEach((f, i) => {
+      const card = cards[i + 1]
+      expect(text(card.querySelector('h3')), f.id).toContain(f.name)
+      const links = [...card.querySelectorAll('a')].map((a) => a.getAttribute('href'))
+      if (f.plugin) {
+        expect(links, f.id).toEqual([f.plugin.repo])
+        expect(text(card), f.id).not.toContain('即将支持')
+      } else {
+        expect(links, f.id).toEqual([])
+        expect(text(card), f.id).toContain('即将支持')
+      }
+    })
+    // The plugins' licence is not settled, so the section names none.
+    expect(text(open)).not.toMatch(/许可|协议|License|AGPL|\bMIT\b/i)
+  })
+
+  it('the FAQ preview shows exactly the featured questions', () => {
+    const faqs = faqSource()
+    const featured = faqs.filter((q) => q.featured).map((q) => q.question)
+    expect(featured.length).toBeGreaterThanOrEqual(4)
+    expect(featured.length).toBeLessThanOrEqual(5)
+
+    const preview = part('[data-faq-preview]')
+    expect(text(preview.querySelector('h2'))).toBe('常见问题')
+    const items = [...preview.querySelectorAll('details')]
+    expect(items.map((d) => text(d.querySelector('summary')))).toEqual(featured)
+    // Each question opens to an answer.
+    for (const d of items) {
+      const question = text(d.querySelector('summary'))
+      expect(text(d).length, question).toBeGreaterThan(question.length)
+    }
+    expect(lastLink(preview)).toEqual(['所有常见问题', '/docs/faq/'])
+
+    // The FAQ page lists every question, in the same order.
+    const page = readPage('/docs/faq/')
+    expect(text(page.querySelector('h1'))).toBe('常见问题')
+    expect([...page.querySelectorAll('main [data-faq-list] summary')].map((s) => text(s))).toEqual(faqs.map((q) => q.question))
+  })
+
+  it.skipIf(noticeFiles.length > 0)('no notices shows 还没有公告。', () => {
+    const latest = part('[data-latest-notices]')
+    expect(text(latest.querySelector('h2'))).toBe('最新公告')
+    expect(text(latest)).toContain('还没有公告。')
+    expect(latest.querySelectorAll('li')).toHaveLength(0)
+    expect(lastLink(latest)).toEqual(['所有公告', '/docs/notices/'])
+
+    const page = readPage('/docs/notices/')
+    expect(text(page.querySelector('h1'))).toBe('公告')
+    expect(text(page.querySelector('main [data-notice-list]'))).toBe('还没有公告。')
+  })
+
+  it.runIf(noticeFiles.length > 0)('the latest three notices are listed, newest first', () => {
+    const latest = part('[data-latest-notices]')
+    const dates = [...latest.querySelectorAll('li time')].map((t) => t.getAttribute('datetime') ?? '')
+    expect(dates).toHaveLength(Math.min(3, noticeFiles.length))
+    expect(dates).toEqual([...dates].sort().reverse())
+    expect(text(latest)).not.toContain('还没有公告。')
+    expect(lastLink(latest)).toEqual(['所有公告', '/docs/notices/'])
+    const page = readPage('/docs/notices/')
+    expect(page.querySelectorAll('main [data-notice-list] li')).toHaveLength(noticeFiles.length)
   })
 })

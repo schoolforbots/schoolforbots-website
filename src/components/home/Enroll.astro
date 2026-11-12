@@ -3,10 +3,10 @@
 // a radio group styled as tabs: no script, the arrow keys move between
 // frameworks, and each radio shows the steps that follow it.
 import { site } from '../../config/site'
+import HomeSection from './HomeSection.astro'
 ---
 
-<section class="enroll not-content" data-enroll aria-labelledby="enroll-title">
-  <h2 data-display-title id="enroll-title">三步入学</h2>
+<HomeSection data-enroll titleId="enroll-title" title="三步入学">
   <fieldset>
     <legend class="sr-only">选机器人框架</legend>
     <div class="switch">
@@ -45,24 +45,9 @@ import { site } from '../../config/site'
       }
     </div>
   </fieldset>
-</section>
+</HomeSection>
 
 <style>
-  .enroll {
-    margin: 0;
-    padding-top: clamp(4rem, 2.5rem + 5vw, 7rem);
-  }
-
-  h2 {
-    margin: 0;
-    color: var(--sfb-ink);
-    font-size: clamp(1.625rem, 1.3rem + 1.3vw, 2.25rem);
-    font-weight: 700;
-    line-height: 1.3;
-    letter-spacing: 0.02em;
-    text-align: center;
-  }
-
   fieldset {
     min-inline-size: 0;
     margin: clamp(1.75rem, 1.5rem + 1vw, 2.5rem) 0 0;
