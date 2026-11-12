@@ -1,6 +1,8 @@
 ---
 title: 收不到验证码
 description: 报名或换钥匙时收不到验证码：查垃圾邮件，确认邮箱写对了，试得太频繁要等一会儿，还不行就发邮件给学校。
+# The page has no sections, so the table of contents would list only its title.
+tableOfContents: false
 ---
 
 报名和[换钥匙](/docs/school-life/new-key/)时，学校都会往邮箱发验证码。收不到时，按顺序试试：

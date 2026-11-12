@@ -95,6 +95,10 @@ html {
 #starlight__search .pagefind-ui__search-input:focus-visible {
   outline-offset: -1px;
 }
+/* The docs table of contents bar on narrow screens spans the window under the top bar: draw its ring inside, or the edges fall off screen. */
+mobile-starlight-toc summary:focus-visible {
+  outline-offset: var(--sl-outline-offset-inside);
+}
 a[href],
 button,
 summary {

@@ -170,6 +170,15 @@ describe('docs', () => {
     expect(page.querySelector('.sl-anchor-link')).toBeNull()
   })
 
+  it('pages without sections have no table of contents', () => {
+    for (const route of ['/docs/faq/', '/docs/rules/', '/docs/notices/', '/docs/help/no-code/', '/404.html']) {
+      const page = readPage(route)
+      expect(page.querySelector('starlight-toc'), route).toBeNull()
+      expect(page.querySelector('mobile-starlight-toc'), route).toBeNull()
+    }
+    expect(readPage('/docs/enroll/register/').querySelector('starlight-toc')).not.toBeNull()
+  })
+
   it('search speaks Chinese', () => {
     const json = readPage('/docs/enroll/').querySelector('site-search')?.getAttribute('data-translations') ?? '{}'
     const strings = JSON.parse(json) as Record<string, string>
