@@ -32,6 +32,36 @@ function distFiles(): string[] {
   return listDist('').filter((f) => statSync(distPath(f)).isFile())
 }
 
+// [ids, classes/attributes/pseudo-classes, types/pseudo-elements] of one selector.
+// Covers the plain selectors in this build; :where() counts as nothing.
+function specificity(selector: string): [number, number, number] {
+  let s = selector.replace(/:where\([^()]*\)/g, '')
+  if (/:(is|not|has|matches)\(/.test(s)) throw new Error(`specificity() does not handle ${selector}`)
+  const take = (re: RegExp) => {
+    const n = s.match(re)?.length ?? 0
+    s = s.replace(re, ' ')
+    return n
+  }
+  const attributes = take(/\[[^\]]*\]/g)
+  const ids = take(/#[\w-]+/g)
+  const pseudoElements = take(/::[\w-]+/g)
+  const classes = take(/\.[\w-]+|:[\w-]+(\([^)]*\))?/g)
+  const types = take(/[a-z][\w-]*/gi)
+  return [ids, attributes + classes, types + pseudoElements]
+}
+
+const outranks = (a: number[], b: number[]) => {
+  const i = a.findIndex((n, k) => n !== b[k])
+  return i !== -1 && a[i] > b[i]
+}
+
+// Every `selector { body }` in a stylesheet, including those nested in @media.
+function rules(css: string): { selector: string; body: string }[] {
+  return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].flatMap(([, list, body]) =>
+    list.split(',').map((selector) => ({ selector: selector.trim(), body })),
+  )
+}
+
 describe('site shell', () => {
   it('both pages share the same top nav', () => {
     for (const route of pages) {
@@ -56,6 +86,30 @@ describe('site shell', () => {
         expect(button.getAttribute('aria-label')).toBe('晚自习（深色模式）')
         expect(button.hasAttribute('aria-pressed')).toBe(true)
         expect(text(button)).toBe('晚自习')
+      }
+    }
+  })
+
+  it('without scripts the theme switch is hidden', () => {
+    for (const route of pages) {
+      const html = readDist(route === '/' ? 'index.html' : `${route.slice(1)}index.html`)
+      const head = html.slice(0, html.indexOf('</head>'))
+      const css = head.match(/<noscript><style>([^<]*)<\/style><\/noscript>/)?.[1] ?? ''
+      const hide = rules(css).find((r) => /display:\s*none/.test(r.body))
+      expect(hide?.selector, route).toMatch(/sfb-theme-toggle$/)
+      // Any other rule on the switch element itself that sets display must rank lower.
+      const sheets = [
+        ...listDist('.css').map(readDist),
+        ...[...html.matchAll(/<style[^>]*>([^<]*)<\/style>/g)].map((m) => m[1]),
+      ]
+      const rivals = sheets
+        .flatMap(rules)
+        .filter((r) => r.selector !== hide?.selector && /display\s*:/.test(r.body))
+        .filter((r) => /(^|[\s>+~])sfb-theme-toggle(?![\w-])[^\s>+~]*$/.test(r.selector))
+      expect(rivals.length, route).toBeGreaterThan(0)
+      for (const rival of rivals) {
+        const ours = specificity(hide?.selector ?? '')
+        expect(outranks(ours, specificity(rival.selector)), `${hide?.selector} vs ${rival.selector}`).toBe(true)
       }
     }
   })
