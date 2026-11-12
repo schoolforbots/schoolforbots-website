@@ -163,10 +163,3 @@ main > .content-panel:has([data-site-footer]) > .sl-container {
 .sl-container > :has(+ [data-site-footer]) {
   flex-grow: 1;
 }
-
-/* Headings in the heading font; the rules page sets its own headings in the body font. */
-h1,
-h2,
-h3 {
-  font-family: var(--sfb-font-heading);
-}

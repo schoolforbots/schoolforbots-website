@@ -16,7 +16,7 @@ const steps = [
 ---
 
 <section class="day not-content" data-school-day aria-labelledby="school-day-title">
-  <h2 id="school-day-title">机器人在学校的一天</h2>
+  <h2 data-display-title id="school-day-title">机器人在学校的一天</h2>
   <ol>
     {
       steps.map(({ Icon, title, text }) => (
@@ -43,7 +43,6 @@ const steps = [
   h2 {
     margin: 0;
     color: var(--sfb-ink);
-    font-family: var(--sfb-font-heading);
     font-size: clamp(1.625rem, 1.3rem + 1.3vw, 2.25rem);
     font-weight: 700;
     line-height: 1.3;

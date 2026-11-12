@@ -1,6 +1,7 @@
 ---
 import Default from '@astrojs/starlight/components/Head.astro'
 import { site } from '../../config/site'
+import { displayTitleSelector } from '../../config/display-titles.mjs'
 import { isRelease } from '../../lib/build-mode'
 
 // Share cards need an absolute address. The image, drawn by scripts/make-og.mjs, shows the text wordmark: @placeholder(logo)
@@ -9,7 +10,7 @@ const shareImage = `${site.url}/og.png`
 
 <Default {...Astro.props}><slot /></Default>
 {!isRelease(import.meta.env.MODE) && <meta name="robots" content="noindex, nofollow" />}
-{/* Heading font: Source Han Sans Heavy cut to the characters the headings use, written to dist/ by scripts/subset-heading-font.mjs. Inline, because the bundler cannot resolve a file that only exists after the build. Without it (npm run dev) headings use the body font. */}
+{/* Heading font: Source Han Sans Heavy cut to the characters the large titles use, written to dist/ by scripts/subset-heading-font.mjs. Inline, because the bundler cannot resolve a file that only exists after the build. Without it (npm run dev) headings use the body font. */}
 <style is:inline>
   @font-face {
     font-family: 'SFB Heading';
@@ -18,6 +19,8 @@ const shareImage = `${site.url}/og.png`
     font-display: swap;
   }
 </style>
+{/* Large titles only (see config/display-titles.mjs); everything else keeps the body font. */}
+<style is:inline set:html={`${displayTitleSelector} { font-family: var(--sfb-font-heading); }`} />
 <link rel="preload" href="/fonts/heading.woff2" as="font" type="font/woff2" crossorigin />
 <meta property="og:image" content={shareImage} />
 <meta property="og:image:width" content="1200" />
