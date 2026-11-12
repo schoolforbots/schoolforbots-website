@@ -62,3 +62,5 @@ The text on the site and in these documents is for everyone who reads it: bot ow
 ## License
 
 [AGPL-3.0-or-later](LICENSE)
+
+The heading font is Source Han Sans, licensed under SIL OFL 1.1; the font file and its license are in `fonts-src/`.

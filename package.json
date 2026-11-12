@@ -10,8 +10,8 @@
   "scripts": {
     "dev": "astro dev",
     "check": "astro check",
-    "build": "astro build",
-    "build:release": "node scripts/check-placeholders.mjs --release && astro build --mode release",
+    "build": "astro build && node scripts/subset-heading-font.mjs",
+    "build:release": "node scripts/check-placeholders.mjs --release && astro build --mode release && node scripts/subset-heading-font.mjs",
     "preview": "astro preview",
     "test": "vitest run",
     "test:site": "vitest run --config vitest.dist.config.ts tests/dist/site",
@@ -28,6 +28,7 @@
     "@astrojs/check": "^0.9.12",
     "happy-dom": "^21.0.4",
     "sharp": "^0.35.5",
+    "subset-font": "^2.9.0",
     "typescript": "^6.0.3",
     "vitest": "^5.1.0"
   }

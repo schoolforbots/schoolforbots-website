@@ -29,7 +29,7 @@
   --sfb-mortar: #BC8E6E;
   --sfb-ledge: #5F2603;
   --sfb-font-body: "PingFang SC", "Microsoft YaHei", "Source Han Sans SC", "Noto Sans CJK SC", sans-serif;
-  --sfb-font-heading: var(--sfb-font-body);
+  --sfb-font-heading: "SFB Heading", var(--sfb-font-body);
   color-scheme: light;
 }
 
@@ -65,7 +65,7 @@
   --sfb-mortar: #211812;
   --sfb-ledge: #2A1406;
   --sfb-font-body: "PingFang SC", "Microsoft YaHei", "Source Han Sans SC", "Noto Sans CJK SC", sans-serif;
-  --sfb-font-heading: var(--sfb-font-body);
+  --sfb-font-heading: "SFB Heading", var(--sfb-font-body);
   color-scheme: dark;
 }
 
@@ -102,7 +102,7 @@
     --sfb-mortar: #211812;
     --sfb-ledge: #2A1406;
     --sfb-font-body: "PingFang SC", "Microsoft YaHei", "Source Han Sans SC", "Noto Sans CJK SC", sans-serif;
-    --sfb-font-heading: var(--sfb-font-body);
+    --sfb-font-heading: "SFB Heading", var(--sfb-font-body);
     color-scheme: dark;
   }
 }

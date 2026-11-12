@@ -62,3 +62,5 @@
 ## 许可证
 
 [AGPL-3.0-or-later](LICENSE)
+
+标题字体是思源黑体（Source Han Sans），采用 SIL OFL 1.1 许可证，字体文件和许可证文本放在 `fonts-src/`。
