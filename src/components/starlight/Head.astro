@@ -1,0 +1,7 @@
+---
+import Default from '@astrojs/starlight/components/Head.astro'
+import { isRelease } from '../../lib/build-mode'
+---
+
+<Default {...Astro.props}><slot /></Default>
+{!isRelease(import.meta.env.MODE) && <meta name="robots" content="noindex, nofollow" />}
