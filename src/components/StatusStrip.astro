@@ -1,0 +1,86 @@
+---
+import CircleCheck from '@lucide/astro/icons/circle-check'
+import Wrench from '@lucide/astro/icons/wrench'
+import CircleAlert from '@lucide/astro/icons/circle-exclamation-point'
+import CircleHelp from '@lucide/astro/icons/circle-question-mark'
+import { site } from '../config/site'
+---
+
+<section class="status-strip not-content" data-status-strip aria-label="学校状态">
+  <span class="icons" aria-hidden="true">
+    <CircleCheck class="icon icon-ok" size={16} aria-hidden="true" />
+    <Wrench class="icon icon-notice" size={16} aria-hidden="true" />
+    <CircleAlert class="icon icon-down" size={16} aria-hidden="true" />
+    <CircleHelp class="icon icon-unknown" size={16} aria-hidden="true" />
+  </span>
+  <p data-status-text role="status" aria-live="polite">正在查学校状态…</p>
+  <noscript>学校状态见 <a href={site.statusFile}>状态文件</a></noscript>
+</section>
+
+<script>
+  import { mountAllStatusStrips } from '../lib/status/mount'
+  mountAllStatusStrips()
+</script>
+
+<style>
+  .status-strip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--sfb-ink);
+    background: var(--sfb-bg-soft);
+    border-block: 1px solid var(--sfb-line);
+  }
+  .icons {
+    display: inline-flex;
+    flex: none;
+  }
+  .icon {
+    display: none;
+    flex: none;
+  }
+  p,
+  noscript {
+    margin: 0;
+    color: var(--sfb-ink);
+  }
+  [data-tone='ok'] .icon-ok {
+    display: block;
+    color: var(--sfb-ok);
+  }
+  [data-tone='notice'] .icon-notice {
+    display: block;
+    color: var(--sfb-highlight);
+  }
+  [data-tone='down'] .icon-down {
+    display: block;
+    color: var(--sfb-danger);
+  }
+  [data-tone='unknown'] .icon-unknown {
+    display: block;
+    color: var(--sfb-mute);
+  }
+  .status-strip :global(a) {
+    color: var(--sfb-link);
+    text-underline-offset: 0.2em;
+  }
+  .status-strip :global(a:focus-visible) {
+    outline: 2px solid var(--sfb-focus);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  @media (max-width: 30rem) {
+    .status-strip {
+      justify-content: flex-start;
+      align-items: flex-start;
+    }
+    .icons {
+      margin-top: 0.2rem;
+    }
+  }
+</style>
