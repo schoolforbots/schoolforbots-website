@@ -39,24 +39,30 @@ export function parseRegistry(markdown) {
   return registry
 }
 
-const tagMarker = /<Placeholder\b[^>]*?\bid="([a-z0-9-]+)"/g
+// Attributes may be quoted with either quote, hold `>` inside quotes or braces,
+// and the tag may span lines. `\sid=` keeps `data-id="x"` from matching.
+const tagMarker = /<Placeholder\b(?:[^>"'{]|"[^"]*"|'[^']*'|\{[^}]*\})*?\sid=(["'])([a-z0-9-]+)\1/g
 const commentMarker = /@placeholder\(([a-z0-9-]+)\)/g
 
 /**
- * Finds every placeholder marker. Lines are 1-based.
+ * Finds every placeholder marker. Lines are 1-based; a tag reports the line
+ * where `<Placeholder` starts.
  * @param {{ path: string; text: string }[]} files
  * @returns {{ id: string; path: string; line: number }[]}
  */
 export function findMarkers(files) {
   const markers = []
   for (const { path, text } of files) {
-    text.split(/\r?\n/).forEach((lineText, index) => {
-      for (const pattern of [tagMarker, commentMarker]) {
-        for (const match of lineText.matchAll(pattern)) {
-          markers.push({ id: match[1], path, line: index + 1 })
-        }
-      }
-    })
+    const lineAt = (index) => text.slice(0, index).split(/\r\n|\r|\n/).length
+    const found = []
+    for (const match of text.matchAll(tagMarker)) {
+      found.push({ id: match[2], path, index: match.index })
+    }
+    for (const match of text.matchAll(commentMarker)) {
+      found.push({ id: match[1], path, index: match.index })
+    }
+    found.sort((x, y) => x.index - y.index)
+    for (const { id, index } of found) markers.push({ id, path, line: lineAt(index) })
   }
   return markers
 }
