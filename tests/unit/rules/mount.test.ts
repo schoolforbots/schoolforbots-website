@@ -26,7 +26,8 @@ const text = [
 function setup(f: typeof fetch, calendarCors = true) {
   const doc = new Window().document
   const el = doc.createElement('div')
-  el.textContent = calendarCors ? '正在读取校规…' : ''
+  // As SchoolRules.astro renders it: the loading line, a live region.
+  if (calendarCors) el.innerHTML = '<p role="status" data-rules-status>正在读取校规…</p>'
   doc.body.appendChild(el)
   const run = () =>
     mountRules(el as unknown as HTMLElement, { fetch: f, timeoutMs: 1000, rulesUrl, serverRepo: server, calendarCors })
@@ -80,9 +81,26 @@ describe('mountRules', () => {
       }) as unknown as typeof fetch,
     ]) {
       const { el, run } = setup(f)
+      const status = el.querySelector('[role="status"]')
       await run()
       expect(el.textContent).toBe('校规暂时读不到，可以在 GitHub 上看。')
+      // The same live region carries the new text, so it is announced.
+      expect(el.querySelector('[role="status"]')).toBe(status)
     }
+  })
+
+  it('a failure without the loading line still lands in a live region', async () => {
+    const doc = new Window().document
+    const el = doc.createElement('div')
+    doc.body.appendChild(el)
+    await mountRules(el as unknown as HTMLElement, {
+      fetch: reply({}, 500),
+      timeoutMs: 1000,
+      rulesUrl,
+      serverRepo: server,
+      calendarCors: true,
+    })
+    expect(el.querySelector('[role="status"]')?.textContent).toBe('校规暂时读不到，可以在 GitHub 上看。')
   })
 
   it('calls fetch with the url and only a signal', async () => {
