@@ -11,11 +11,12 @@
     "dev": "astro dev",
     "check": "astro check",
     "build": "astro build",
-    "build:release": "astro build --mode release",
+    "build:release": "node scripts/check-placeholders.mjs --release && astro build --mode release",
     "preview": "astro preview",
     "test": "vitest run",
     "test:site": "vitest run --config vitest.dist.config.ts tests/dist/site",
-    "verify": "npm run check && npm test && npm run build && npm run test:site"
+    "verify": "npm run check && npm test && npm run build && npm run test:site",
+    "check:placeholders": "node scripts/check-placeholders.mjs"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.42.10",
