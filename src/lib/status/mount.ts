@@ -38,24 +38,25 @@ function render(el: HTMLElement, status: StatusText): void {
 }
 
 export async function mountStatusStrip(el: HTMLElement, deps: MountDeps): Promise<void> {
-  const describeOptions = {
-    now: deps.now(),
+  const describeOptions = (now: Date) => ({
+    now,
     statusFileUrl: deps.statusFileUrl,
     cannotConnectHref: deps.cannotConnectHref,
-  }
+  })
   try {
-    const nowMs = deps.now().getTime()
+    const now = deps.now()
+    const nowMs = now.getTime()
     const { calendarCors } = deps.sources
     const cached = readCachedView(deps.storage, { now: nowMs, maxAgeMs: deps.cacheMs, calendarCors })
     if (cached) {
-      render(el, describeStatus(cached, describeOptions))
+      render(el, describeStatus(cached, describeOptions(now)))
       return
     }
     const view = await resolveStatus(deps.sources)
-    render(el, describeStatus(view, describeOptions))
+    render(el, describeStatus(view, describeOptions(now)))
     writeCachedView(deps.storage, view, { now: nowMs, calendarCors })
   } catch {
-    render(el, describeStatus({ kind: 'unknown' }, describeOptions))
+    render(el, describeStatus({ kind: 'unknown' }, describeOptions(new Date())))
   }
 }
 

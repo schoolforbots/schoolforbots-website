@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { mountStatusStrip, type MountDeps } from '../../../src/lib/status/mount'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { mountStatusStrip, safeSessionStorage, type MountDeps } from '../../../src/lib/status/mount'
 
 const CAL = 'https://api.test/v1/school-calendar'
 const SF = 'https://status.test/status.json'
@@ -71,6 +71,10 @@ beforeEach(() => {
   document.body.innerHTML = ''
 })
 
+afterEach(() => {
+  vi.restoreAllMocks()
+})
+
 describe('mountStatusStrip', () => {
   it('shows the cached view without any request', async () => {
     const storage = new FakeStorage()
@@ -136,5 +140,47 @@ describe('mountStatusStrip', () => {
     await mountStatusStrip(el, deps(f, null))
     expect(el.dataset.tone).toBe('unknown')
     expect(text(el)).toContain('状态暂时查不到')
+  })
+
+  it('renders and caches nothing when setItem throws', async () => {
+    const storage = new FakeStorage()
+    storage.setItem = () => {
+      throw new DOMException('quota', 'QuotaExceededError')
+    }
+    const el = strip()
+    await mountStatusStrip(el, deps(okFetch(), storage as unknown as Storage))
+    expect(text(el)).toBe('学校正常 · 学期中')
+    expect(el.dataset.tone).toBe('ok')
+    expect(storage.length).toBe(0)
+  })
+
+  it('still renders when the clock throws', async () => {
+    const el = strip()
+    const d = deps(okFetch(), null)
+    d.now = () => {
+      throw new Error('clock')
+    }
+    await mountStatusStrip(el, d)
+    expect(el.dataset.tone).toBe('unknown')
+  })
+})
+
+describe('safeSessionStorage', () => {
+  it('returns the storage when it works', () => {
+    expect(safeSessionStorage()).toBe(window.sessionStorage)
+  })
+
+  it('returns null when reading window.sessionStorage throws', () => {
+    vi.spyOn(window, 'sessionStorage', 'get').mockImplementation(() => {
+      throw new DOMException('blocked', 'SecurityError')
+    })
+    expect(safeSessionStorage()).toBeNull()
+  })
+
+  it('returns null when getItem throws', () => {
+    vi.spyOn(window.sessionStorage, 'getItem').mockImplementation(() => {
+      throw new DOMException('blocked', 'SecurityError')
+    })
+    expect(safeSessionStorage()).toBeNull()
   })
 })
