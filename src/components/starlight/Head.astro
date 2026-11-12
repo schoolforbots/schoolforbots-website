@@ -16,5 +16,5 @@ const shareImage = `${site.url}/og.png`
 {/* The browser bar takes the colour of the top of the page; the 晚自习 switch updates both. */}
 <meta name="theme-color" content="#FDF4E3" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#141D19" media="(prefers-color-scheme: dark)" />
-{/* The 晚自习 switch needs script; without it, hide the switch. */}
-<noscript><style is:inline>sfb-theme-toggle { display: none; }</style></noscript>
+{/* The 晚自习 switch needs script; without it, hide the switch. `html` outranks the switch's own scoped rule. */}
+<noscript><style is:inline>html sfb-theme-toggle { display: none; }</style></noscript>
