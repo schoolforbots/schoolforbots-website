@@ -1,4 +1,5 @@
-import { statSync } from 'node:fs'
+import { readFileSync, statSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { describe, expect, it } from 'vitest'
 import { displayTitleSelector } from '../../../src/config/display-titles.mjs'
 import { distExists, distPath, listDist, readDist, readPage } from '../helpers'
@@ -51,5 +52,30 @@ describe('heading font', () => {
     const others = [...page.querySelectorAll('h2, h3, h4')].filter((h) => !titles.has(h))
     expect(others.length).toBeGreaterThan(0)
     expect(page.querySelectorAll('h1')).toHaveLength(1)
+  })
+})
+
+describe('heading font licence', () => {
+  it('ships the OFL text next to the font, unchanged', () => {
+    expect(distExists('fonts/OFL.txt')).toBe(true)
+    expect(readDist('fonts/OFL.txt')).toBe(readFileSync('fonts-src/OFL.txt', 'utf8'))
+  })
+
+  it.skipIf(!hasFont)('keeps the licence name records (IDs 13 and 14) in the subset', async () => {
+    // wawoff2 is already installed (subset-font depends on it); it has no type declarations.
+    const { decompress } = createRequire(import.meta.url)('wawoff2') as { decompress(b: Uint8Array): Promise<Uint8Array> }
+    const sfnt = Buffer.from(await decompress(readFileSync(distPath('fonts/heading.woff2'))))
+    const tables = sfnt.readUInt16BE(4)
+    let nameOffset = -1
+    for (let i = 0; i < tables; i++) {
+      const rec = 12 + i * 16
+      if (sfnt.toString('latin1', rec, rec + 4) === 'name') nameOffset = sfnt.readUInt32BE(rec + 8)
+    }
+    expect(nameOffset).toBeGreaterThan(0)
+    const count = sfnt.readUInt16BE(nameOffset + 2)
+    const ids = new Set<number>()
+    for (let i = 0; i < count; i++) ids.add(sfnt.readUInt16BE(nameOffset + 6 + i * 12 + 6))
+    expect(ids.has(13)).toBe(true)
+    expect(ids.has(14)).toBe(true)
   })
 })
