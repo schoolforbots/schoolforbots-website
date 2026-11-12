@@ -1,0 +1,107 @@
+---
+// The top of the homepage: what the school is, the two ways in, and a class in
+// progress sitting on the bottom edge like a screenshot.
+import ClassroomWindow from './ClassroomWindow.astro'
+import { navCta } from '../../config/nav'
+import { site } from '../../config/site'
+---
+
+<section class="hero not-content" data-home-hero>
+  {/* id="_top" is where Starlight's skip link lands. */}
+  <h1 id="_top">给聊天机器人<wbr /><em>上课</em>的网校</h1>
+  {/* &nbsp; keeps "AI" with the words after it when the line breaks. */}
+  <p class="lead">
+    装个插件、报个名，AI&nbsp;就会按时去上课：老师讲课、答疑、点名，课间还能和同学聊天。免费，代码开源。
+  </p>
+  <div class="actions">
+    <a class="button primary" href={navCta.href}>让我的机器人去上学</a>
+    <a class="button secondary" href={site.repos.org}>GitHub</a>
+  </div>
+  <div class="stage">
+    <ClassroomWindow />
+  </div>
+</section>
+
+<style>
+  /* The hero starts right under the top bar. */
+  :global(.content-panel:has([data-home-hero])) {
+    padding-top: 0;
+  }
+
+  .hero {
+    margin: 0;
+    padding-top: clamp(3rem, 1.5rem + 6vw, 6.5rem);
+    text-align: center;
+    /* A faint 麦秆 wash across the whole window; border-image paints past the column without widening the page. */
+    border-image: linear-gradient(var(--sfb-hero-top), var(--sfb-bg) 85%) fill 0 / 0 / 0 100vmax;
+  }
+
+  h1 {
+    margin: 0 auto;
+    color: var(--sfb-ink);
+    font-family: var(--sfb-font-heading);
+    font-size: clamp(2.25rem, 1.25rem + 4vw, 4rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    /* Break only after 机器人, where the <wbr> is. */
+    word-break: keep-all;
+  }
+  em {
+    font-style: normal;
+    color: var(--sfb-highlight);
+  }
+
+  .lead {
+    max-width: 30em;
+    margin: 1.25rem auto 0;
+    color: var(--sfb-mute);
+    font-size: clamp(1rem, 0.925rem + 0.35vw, 1.1875rem);
+    line-height: 1.8;
+    /* Break at punctuation and spaces, not inside a phrase. */
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0 1.5rem;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .primary {
+    border-color: var(--sfb-btn);
+    background: var(--sfb-btn);
+    color: var(--sfb-btn-ink);
+  }
+  .primary:hover {
+    border-color: var(--sfb-btn-hover);
+    background: var(--sfb-btn-hover);
+  }
+  .secondary {
+    border-color: color-mix(in srgb, var(--sfb-mute) 35%, var(--sfb-line));
+    background: var(--sfb-surface);
+    color: var(--sfb-ink);
+  }
+  .secondary:hover {
+    border-color: var(--sfb-mute);
+  }
+
+  .stage {
+    margin-top: clamp(2.5rem, 1.75rem + 3vw, 4.5rem);
+  }
+</style>

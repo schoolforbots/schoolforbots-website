@@ -1,0 +1,12 @@
+---
+// The homepage draws its own hero, with the page's only h1, inside the page
+// (src/components/home/Hero.astro). Its frontmatter sets `hero` only to get
+// Starlight's one-panel layout without the page title, so Starlight's own
+// hero is left out there. Any other page with `hero` keeps Starlight's.
+import type {} from '@astrojs/starlight' // Starlight's types for Astro.locals
+import Default from '@astrojs/starlight/components/Hero.astro'
+
+const isHomepage = Astro.locals.starlightRoute.id === ''
+---
+
+{!isHomepage && <Default {...Astro.props} />}

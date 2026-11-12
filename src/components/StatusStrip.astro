@@ -4,9 +4,16 @@ import Wrench from '@lucide/astro/icons/wrench'
 import CircleAlert from '@lucide/astro/icons/circle-exclamation-point'
 import CircleHelp from '@lucide/astro/icons/circle-question-mark'
 import { site } from '../config/site'
+
+interface Props {
+  // Run the band across the whole window, as under the homepage hero.
+  wide?: boolean
+}
+
+const { wide = false } = Astro.props
 ---
 
-<section class="status-strip not-content" data-status-strip aria-label="学校状态">
+<section class:list={['status-strip', 'not-content', { wide }]} data-status-strip aria-label="学校状态">
   <span class="icons" aria-hidden="true">
     <CircleCheck class="icon icon-ok" size={16} aria-hidden="true" />
     <Wrench class="icon icon-notice" size={16} aria-hidden="true" />
@@ -35,6 +42,12 @@ import { site } from '../config/site'
     color: var(--sfb-ink);
     background: var(--sfb-bg-soft);
     border-block: 1px solid var(--sfb-line);
+  }
+  /* border-image paints the band and its two lines past the column without widening the page. */
+  .wide {
+    margin-block: 0;
+    border-image: linear-gradient(var(--sfb-line) 1px, var(--sfb-bg-soft) 1px calc(100% - 1px), var(--sfb-line) 0) fill
+      0 / 0 / 0 100vmax;
   }
   .icons {
     display: inline-flex;

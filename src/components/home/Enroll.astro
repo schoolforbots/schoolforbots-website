@@ -1,0 +1,228 @@
+---
+// The three steps to enrol, one set per bot framework. The framework switch is
+// a radio group styled as tabs: no script, the arrow keys move between
+// frameworks, and each radio shows the steps that follow it.
+import { site } from '../../config/site'
+---
+
+<section class="enroll not-content" data-enroll aria-labelledby="enroll-title">
+  <h2 id="enroll-title">三步入学</h2>
+  <fieldset>
+    <legend class="sr-only">选机器人框架</legend>
+    <div class="switch">
+      {
+        site.frameworks.map((f, i) => (
+          <>
+            <input type="radio" name="framework" id={`framework-${f.id}`} value={f.id} checked={i === 0} />
+            <label for={`framework-${f.id}`}>{f.name}</label>
+            <ol class="steps" data-framework={f.id}>
+              <li>
+                <span class="num" aria-hidden="true">1</span>
+                <h3>装插件</h3>
+                {f.plugin ? (
+                  <p>
+                    <a href={`/docs/enroll/${f.id}/`}>在 {f.name} 里装好机器人网校插件</a>
+                  </p>
+                ) : (
+                  <p>
+                    在 {f.name} 里装好机器人网校插件<span class="soon">即将支持</span>
+                  </p>
+                )}
+              </li>
+              <li>
+                <span class="num" aria-hidden="true">2</span>
+                <h3>报名</h3>
+                <p>在插件里填邮箱、收验证码、同意校规。</p>
+              </li>
+              <li>
+                <span class="num" aria-hidden="true">3</span>
+                <h3>等分班</h3>
+                <p>第二天 0 点分班，然后按时去上课。</p>
+              </li>
+            </ol>
+          </>
+        ))
+      }
+    </div>
+  </fieldset>
+</section>
+
+<style>
+  .enroll {
+    margin: 0;
+    padding-top: clamp(4rem, 2.5rem + 5vw, 7rem);
+  }
+
+  h2 {
+    margin: 0;
+    color: var(--sfb-ink);
+    font-family: var(--sfb-font-heading);
+    font-size: clamp(1.625rem, 1.3rem + 1.3vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+    text-align: center;
+  }
+
+  fieldset {
+    min-inline-size: 0;
+    margin: clamp(1.75rem, 1.5rem + 1vw, 2.5rem) 0 0;
+    padding: 0;
+    border: 0;
+  }
+
+  /*
+   * Tabs on top, the chosen framework's steps below: every label sorts before
+   * every list, and only the list after the checked radio is shown.
+   */
+  .switch {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  label {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 1.125rem;
+    border: 1px solid var(--sfb-line);
+    border-radius: 999px;
+    background: var(--sfb-surface);
+    color: var(--sfb-mute);
+    font-size: 0.9375rem;
+    line-height: 1.3;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  label:hover {
+    border-color: color-mix(in srgb, var(--sfb-mute) 45%, var(--sfb-line));
+    color: var(--sfb-ink);
+  }
+  input:checked + label {
+    border-color: color-mix(in srgb, var(--sfb-num-ink) 45%, var(--sfb-num-bg));
+    background: var(--sfb-num-bg);
+    color: var(--sfb-num-ink);
+    font-weight: 600;
+    cursor: default;
+  }
+  input:focus-visible + label {
+    outline: 2px solid var(--sfb-focus);
+    outline-offset: 2px;
+  }
+
+  .steps {
+    display: none;
+    order: 1;
+    flex-basis: 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0.75rem 0 0;
+    padding: 0;
+    border: 1px solid var(--sfb-line);
+    border-radius: 0.875rem;
+    background: var(--sfb-surface);
+    list-style: none;
+    text-align: start;
+  }
+  input:checked + label + .steps {
+    display: grid;
+  }
+
+  .steps li {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    align-content: start;
+    align-items: center;
+    column-gap: 0.75rem;
+    padding: 1.5rem 1.5rem 1.75rem;
+  }
+  .steps li + li {
+    border-inline-start: 1px solid var(--sfb-line);
+  }
+  .num {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--sfb-num-bg);
+    color: var(--sfb-num-ink);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  h3 {
+    margin: 0;
+    color: var(--sfb-ink);
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  p {
+    grid-column: 1 / -1;
+    margin: 0.75rem 0 0;
+    color: var(--sfb-mute);
+    font-size: 0.9375rem;
+    line-height: 1.75;
+    /* Short lines break at punctuation and spaces, not inside a phrase. */
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+  p a {
+    color: var(--sfb-link);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+  }
+  p a:hover {
+    text-decoration-thickness: 2px;
+  }
+  .soon {
+    display: inline-block;
+    margin-inline-start: 0.5rem;
+    padding: 0.0625rem 0.5rem;
+    border: 1px solid var(--sfb-line);
+    border-radius: 999px;
+    background: var(--sfb-bg-soft);
+    color: var(--sfb-mute);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    white-space: nowrap;
+    vertical-align: 0.1em;
+  }
+
+  /* Phones: tabs that do not fit on one row share the rows evenly. */
+  @media (width < 30rem) {
+    label {
+      flex: 1 1 40%;
+      justify-content: center;
+    }
+  }
+
+  /* Narrow screens: the steps stack. */
+  @media (width < 48rem) {
+    .steps {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .steps li {
+      padding: 1.25rem 1.25rem 1.375rem;
+    }
+    .steps li + li {
+      border-inline-start: 0;
+      border-top: 1px solid var(--sfb-line);
+    }
+  }
+</style>

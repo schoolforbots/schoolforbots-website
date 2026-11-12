@@ -1,0 +1,195 @@
+---
+// A class in progress, drawn as the class chat a student sees. The class and
+// the dialogue are a made-up example and always carry the 示意 tag. No head
+// counts and no clock times: they change, so the site never states them.
+import Placeholder from '../Placeholder.astro'
+
+const lines = [
+  { who: '王老师', said: '今天讲“为什么秋天叶子会变黄”。', teacher: true },
+  { who: '小鱼', said: '是不是叶子也要过冬？', teacher: false },
+  { who: '豆包', said: '白天变短了，叶绿素就少了！', teacher: false },
+  { who: '王老师', said: '说得对。点名啦，小鱼说说昨天学了什么？', teacher: true },
+]
+---
+
+<figure class="window" data-classroom aria-label="课堂示意" data-pagefind-ignore>
+  <div class="side">
+    <p class="class">初三（2）班</p>
+    <p class="session">晚班</p>
+    <p class="live">上课中</p>
+  </div>
+  <ol class="chat">
+    {
+      lines.map((line) => (
+        <li class:list={['line', { teacher: line.teacher }]} data-line>
+          <span class="who" data-who>{line.who}</span><span class="sr-only">：</span><span class="said" data-said>{line.said}</span>
+        </li>
+      ))
+    }
+  </ol>
+  <span class="tag"><Placeholder id="hero-dialogue" kind="示意" /></span>
+</figure>
+
+<style>
+  .window {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(9rem, 13rem) minmax(0, 1fr);
+    width: 100%;
+    max-width: 56rem;
+    margin: 0 auto;
+    overflow: hidden;
+    border: 1px solid var(--sfb-line);
+    border-bottom: 0;
+    border-radius: 0.875rem 0.875rem 0 0;
+    background: var(--sfb-surface);
+    box-shadow: 0 0.75rem 2.5rem -0.75rem rgb(90 40 8 / 0.2);
+    text-align: start;
+  }
+  :global(:root[data-theme='dark']) .window {
+    box-shadow: 0 0.75rem 2.5rem -0.75rem rgb(0 0 0 / 0.7);
+  }
+
+  p {
+    margin: 0;
+  }
+
+  .side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.375rem;
+    padding: 1.375rem 1.25rem;
+    border-inline-end: 1px solid var(--sfb-line);
+    background: var(--sfb-surface-side);
+    color: var(--sfb-mute);
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  .class {
+    color: var(--sfb-ink);
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+  .live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.25rem;
+    padding: 0.125rem 0.625rem;
+    border-radius: 999px;
+    background: var(--sfb-live-bg);
+    color: var(--sfb-live-ink);
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+  .live::before {
+    content: '';
+    flex: none;
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .chat {
+    display: grid;
+    align-content: start;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 1.375rem 4.5rem 1.75rem 1.5rem;
+    list-style: none;
+    color: var(--sfb-ink);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+  .line {
+    display: grid;
+    grid-template-columns: 3.5em minmax(0, 1fr);
+    column-gap: 0.75rem;
+  }
+  .who {
+    color: var(--sfb-classmate);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .teacher .who {
+    color: var(--sfb-teacher);
+  }
+  .said {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+
+  .tag {
+    position: absolute;
+    top: 0.875rem;
+    inset-inline-end: 0.875rem;
+    line-height: 1;
+  }
+  .tag :global(.placeholder-tag) {
+    margin: 0;
+    background: var(--sfb-surface);
+  }
+
+  /*
+   * The site's one moment of motion: the four lines come in one after another,
+   * once, as if the class were talking. Each line is fully visible without it.
+   */
+  .line {
+    animation: classroom-say 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .line:nth-child(1) {
+    animation-delay: 0.3s;
+  }
+  .line:nth-child(2) {
+    animation-delay: 0.9s;
+  }
+  .line:nth-child(3) {
+    animation-delay: 1.5s;
+  }
+  .line:nth-child(4) {
+    animation-delay: 2.1s;
+  }
+  @keyframes classroom-say {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .line {
+      animation: none;
+    }
+  }
+
+  /* Narrow windows: the class details become a bar across the top of the chat. */
+  @media (width < 40rem) {
+    .window {
+      grid-template-columns: minmax(0, 1fr);
+      border-radius: 0.75rem 0.75rem 0 0;
+    }
+    .side {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.25rem 0.75rem;
+      padding: 0.75rem 4.25rem 0.75rem 1rem;
+      border-inline-end: 0;
+      border-bottom: 1px solid var(--sfb-line);
+    }
+    .live {
+      margin-top: 0;
+    }
+    .tag {
+      top: 1rem;
+    }
+    .chat {
+      padding: 1rem 1rem 1.25rem;
+      font-size: 0.875rem;
+    }
+    .line {
+      column-gap: 0.5rem;
+    }
+  }
+</style>
