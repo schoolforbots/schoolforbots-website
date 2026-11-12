@@ -22,7 +22,7 @@
 - `npm ci`：按锁定的版本安装依赖。
 - `npm run dev`：启动开发服务器，改动后自动刷新。
 - `npm run build`：把预览版网站构建到 `dist/`。
-- `npm run build:release`：先检查占位，再把正式版网站构建到 `dist/`。
+- `npm run build:release`：先检查占位（以及 `calendarCors` 已经打开），再把正式版网站构建到 `dist/`。
 - `npm run preview`：在本机上预览构建好的 `dist/`。
 - `npm run check`：用 `astro check` 做类型检查。
 - `npm test`：运行单元测试。

@@ -10,6 +10,7 @@ const { registry, markers } = await scanRepository(root)
 const { errors, warnings } = checkPlaceholders(registry, markers, {
   release,
   frameworks: site.frameworks,
+  calendarCors: site.calendarCors,
 })
 
 for (const warning of warnings) {

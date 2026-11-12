@@ -91,7 +91,7 @@ describe('placeholder check', () => {
 
   it('an unregistered marker is an error in both modes', () => {
     for (const release of [false, true]) {
-      const { errors } = checkPlaceholders([], [marker], { release, frameworks: withPlugin })
+      const { errors } = checkPlaceholders([], [marker], { release, frameworks: withPlugin, calendarCors: true })
       expect(errors.join('\n')).toContain('logo')
       expect(errors.join('\n')).toContain('src/a.ts:7')
     }
@@ -101,6 +101,7 @@ describe('placeholder check', () => {
     const { errors } = checkPlaceholders([{ id: 'logo', release: 'allow' }], [], {
       release: false,
       frameworks: withPlugin,
+      calendarCors: true,
     })
     expect(errors.join('\n')).toContain('过期')
     expect(errors.join('\n')).toContain('logo')
@@ -108,10 +109,10 @@ describe('placeholder check', () => {
 
   it('a blocking placeholder is a warning normally and an error on release', () => {
     const registry = [{ id: 'logo', release: 'block' as const }]
-    const normal = checkPlaceholders(registry, [marker], { release: false, frameworks: withPlugin })
+    const normal = checkPlaceholders(registry, [marker], { release: false, frameworks: withPlugin, calendarCors: true })
     expect(normal.errors).toEqual([])
     expect(normal.warnings.join('\n')).toContain('src/a.ts:7')
-    const release = checkPlaceholders(registry, [marker], { release: true, frameworks: withPlugin })
+    const release = checkPlaceholders(registry, [marker], { release: true, frameworks: withPlugin, calendarCors: true })
     expect(release.errors.join('\n')).toContain('logo')
   })
 
@@ -119,6 +120,7 @@ describe('placeholder check', () => {
     const result = checkPlaceholders([{ id: 'logo', release: 'allow' }], [marker], {
       release: true,
       frameworks: withPlugin,
+      calendarCors: true,
     })
     expect(result).toEqual({ errors: [], warnings: [] })
   })
@@ -127,15 +129,25 @@ describe('placeholder check', () => {
     const { errors } = checkPlaceholders([], [], {
       release: true,
       frameworks: [{ plugin: null }, { plugin: null }],
+      calendarCors: true,
     })
     expect(errors.join('\n')).toContain('没有一个框架有插件')
-    const normal = checkPlaceholders([], [], { release: false, frameworks: [{ plugin: null }] })
+    const normal = checkPlaceholders([], [], { release: false, frameworks: [{ plugin: null }], calendarCors: true })
     expect(normal.errors).toEqual([])
+  })
+
+  it('release fails while calendarCors is off', () => {
+    const off = checkPlaceholders([], [], { release: true, frameworks: withPlugin, calendarCors: false })
+    expect(off.errors.join('\n')).toContain('calendarCors')
+    const on = checkPlaceholders([], [], { release: true, frameworks: withPlugin, calendarCors: true })
+    expect(on).toEqual({ errors: [], warnings: [] })
+    const normal = checkPlaceholders([], [], { release: false, frameworks: withPlugin, calendarCors: false })
+    expect(normal).toEqual({ errors: [], warnings: [] })
   })
 
   it("the repository's registry and markers agree", async () => {
     const { registry, markers } = await scanRepository(process.cwd())
-    const { errors } = checkPlaceholders(registry, markers, { release: false, frameworks: [] })
+    const { errors } = checkPlaceholders(registry, markers, { release: false, frameworks: [], calendarCors: false })
     expect(errors).toEqual([])
   })
 })

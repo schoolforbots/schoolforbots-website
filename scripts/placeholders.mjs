@@ -70,7 +70,7 @@ export function findMarkers(files) {
 /**
  * @param {{ id: string; release: 'block' | 'allow' }[]} registry
  * @param {{ id: string; path: string; line: number }[]} markers
- * @param {{ release: boolean; frameworks: { plugin: unknown }[] }} opts
+ * @param {{ release: boolean; frameworks: { plugin: unknown }[]; calendarCors: boolean }} opts
  * @returns {{ errors: string[]; warnings: string[] }}
  */
 export function checkPlaceholders(registry, markers, opts) {
@@ -96,6 +96,10 @@ export function checkPlaceholders(registry, markers, opts) {
   }
   if (opts.release && !opts.frameworks.some((f) => f.plugin)) {
     errors.push('正式发布需要至少一个框架的插件已经发布：没有一个框架有插件')
+  }
+  // The status strip, the rules page and the docs that describe them assume the browser reads the school directly.
+  if (opts.release && !opts.calendarCors) {
+    errors.push('正式发布需要打开 src/config/site.ts 里的 calendarCors：状态条和校规页要直接读学校的接口')
   }
   return { errors, warnings }
 }
