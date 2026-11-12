@@ -1,17 +1,21 @@
 ---
 // The button that opens the docs table of contents on narrow screens, drawn
-// with Lucide icons so the site keeps one icon set. Markup and behaviour
-// otherwise follow Starlight's own MobileMenuToggle; its look is set in
-// styles/starlight.css to match the bar's other buttons.
+// with Lucide icons so the site keeps one icon set. It sits beside the site's
+// 菜单 button, so it shows a contents tree rather than a second menu glyph, and
+// its name is also its tooltip. Markup and behaviour otherwise follow
+// Starlight's own MobileMenuToggle; its look is set in styles/starlight.css to
+// match the bar's other buttons.
 import type {} from '@astrojs/starlight' // Starlight's types for Astro.locals
-import Menu from '@lucide/astro/icons/menu'
+import ListTree from '@lucide/astro/icons/list-tree'
 import X from '@lucide/astro/icons/x'
+
+const label = Astro.locals.t('menuButton.accessibleLabel')
 ---
 
-<button popovertarget="starlight__sidebar" class="sl-menu-button sl-flex md:sl-hidden print:hidden">
-  <Menu class="open-menu" size={18} aria-hidden="true" />
+<button popovertarget="starlight__sidebar" class="sl-menu-button sl-flex md:sl-hidden print:hidden" title={label}>
+  <ListTree class="open-menu" size={18} aria-hidden="true" />
   <X class="close-menu" size={18} aria-hidden="true" />
-  <span class="sr-only">{Astro.locals.t('menuButton.accessibleLabel')}</span>
+  <span class="sr-only">{label}</span>
 </button>
 
 <style>
