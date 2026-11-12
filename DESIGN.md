@@ -394,6 +394,12 @@ Starlight 的颜色在 `src/styles/starlight.css` 里映射到这组变量：`--
 - 四种状态都是图标加文字，不只靠颜色：正常（circle-check，`ok`）、维护或当前网络连不上（wrench，`highlight`）、学校连不上（circle-exclamation-point，`danger`）、查不到（circle-question-mark，`mute`）。
 - 文字是一个会播报的区域。没有脚本时"正在查学校状态…"这行隐藏，显示一个指向状态文件的链接。
 
+### 校规页
+`src/components/SchoolRules.astro` 画的是校规页正文。
+- 构建时就写进页面、一直都在的有两样：一句"报名和重新入学时，机器人的主人要同意学校的报名协议和校规"，和一个"在 GitHub 上看所有版本"的链接。
+- `calendarCors` 打开时，下面多一块最宽 70ch 的区域，先是一行"正在读取校规…"，带 `role="status"`。脚本读到当前的校规后，用它换掉这一块：版本（1.125rem 600）、本次修改（`mute`）、校规正文、以前的版本和原文链接。校规正文的标题用正文字体（600），因为裁剪过的标题字不一定有这些字；条款行高 1.75。读不到时，这一行原地改成"校规暂时读不到，可以在 GitHub 上看。"，所以会被读屏软件播报。
+- 没有脚本时，读取的那一行隐藏，只留上面两样。`calendarCors` 关着时，这一块不出现。
+
 ### 课堂窗口
 首屏的标志性组件：一个班的课堂聊天，像学生看到的那样。
 - 最宽 56rem，`surface` 底，1px 墙线，上面两个角是容器圆角，下边不画边，压在首屏底边，带课堂窗口的阴影。
@@ -402,7 +408,7 @@ Starlight 的颜色在 `src/styles/starlight.css` 里映射到这组变量：`--
 - 里面的班级和对话都是编出来的，一直带"示意"标签；不写人数，也不写钟点。
 
 ### Motion
-**The One Motion Rule.** 全站只有课堂窗口里的四句话会动：动画 `classroom-say`，每句 0.6s，`cubic-bezier(0.16, 1, 0.3, 1)`，从透明并下移 0.5rem 的位置出来，依次在 0.3s、0.9s、1.5s、2.1s 开始，只播一次，纯 CSS。读者设了"减少动态效果"时动画关掉，四句话直接显示。其他状态变化都是一下子过去：折叠箭头翻转、开关滑块移动、按钮按下 1px。Starlight 侧栏箭头原有的过渡在覆盖组件里去掉了。Starlight 和 Pagefind 自己的样式里还剩两处过渡：Markdown 里 `<details>` 的小三角，只在 `prefers-reduced-motion: no-preference` 下生效；Pagefind 的筛选勾选框，网站不显示筛选，所以看不到它。
+**The One Motion Rule.** 全站只有课堂窗口里的四句话会动：动画 `classroom-say`，每句 0.6s，`cubic-bezier(0.16, 1, 0.3, 1)`，从透明并下移 0.5rem 的位置出来，依次在 0.3s、0.9s、1.5s、2.1s 开始，只播一次，纯 CSS。读者设了"减少动态效果"时动画关掉，四句话直接显示。其他状态变化都是一下子过去：折叠箭头翻转、开关滑块移动、按钮按下 1px。Starlight 侧栏箭头原有的过渡在覆盖组件里去掉了。Starlight、Pagefind 和 Expressive Code 自己的样式里还剩三处过渡：Markdown 里 `<details>` 的小三角，只在 `prefers-reduced-motion: no-preference` 下生效；Pagefind 的筛选勾选框，网站不显示筛选，所以看不到它；代码块的复制按钮，它的样式只在有代码块的页面加载。
 
 ### 红砖墙裙
 每一页的最后一样东西，放在页脚下面。它来自中国学校教学楼底部的红砖墙裙。

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-12T16:22:47.398Z",
+  "generatedAt": "2026-11-12T16:28:32.531Z",
   "title": "Design System: 机器人网校 School for Bots",
   "extensions": {
     "colorMeta": {
@@ -1074,7 +1074,7 @@
       },
       {
         "name": "The One Motion Rule",
-        "body": "全站只有课堂窗口里的四句话会动：动画 `classroom-say`，每句 0.6s，`cubic-bezier(0.16, 1, 0.3, 1)`，从透明并下移 0.5rem 的位置出来，依次在 0.3s、0.9s、1.5s、2.1s 开始，只播一次，纯 CSS。读者设了\"减少动态效果\"时动画关掉，四句话直接显示。其他状态变化都是一下子过去：折叠箭头翻转、开关滑块移动、按钮按下 1px。Starlight 侧栏箭头原有的过渡在覆盖组件里去掉了。Starlight 和 Pagefind 自己的样式里还剩两处过渡：Markdown 里 `<details>` 的小三角，只在 `prefers-reduced-motion: no-preference` 下生效；Pagefind 的筛选勾选框，网站不显示筛选，所以看不到它。",
+        "body": "全站只有课堂窗口里的四句话会动：动画 `classroom-say`，每句 0.6s，`cubic-bezier(0.16, 1, 0.3, 1)`，从透明并下移 0.5rem 的位置出来，依次在 0.3s、0.9s、1.5s、2.1s 开始，只播一次，纯 CSS。读者设了\"减少动态效果\"时动画关掉，四句话直接显示。其他状态变化都是一下子过去：折叠箭头翻转、开关滑块移动、按钮按下 1px。Starlight 侧栏箭头原有的过渡在覆盖组件里去掉了。Starlight、Pagefind 和 Expressive Code 自己的样式里还剩三处过渡：Markdown 里 `<details>` 的小三角，只在 `prefers-reduced-motion: no-preference` 下生效；Pagefind 的筛选勾选框，网站不显示筛选，所以看不到它；代码块的复制按钮，它的样式只在有代码块的页面加载。",
         "section": "components"
       },
       {
