@@ -79,7 +79,17 @@ export async function mountRules(el: HTMLElement, deps: Deps): Promise<void> {
   const rules = outcome.kind === 'ok' ? parseRulesResponse(outcome.body) : null
   if (rules) {
     render(el, rules, deps.serverRepo)
+    return
+  }
+  // Change the text of the loading line in place, so screen readers announce it.
+  const failed = '校规暂时读不到，可以在 GitHub 上看。'
+  const status = el.querySelector<HTMLElement>('[data-rules-status]')
+  if (status) {
+    status.textContent = failed
   } else {
-    el.replaceChildren(make(el, 'p', '校规暂时读不到，可以在 GitHub 上看。'))
+    const p = make(el, 'p', failed)
+    p.setAttribute('role', 'status')
+    p.dataset.rulesStatus = ''
+    el.replaceChildren(p)
   }
 }

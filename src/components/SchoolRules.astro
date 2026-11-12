@@ -1,7 +1,9 @@
 ---
 // The rules sentence and the GitHub link are always in the page. When the
 // school allows cross-origin reads, the script reads the current rules and
-// fills the container; otherwise the container is not rendered.
+// fills the container; otherwise the container is not rendered. The loading
+// line is a live region, so a failure that replaces its text is announced;
+// without script it is hidden (see starlight/Head.astro).
 import { site } from '../config/site'
 
 const allVersions = `${site.repos.server}/tree/main/school-rules`
@@ -17,7 +19,7 @@ const config = JSON.stringify({
 {
   site.calendarCors && (
     <div class="rules-root not-content" data-rules-root data-config={config}>
-      <p>正在读取校规…</p>
+      <p role="status" data-rules-status>正在读取校规…</p>
     </div>
   )
 }
