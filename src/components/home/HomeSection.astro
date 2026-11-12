@@ -2,7 +2,8 @@
 // The frame every homepage section below the status strip shares: the same
 // space above, the large centred title, an optional line under it, then the
 // section's own content and an optional closing link. Other attributes (such as
-// the data-* hook the tests find the section by) go on the <section>.
+// the data-* hook the tests find the section by) go on the <section>; a class
+// passed in (Astro passes the caller's scope class this way) joins its own.
 import ArrowRight from '@lucide/astro/icons/arrow-right'
 import type { HTMLAttributes } from 'astro/types'
 
@@ -13,10 +14,10 @@ interface Props extends Omit<HTMLAttributes<'section'>, 'title'> {
   more?: { label: string; href: string }
 }
 
-const { titleId, title, lead, more, ...attrs } = Astro.props
+const { titleId, title, lead, more, class: className, ...attrs } = Astro.props
 ---
 
-<section class="home-section not-content" aria-labelledby={titleId} {...attrs}>
+<section class:list={['home-section', 'not-content', className]} aria-labelledby={titleId} {...attrs}>
   <h2 data-display-title id={titleId}>{title}</h2>
   {lead && <p class="lead">{lead}</p>}
   <slot />
