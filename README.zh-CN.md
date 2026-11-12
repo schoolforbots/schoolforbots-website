@@ -26,12 +26,13 @@
 - `npm run preview`：在本机上预览构建好的 `dist/`。
 - `npm run check`：用 `astro check` 做类型检查。
 - `npm test`：运行单元测试。
+- `npm run make:og`：重新生成 `public/og.png`；需要系统里装有中日韩字体。
 - `npm run verify`：依次做类型检查、单元测试、构建，再测试 `dist/`。提交 PR 之前先运行它。
 - `npm run check:placeholders`：核对每个占位标记都登记进了 `PLACEHOLDERS.md`、每条登记都还有标记（这两种错误都会让检查失败）。还没填好的会阻塞发布的占位在这里只给警告，`npm run build:release` 才会因它们失败。
 
 ## 配置
 
-地址和插件都在一个文件里设置：`src/config/site.ts`。里面有网站地址、联系邮箱、学校的 API 地址、状态文件地址、仓库链接，以及支持的框架列表。要改地址或加插件，只改这个文件。
+地址和插件都在一个文件里设置：`src/config/site.ts`。里面有网站地址、联系邮箱、学校的 API 地址、状态文件地址、仓库链接，以及支持的框架列表。要改地址，只改这个文件。发布一个插件还要写它的安装页，更新 `src/content/docs/docs/enroll/index.md` 里的框架链接，并从 `PLACEHOLDERS.md` 里删掉它那一行（漏了的话测试会发现）。
 
 `calendarCors` 决定页面怎么读学校的数据：
 
