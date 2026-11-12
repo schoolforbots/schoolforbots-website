@@ -1,5 +1,15 @@
 {
   "menuButton.accessibleLabel": "文档目录",
   "page.previousLink": "上一篇",
-  "page.nextLink": "下一篇"
+  "page.nextLink": "下一篇",
+  "pagefind.clear_search": "清除",
+  "pagefind.load_more": "显示更多结果",
+  "pagefind.search_label": "搜索本站",
+  "pagefind.filters_label": "筛选",
+  "pagefind.zero_results": "没有找到“[SEARCH_TERM]”，换个词试试",
+  "pagefind.many_results": "找到 [COUNT] 条“[SEARCH_TERM]”的结果",
+  "pagefind.one_result": "找到 [COUNT] 条“[SEARCH_TERM]”的结果",
+  "pagefind.alt_search": "没有找到“[SEARCH_TERM]”，下面是“[DIFFERENT_TERM]”的结果",
+  "pagefind.search_suggestion": "没有找到“[SEARCH_TERM]”，可以换个词试试：",
+  "pagefind.searching": "正在搜索“[SEARCH_TERM]”…"
 }

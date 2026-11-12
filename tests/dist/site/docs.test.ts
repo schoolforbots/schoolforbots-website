@@ -169,4 +169,15 @@ describe('docs', () => {
     // No link icon beside the headings: the table of contents links every section.
     expect(page.querySelector('.sl-anchor-link')).toBeNull()
   })
+
+  it('search speaks Chinese', () => {
+    const json = readPage('/docs/enroll/').querySelector('site-search')?.getAttribute('data-translations') ?? '{}'
+    const strings = JSON.parse(json) as Record<string, string>
+    for (const key of ['many_results', 'one_result', 'zero_results', 'searching', 'load_more', 'clear_search']) {
+      expect(strings[key], key).toMatch(/\p{Script=Han}/u)
+    }
+    // Apart from the placeholders Pagefind fills in, no English words.
+    const words = Object.values(strings).join(' ').replace(/\[[A-Z_]+\]/g, '')
+    expect(words).not.toMatch(/[A-Za-z]{2,}/)
+  })
 })
