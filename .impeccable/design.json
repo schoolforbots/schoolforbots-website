@@ -1,0 +1,1106 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-12T16:22:47.398Z",
+  "title": "Design System: 机器人网校 School for Bots",
+  "extensions": {
+    "colorMeta": {
+      "bg": {
+        "role": "neutral",
+        "displayName": "纸白 Paper White",
+        "canonical": "#FFFDF9",
+        "tonalRamp": [
+          "#0C0B0A",
+          "#252422",
+          "#413F3D",
+          "#5F5D5A",
+          "#82807D",
+          "#A6A4A1",
+          "#CBCAC8",
+          "#EFEEEE"
+        ]
+      },
+      "bg-night": {
+        "role": "neutral",
+        "displayName": "夜墨绿 Night Ink-Green（晚自习）",
+        "canonical": "#0E1412",
+        "tonalRamp": [
+          "#090C0B",
+          "#202524",
+          "#3B413F",
+          "#58605D",
+          "#7B827F",
+          "#A0A6A4",
+          "#C7CCCA",
+          "#EDEFEE"
+        ]
+      },
+      "bg-soft": {
+        "role": "neutral",
+        "displayName": "旧纸 Old Paper",
+        "canonical": "#FBF7F1",
+        "tonalRamp": [
+          "#0C0B09",
+          "#262420",
+          "#423F3B",
+          "#605D58",
+          "#83807B",
+          "#A7A4A0",
+          "#CCCAC7",
+          "#EFEEED"
+        ]
+      },
+      "bg-soft-night": {
+        "role": "neutral",
+        "displayName": "夜旧纸 Night Paper（晚自习）",
+        "canonical": "#141C19",
+        "tonalRamp": [
+          "#080C0B",
+          "#1F2623",
+          "#3A423F",
+          "#57605C",
+          "#79837F",
+          "#9EA7A3",
+          "#C6CCCA",
+          "#EDEFEE"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "白板 Board White",
+        "canonical": "#FFFFFF",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#242424",
+          "#404040",
+          "#5D5D5D",
+          "#808080",
+          "#A4A4A4",
+          "#CACACA",
+          "#EEEEEE"
+        ]
+      },
+      "surface-night": {
+        "role": "neutral",
+        "displayName": "夜白板 Night Board（晚自习）",
+        "canonical": "#121A17",
+        "tonalRamp": [
+          "#080C0B",
+          "#1F2623",
+          "#3A423F",
+          "#57605C",
+          "#79837F",
+          "#9EA7A3",
+          "#C6CCCA",
+          "#EDEFEE"
+        ]
+      },
+      "surface-side": {
+        "role": "neutral",
+        "displayName": "暖白侧栏 Warm Side",
+        "canonical": "#FFFAF2",
+        "tonalRamp": [
+          "#0C0B08",
+          "#26241F",
+          "#433F39",
+          "#615D56",
+          "#848079",
+          "#A8A49E",
+          "#CDCAC6",
+          "#EFEEED"
+        ]
+      },
+      "surface-side-night": {
+        "role": "neutral",
+        "displayName": "夜侧栏 Night Side（晚自习）",
+        "canonical": "#0F1613",
+        "tonalRamp": [
+          "#090C0B",
+          "#202623",
+          "#3A423E",
+          "#57605C",
+          "#7A837F",
+          "#9FA7A3",
+          "#C7CCC9",
+          "#EDEFEE"
+        ]
+      },
+      "hero-top": {
+        "role": "neutral",
+        "displayName": "晨光 Morning Light",
+        "canonical": "#FDF4E3",
+        "tonalRamp": [
+          "#0E0B06",
+          "#28231A",
+          "#463F32",
+          "#645D4E",
+          "#877F71",
+          "#ABA497",
+          "#CFCAC1",
+          "#F0EEEB"
+        ]
+      },
+      "hero-top-night": {
+        "role": "neutral",
+        "displayName": "夜色 Night Top（晚自习）",
+        "canonical": "#141D19",
+        "tonalRamp": [
+          "#080C0A",
+          "#1F2623",
+          "#39423E",
+          "#56605C",
+          "#78837E",
+          "#9EA7A3",
+          "#C6CCC9",
+          "#EDEFEE"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "墙线 Wall Line",
+        "canonical": "#EFE5DA",
+        "tonalRamp": [
+          "#0E0B07",
+          "#29231D",
+          "#463E36",
+          "#645C53",
+          "#877F75",
+          "#ABA39B",
+          "#CFC9C4",
+          "#F0EEEC"
+        ]
+      },
+      "line-night": {
+        "role": "neutral",
+        "displayName": "夜墙线 Night Line（晚自习）",
+        "canonical": "#26302B",
+        "tonalRamp": [
+          "#080C0A",
+          "#1F2622",
+          "#39423D",
+          "#56615B",
+          "#78837E",
+          "#9EA7A2",
+          "#C6CCC9",
+          "#EDEFEE"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "墨褐 Ink Brown",
+        "canonical": "#1F1410",
+        "tonalRamp": [
+          "#0F0A08",
+          "#2B221E",
+          "#493D38",
+          "#685A55",
+          "#8B7D78",
+          "#AEA29D",
+          "#D1C8C5",
+          "#F1EEEC"
+        ]
+      },
+      "ink-night": {
+        "role": "neutral",
+        "displayName": "暖白 Warm White（晚自习）",
+        "canonical": "#F3EFE6",
+        "tonalRamp": [
+          "#0C0B08",
+          "#26241F",
+          "#423F39",
+          "#615D56",
+          "#838078",
+          "#A7A49D",
+          "#CCCAC6",
+          "#EFEEED"
+        ]
+      },
+      "mute": {
+        "role": "neutral",
+        "displayName": "灰褐 Grey Brown",
+        "canonical": "#5E4D43",
+        "tonalRamp": [
+          "#100906",
+          "#2D211A",
+          "#4B3C33",
+          "#6B5A4F",
+          "#8E7C72",
+          "#B1A198",
+          "#D3C8C2",
+          "#F1EDEB"
+        ]
+      },
+      "mute-night": {
+        "role": "neutral",
+        "displayName": "灰绿 Grey Green（晚自习）",
+        "canonical": "#A9B2AC",
+        "tonalRamp": [
+          "#090C0A",
+          "#202622",
+          "#3B423D",
+          "#58605B",
+          "#7A837D",
+          "#9FA7A2",
+          "#C7CCC9",
+          "#EDEFEE"
+        ]
+      },
+      "link": {
+        "role": "primary",
+        "displayName": "红砖棕 Brick Brown",
+        "canonical": "#813405",
+        "tonalRamp": [
+          "#190500",
+          "#3F1501",
+          "#6A2901",
+          "#92441B",
+          "#B76843",
+          "#D79172",
+          "#EFBEA9",
+          "#FCEAE2"
+        ]
+      },
+      "link-night": {
+        "role": "primary",
+        "displayName": "麦秆色 Straw（晚自习）",
+        "canonical": "#F8DDA4",
+        "tonalRamp": [
+          "#110A00",
+          "#2F2200",
+          "#513C04",
+          "#725A23",
+          "#957D49",
+          "#B7A277",
+          "#D7C9AC",
+          "#F3EEE3"
+        ]
+      },
+      "btn": {
+        "role": "primary",
+        "displayName": "红砖棕 Brick Brown",
+        "canonical": "#813405",
+        "tonalRamp": [
+          "#190500",
+          "#3F1501",
+          "#6A2901",
+          "#92441B",
+          "#B76843",
+          "#D79172",
+          "#EFBEA9",
+          "#FCEAE2"
+        ]
+      },
+      "btn-night": {
+        "role": "primary",
+        "displayName": "银杏黄 Ginkgo Yellow（晚自习）",
+        "canonical": "#F9A03F",
+        "tonalRamp": [
+          "#150800",
+          "#371D00",
+          "#5D3501",
+          "#864E04",
+          "#B76C03",
+          "#D9934C",
+          "#F0C093",
+          "#FDEBDB"
+        ]
+      },
+      "btn-ink": {
+        "role": "neutral",
+        "displayName": "白板 Board White",
+        "canonical": "#FFFFFF",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#242424",
+          "#404040",
+          "#5D5D5D",
+          "#808080",
+          "#A4A4A4",
+          "#CACACA",
+          "#EEEEEE"
+        ]
+      },
+      "btn-ink-night": {
+        "role": "neutral",
+        "displayName": "深褐 Deep Brown（晚自习）",
+        "canonical": "#21140A",
+        "tonalRamp": [
+          "#100A06",
+          "#2C221A",
+          "#4B3D32",
+          "#6A5A4E",
+          "#8D7D71",
+          "#B0A197",
+          "#D2C8C1",
+          "#F1EEEB"
+        ]
+      },
+      "btn-hover": {
+        "role": "primary",
+        "displayName": "深红砖 Deep Brick",
+        "canonical": "#6A2A03",
+        "tonalRamp": [
+          "#190500",
+          "#3F1500",
+          "#672C0A",
+          "#8C4927",
+          "#B16D4C",
+          "#D19579",
+          "#EAC0AD",
+          "#FAEBE4"
+        ]
+      },
+      "btn-hover-night": {
+        "role": "primary",
+        "displayName": "浅银杏 Light Ginkgo（晚自习）",
+        "canonical": "#FBB565",
+        "tonalRamp": [
+          "#140800",
+          "#351E01",
+          "#5B3602",
+          "#835002",
+          "#AF701C",
+          "#CF985B",
+          "#E9C39B",
+          "#FAECDE"
+        ]
+      },
+      "nav-btn": {
+        "role": "neutral",
+        "displayName": "墨褐 Ink Brown",
+        "canonical": "#1F1410",
+        "tonalRamp": [
+          "#0F0A08",
+          "#2B221E",
+          "#493D38",
+          "#685A55",
+          "#8B7D78",
+          "#AEA29D",
+          "#D1C8C5",
+          "#F1EEEC"
+        ]
+      },
+      "nav-btn-night": {
+        "role": "neutral",
+        "displayName": "暖白 Warm White（晚自习）",
+        "canonical": "#F3EFE6",
+        "tonalRamp": [
+          "#0C0B08",
+          "#26241F",
+          "#423F39",
+          "#615D56",
+          "#838078",
+          "#A7A49D",
+          "#CCCAC6",
+          "#EFEEED"
+        ]
+      },
+      "nav-btn-ink": {
+        "role": "neutral",
+        "displayName": "白板 Board White",
+        "canonical": "#FFFFFF",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#242424",
+          "#404040",
+          "#5D5D5D",
+          "#808080",
+          "#A4A4A4",
+          "#CACACA",
+          "#EEEEEE"
+        ]
+      },
+      "nav-btn-ink-night": {
+        "role": "neutral",
+        "displayName": "夜墨绿 Night Ink-Green（晚自习）",
+        "canonical": "#0E1412",
+        "tonalRamp": [
+          "#090C0B",
+          "#202524",
+          "#3B413F",
+          "#58605D",
+          "#7B827F",
+          "#A0A6A4",
+          "#C7CCCA",
+          "#EDEFEE"
+        ]
+      },
+      "focus": {
+        "role": "secondary",
+        "displayName": "柿子橙 Persimmon",
+        "canonical": "#D45113",
+        "tonalRamp": [
+          "#1A0400",
+          "#421201",
+          "#6E2400",
+          "#9E3701",
+          "#D0531C",
+          "#EE835A",
+          "#FFB79D",
+          "#FFE9E2"
+        ]
+      },
+      "focus-night": {
+        "role": "secondary",
+        "displayName": "银杏黄 Ginkgo Yellow（晚自习）",
+        "canonical": "#F9A03F",
+        "tonalRamp": [
+          "#150800",
+          "#371D00",
+          "#5D3501",
+          "#864E04",
+          "#B76C03",
+          "#D9934C",
+          "#F0C093",
+          "#FDEBDB"
+        ]
+      },
+      "highlight": {
+        "role": "secondary",
+        "displayName": "柿子橙 Persimmon",
+        "canonical": "#D45113",
+        "tonalRamp": [
+          "#1A0400",
+          "#421201",
+          "#6E2400",
+          "#9E3701",
+          "#D0531C",
+          "#EE835A",
+          "#FFB79D",
+          "#FFE9E2"
+        ]
+      },
+      "highlight-night": {
+        "role": "secondary",
+        "displayName": "银杏黄 Ginkgo Yellow（晚自习）",
+        "canonical": "#F9A03F",
+        "tonalRamp": [
+          "#150800",
+          "#371D00",
+          "#5D3501",
+          "#864E04",
+          "#B76C03",
+          "#D9934C",
+          "#F0C093",
+          "#FDEBDB"
+        ]
+      },
+      "logo": {
+        "role": "secondary",
+        "displayName": "柿子橙 Persimmon",
+        "canonical": "#D45113",
+        "tonalRamp": [
+          "#1A0400",
+          "#421201",
+          "#6E2400",
+          "#9E3701",
+          "#D0531C",
+          "#EE835A",
+          "#FFB79D",
+          "#FFE9E2"
+        ]
+      },
+      "logo-night": {
+        "role": "secondary",
+        "displayName": "银杏黄 Ginkgo Yellow（晚自习）",
+        "canonical": "#F9A03F",
+        "tonalRamp": [
+          "#150800",
+          "#371D00",
+          "#5D3501",
+          "#864E04",
+          "#B76C03",
+          "#D9934C",
+          "#F0C093",
+          "#FDEBDB"
+        ]
+      },
+      "teacher": {
+        "role": "secondary",
+        "displayName": "深柿子 Deep Persimmon",
+        "canonical": "#C24A10",
+        "tonalRamp": [
+          "#1A0400",
+          "#421200",
+          "#6E2401",
+          "#9D3803",
+          "#CC5827",
+          "#EA8660",
+          "#FDB89E",
+          "#FFE9E2"
+        ]
+      },
+      "teacher-night": {
+        "role": "secondary",
+        "displayName": "银杏黄 Ginkgo Yellow（晚自习）",
+        "canonical": "#F9A03F",
+        "tonalRamp": [
+          "#150800",
+          "#371D00",
+          "#5D3501",
+          "#864E04",
+          "#B76C03",
+          "#D9934C",
+          "#F0C093",
+          "#FDEBDB"
+        ]
+      },
+      "classmate": {
+        "role": "tertiary",
+        "displayName": "红砖棕 Brick Brown",
+        "canonical": "#813405",
+        "tonalRamp": [
+          "#190500",
+          "#3F1501",
+          "#6A2901",
+          "#92441B",
+          "#B76843",
+          "#D79172",
+          "#EFBEA9",
+          "#FCEAE2"
+        ]
+      },
+      "classmate-night": {
+        "role": "tertiary",
+        "displayName": "麦秆色 Straw（晚自习）",
+        "canonical": "#F8DDA4",
+        "tonalRamp": [
+          "#110A00",
+          "#2F2200",
+          "#513C04",
+          "#725A23",
+          "#957D49",
+          "#B7A277",
+          "#D7C9AC",
+          "#F3EEE3"
+        ]
+      },
+      "live-bg": {
+        "role": "tertiary",
+        "displayName": "嫩芽绿 Sprout Green",
+        "canonical": "#DDF9C1",
+        "tonalRamp": [
+          "#060E00",
+          "#1A2905",
+          "#33471A",
+          "#4F6635",
+          "#728958",
+          "#98AD83",
+          "#C2D0B4",
+          "#EBF1E6"
+        ]
+      },
+      "live-bg-night": {
+        "role": "tertiary",
+        "displayName": "夜嫩芽 Night Sprout（晚自习）",
+        "canonical": "#2C362B",
+        "tonalRamp": [
+          "#080C08",
+          "#1F261E",
+          "#394338",
+          "#566155",
+          "#798478",
+          "#9EA89D",
+          "#C6CDC5",
+          "#EDEFEC"
+        ]
+      },
+      "live-ink": {
+        "role": "tertiary",
+        "displayName": "深绿 Deep Green",
+        "canonical": "#2C5A1D",
+        "tonalRamp": [
+          "#020F00",
+          "#0B2C01",
+          "#214B13",
+          "#3D6B2F",
+          "#608F53",
+          "#8AB27F",
+          "#B9D4B1",
+          "#E8F2E5"
+        ]
+      },
+      "live-ink-night": {
+        "role": "tertiary",
+        "displayName": "嫩芽绿 Sprout Green（晚自习）",
+        "canonical": "#DDF9C1",
+        "tonalRamp": [
+          "#060E00",
+          "#1A2905",
+          "#33471A",
+          "#4F6635",
+          "#728958",
+          "#98AD83",
+          "#C2D0B4",
+          "#EBF1E6"
+        ]
+      },
+      "num-bg": {
+        "role": "tertiary",
+        "displayName": "麦秆色 Straw",
+        "canonical": "#F8DDA4",
+        "tonalRamp": [
+          "#110A00",
+          "#2F2200",
+          "#513C04",
+          "#725A23",
+          "#957D49",
+          "#B7A277",
+          "#D7C9AC",
+          "#F3EEE3"
+        ]
+      },
+      "num-bg-night": {
+        "role": "tertiary",
+        "displayName": "夜麦秆 Night Straw（晚自习）",
+        "canonical": "#342E1E",
+        "tonalRamp": [
+          "#0D0B05",
+          "#282418",
+          "#453F30",
+          "#645D4C",
+          "#86806E",
+          "#AAA495",
+          "#CECAC0",
+          "#F0EEEA"
+        ]
+      },
+      "num-ink": {
+        "role": "primary",
+        "displayName": "红砖棕 Brick Brown",
+        "canonical": "#813405",
+        "tonalRamp": [
+          "#190500",
+          "#3F1501",
+          "#6A2901",
+          "#92441B",
+          "#B76843",
+          "#D79172",
+          "#EFBEA9",
+          "#FCEAE2"
+        ]
+      },
+      "num-ink-night": {
+        "role": "primary",
+        "displayName": "银杏黄 Ginkgo Yellow（晚自习）",
+        "canonical": "#F9A03F",
+        "tonalRamp": [
+          "#150800",
+          "#371D00",
+          "#5D3501",
+          "#864E04",
+          "#B76C03",
+          "#D9934C",
+          "#F0C093",
+          "#FDEBDB"
+        ]
+      },
+      "ok": {
+        "role": "tertiary",
+        "displayName": "正常绿 OK Green",
+        "canonical": "#3F8A2C",
+        "tonalRamp": [
+          "#011000",
+          "#082D00",
+          "#144D02",
+          "#247009",
+          "#4D943C",
+          "#7BB76D",
+          "#AFD8A6",
+          "#E5F4E2"
+        ]
+      },
+      "ok-night": {
+        "role": "tertiary",
+        "displayName": "嫩芽绿 Sprout Green（晚自习）",
+        "canonical": "#DDF9C1",
+        "tonalRamp": [
+          "#060E00",
+          "#1A2905",
+          "#33471A",
+          "#4F6635",
+          "#728958",
+          "#98AD83",
+          "#C2D0B4",
+          "#EBF1E6"
+        ]
+      },
+      "danger": {
+        "role": "tertiary",
+        "displayName": "绯红 Crimson",
+        "canonical": "#B4232F",
+        "tonalRamp": [
+          "#1E0002",
+          "#4B0009",
+          "#7B0216",
+          "#AC1929",
+          "#D34B4D",
+          "#F27C79",
+          "#FEB5B0",
+          "#FFE9E7"
+        ]
+      },
+      "danger-night": {
+        "role": "tertiary",
+        "displayName": "浅绯红 Light Crimson（晚自习）",
+        "canonical": "#FF8A8F",
+        "tonalRamp": [
+          "#1E0003",
+          "#4A010F",
+          "#761223",
+          "#9E323E",
+          "#C45A60",
+          "#E38689",
+          "#F8B7B8",
+          "#FEE9E9"
+        ]
+      },
+      "brick": {
+        "role": "tertiary",
+        "displayName": "红砖棕 Brick Brown",
+        "canonical": "#813405",
+        "tonalRamp": [
+          "#190500",
+          "#3F1501",
+          "#6A2901",
+          "#92441B",
+          "#B76843",
+          "#D79172",
+          "#EFBEA9",
+          "#FCEAE2"
+        ]
+      },
+      "brick-night": {
+        "role": "tertiary",
+        "displayName": "夜砖 Night Brick（晚自习）",
+        "canonical": "#5A2410",
+        "tonalRamp": [
+          "#1A0401",
+          "#3E1708",
+          "#622F1D",
+          "#864C37",
+          "#AB6F5B",
+          "#CB9684",
+          "#E6C1B4",
+          "#F9EBE6"
+        ]
+      },
+      "mortar": {
+        "role": "tertiary",
+        "displayName": "灰缝 Mortar",
+        "canonical": "#BC8E6E",
+        "tonalRamp": [
+          "#160700",
+          "#381C06",
+          "#5A361A",
+          "#7D5334",
+          "#A07658",
+          "#C29C82",
+          "#DFC5B3",
+          "#F6ECE6"
+        ]
+      },
+      "mortar-night": {
+        "role": "tertiary",
+        "displayName": "夜灰缝 Night Mortar（晚自习）",
+        "canonical": "#211812",
+        "tonalRamp": [
+          "#0E0A08",
+          "#2A221E",
+          "#473E37",
+          "#665B54",
+          "#897E76",
+          "#ACA29C",
+          "#D0C9C4",
+          "#F0EEEC"
+        ]
+      },
+      "ledge": {
+        "role": "tertiary",
+        "displayName": "窗台 Ledge",
+        "canonical": "#5F2603",
+        "tonalRamp": [
+          "#190500",
+          "#3F1600",
+          "#642E11",
+          "#884B2D",
+          "#AD6F51",
+          "#CD967C",
+          "#E7C1AF",
+          "#F9EBE5"
+        ]
+      },
+      "ledge-night": {
+        "role": "tertiary",
+        "displayName": "夜窗台 Night Ledge（晚自习）",
+        "canonical": "#2A1406",
+        "tonalRamp": [
+          "#130804",
+          "#311F15",
+          "#513A2C",
+          "#725747",
+          "#957A6A",
+          "#B79F91",
+          "#D8C7BD",
+          "#F3EDE9"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "首屏的 h1，首页上只有这一个；标题字，强调词只换颜色。"
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "首页各节的居中标题，带 data-display-title，用标题字。"
+      },
+      "page-title": {
+        "displayName": "Page title",
+        "purpose": "文档页标题（Starlight 的 h1），手机上 2.1875rem，用标题字。"
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "卡片、步骤、校规单里的 h3。"
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "文档正文，正文栏最宽 45rem。"
+      },
+      "body-small": {
+        "displayName": "Body small",
+        "purpose": "首页的说明文字、页签、问答答案，多用 mute 色。"
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "首屏的两个按钮。"
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "顶栏的按钮、开关和链接；顶栏主按钮用 600。"
+      },
+      "tag": {
+        "displayName": "Tag",
+        "purpose": "即将支持、示意、待补这些小标签。"
+      }
+    },
+    "shadows": [
+      {
+        "name": "classroom-window",
+        "value": "0 0.75rem 2.5rem -0.75rem rgb(90 40 8 / 0.2)",
+        "purpose": "首屏的课堂窗口；晚上换成 rgb(0 0 0 / 0.7)。"
+      },
+      {
+        "name": "popover",
+        "value": "0 22px 44px -30px rgb(90 40 8 / 0.45)",
+        "purpose": "--sl-shadow-lg：打开的菜单面板和搜索对话框；晚上 rgb(0 0 0 / 0.8)。"
+      },
+      {
+        "name": "pagination",
+        "value": "0 8px 18px -12px rgb(90 40 8 / 0.3)",
+        "purpose": "--sl-shadow-md：文档页的上一篇和下一篇；晚上 rgb(0 0 0 / 0.6)。"
+      }
+    ],
+    "motion": [
+      {
+        "name": "classroom-say",
+        "value": "0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "全站唯一的动效：课堂窗口里的四句话从透明并下移 0.5rem 出来，依次在 0.3s、0.9s、1.5s、2.1s 开始，只播一次；减少动态效果时关掉。"
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "narrowest",
+        "value": "23rem"
+      },
+      {
+        "name": "phone",
+        "value": "30rem"
+      },
+      {
+        "name": "classroom-stack",
+        "value": "40rem"
+      },
+      {
+        "name": "home-stack",
+        "value": "48rem"
+      },
+      {
+        "name": "menu",
+        "value": "50rem"
+      },
+      {
+        "name": "switch-label",
+        "value": "56rem"
+      },
+      {
+        "name": "wide",
+        "value": "72rem"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "首屏的主按钮，每屏最多一个。",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">让我的机器人去上学</a>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; min-height: 3rem; padding: 0 1.5rem; border: 1px solid var(--sfb-btn, #813405); border-radius: 0.5rem; background: var(--sfb-btn, #813405); color: var(--sfb-btn-ink, #FFFFFF); font-family: var(--sfb-font-body, \"PingFang SC\", \"Microsoft YaHei\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif); font-size: 1rem; font-weight: 600; text-decoration: none; white-space: nowrap; } .ds-btn-primary:hover { border-color: var(--sfb-btn-hover, #6A2A03); background: var(--sfb-btn-hover, #6A2A03); } .ds-btn-primary:focus-visible { outline: 2px solid var(--sfb-focus, #D45113); outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "主按钮旁边的次要按钮。",
+      "html": "<a class=\"ds-btn-secondary\" href=\"#\">GitHub</a>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; min-height: 3rem; padding: 0 1.5rem; border: 1px solid color-mix(in srgb, var(--sfb-mute, #5E4D43) 35%, var(--sfb-line, #EFE5DA)); border-radius: 0.5rem; background: var(--sfb-surface, #FFFFFF); color: var(--sfb-ink, #1F1410); font-family: var(--sfb-font-body, \"PingFang SC\", \"Microsoft YaHei\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif); font-size: 1rem; font-weight: 600; text-decoration: none; white-space: nowrap; } .ds-btn-secondary:hover { border-color: var(--sfb-mute, #5E4D43); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--sfb-focus, #D45113); outline-offset: 2px; }"
+    },
+    {
+      "name": "晚自习 Switch",
+      "kind": "custom",
+      "refersTo": "theme-switch",
+      "description": "顶栏上的深色模式开关：滑轨加\"晚自习\"三个字。",
+      "html": "<button type=\"button\" class=\"ds-theme-switch\" aria-pressed=\"true\" aria-label=\"晚自习（深色模式）\" title=\"深色模式\"><span class=\"ds-track\" aria-hidden=\"true\"><span class=\"ds-knob\"></span></span><span>晚自习</span></button>",
+      "css": ".ds-theme-switch { display: inline-flex; align-items: center; gap: 0.55rem; min-height: 2.5rem; padding: 0 0.8rem; border: 1px solid var(--sfb-line, #EFE5DA); border-radius: 0.5rem; background: transparent; color: var(--sfb-ink, #1F1410); font-family: var(--sfb-font-body, \"PingFang SC\", \"Microsoft YaHei\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif); font-size: 0.875rem; white-space: nowrap; cursor: pointer; } .ds-theme-switch:hover { background: var(--sfb-bg-soft, #FBF7F1); border-color: var(--sfb-mute, #5E4D43); } .ds-theme-switch:active { transform: translateY(1px); } .ds-theme-switch:focus-visible { outline: 2px solid var(--sfb-focus, #D45113); outline-offset: 2px; } .ds-track { position: relative; flex: none; width: 30px; height: 18px; border-radius: 9px; background: var(--sfb-line, #EFE5DA); } .ds-knob { position: absolute; top: 3px; left: 3px; width: 12px; height: 12px; border-radius: 50%; background: var(--sfb-mute, #5E4D43); } .ds-theme-switch[aria-pressed='true'] .ds-track { background: var(--sfb-btn, #813405); } .ds-theme-switch[aria-pressed='true'] .ds-knob { transform: translateX(12px); background: var(--sfb-btn-ink, #FFFFFF); }"
+    },
+    {
+      "name": "Framework Tabs",
+      "kind": "chip",
+      "refersTo": "tab",
+      "description": "三步入学的框架切换：单选按钮画成胶囊页签，选中的带 2px 环。",
+      "html": "<div class=\"ds-tabs\"><input type=\"radio\" name=\"ds-fw\" id=\"ds-fw-a\" checked><label for=\"ds-fw-a\">DSH（DeepSeek harness）</label><input type=\"radio\" name=\"ds-fw\" id=\"ds-fw-b\"><label for=\"ds-fw-b\">AstrBot</label><input type=\"radio\" name=\"ds-fw\" id=\"ds-fw-c\"><label for=\"ds-fw-c\">LangBot</label></div>",
+      "css": ".ds-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; font-family: var(--sfb-font-body, \"PingFang SC\", \"Microsoft YaHei\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif); } .ds-tabs input { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); } .ds-tabs label { display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0 1.125rem; border: 1px solid var(--sfb-line, #EFE5DA); border-radius: 999px; background: var(--sfb-surface, #FFFFFF); color: var(--sfb-mute, #5E4D43); font-size: 0.9375rem; white-space: nowrap; cursor: pointer; } .ds-tabs label:hover { border-color: color-mix(in srgb, var(--sfb-mute, #5E4D43) 45%, var(--sfb-line, #EFE5DA)); color: var(--sfb-ink, #1F1410); } .ds-tabs input:checked + label { border-color: var(--sfb-num-ink, #813405); box-shadow: inset 0 0 0 1px var(--sfb-num-ink, #813405); background: var(--sfb-num-bg, #F8DDA4); color: var(--sfb-num-ink, #813405); font-weight: 600; cursor: default; } .ds-tabs input:focus-visible + label { outline: 2px solid var(--sfb-focus, #D45113); outline-offset: 2px; }"
+    },
+    {
+      "name": "Tags",
+      "kind": "chip",
+      "refersTo": "tag-soon",
+      "description": "即将支持、上课中，以及占位的示意和待补标签。",
+      "html": "<p class=\"ds-tags\"><span class=\"ds-tag-soon\">即将支持</span> <span class=\"ds-tag-live\">上课中</span> <span class=\"ds-tag-placeholder\">示意</span></p>",
+      "css": ".ds-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin: 0; font-family: var(--sfb-font-body, \"PingFang SC\", \"Microsoft YaHei\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif); } .ds-tag-soon { padding: 0.0625rem 0.5rem; border: 1px solid var(--sfb-line, #EFE5DA); border-radius: 999px; background: var(--sfb-bg-soft, #FBF7F1); color: var(--sfb-mute, #5E4D43); font-size: 0.75rem; line-height: 1.5; white-space: nowrap; } .ds-tag-live { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.125rem 0.625rem; border-radius: 999px; background: var(--sfb-live-bg, #DDF9C1); color: var(--sfb-live-ink, #2C5A1D); font-size: 0.8125rem; font-weight: 600; } .ds-tag-live::before { content: ''; width: 0.4375rem; height: 0.4375rem; border-radius: 50%; background: currentColor; } .ds-tag-placeholder { display: inline-block; padding: 0.05em 0.5em; border: 1px dashed var(--sfb-highlight, #D45113); border-radius: 0.25em; color: var(--sfb-mute, #5E4D43); font-size: 0.75rem; line-height: 1.5; white-space: nowrap; }"
+    },
+    {
+      "name": "Top Bar",
+      "kind": "nav",
+      "refersTo": "button-nav",
+      "description": "首页和文档页共用的顶栏：名字、导航链接、搜索、主按钮。",
+      "html": "<header class=\"ds-nav\"><a class=\"ds-home\" href=\"#\"><span class=\"ds-logo\" aria-hidden=\"true\"></span><span class=\"ds-zh\">机器人网校</span></a><nav aria-label=\"网站导航\"><a href=\"#\" aria-current=\"page\">入学指南</a><a href=\"#\">教程</a><a href=\"#\">常见问题</a><a href=\"#\">校规</a><a href=\"#\">公告</a></nav><button type=\"button\" class=\"ds-search\" aria-label=\"搜索\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m21 21-4.34-4.34\"/><circle cx=\"11\" cy=\"11\" r=\"8\"/></svg></button><a class=\"ds-btn-nav\" href=\"#\">让机器人去上学</a></header>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 1rem; height: 4rem; padding: 0 1.5rem; border-bottom: 1px solid var(--sfb-line, #EFE5DA); background: var(--sfb-bg, #FFFDF9); font-family: var(--sfb-font-body, \"PingFang SC\", \"Microsoft YaHei\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif); } .ds-home { display: flex; align-items: center; gap: 0.55rem; margin-inline-end: auto; color: var(--sfb-ink, #1F1410); text-decoration: none; } .ds-logo { width: 1.25rem; height: 1.25rem; border-radius: 0.3125rem; background: var(--sfb-logo, #D45113); } .ds-zh { font-size: 1.125rem; font-weight: 700; letter-spacing: 0.04em; } .ds-nav nav { display: flex; gap: 0.25rem; } .ds-nav nav a { display: flex; align-items: center; min-height: 2.5rem; padding: 0 0.55rem; border-radius: 0.375rem; color: var(--sfb-mute, #5E4D43); font-size: 0.9375rem; text-decoration: none; } .ds-nav nav a:hover { color: var(--sfb-ink, #1F1410); } .ds-nav nav a[aria-current='page'] { color: var(--sfb-ink, #1F1410); font-weight: 600; } .ds-search { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; padding: 0; border: 1px solid var(--sfb-line, #EFE5DA); border-radius: 0.5rem; background: var(--sfb-bg, #FFFDF9); color: var(--sfb-ink, #1F1410); cursor: pointer; } .ds-search:hover { border-color: var(--sfb-mute, #5E4D43); } .ds-btn-nav { display: inline-flex; align-items: center; min-height: 2.5rem; padding: 0 1rem; border-radius: 0.5rem; background: var(--sfb-nav-btn, #1F1410); color: var(--sfb-nav-btn-ink, #FFFFFF); font-size: 0.875rem; font-weight: 600; text-decoration: none; white-space: nowrap; } .ds-btn-nav:hover { background: color-mix(in srgb, var(--sfb-nav-btn, #1F1410) 84%, var(--sfb-bg, #FFFDF9)); } .ds-btn-nav:active { transform: translateY(1px); } .ds-nav a:focus-visible, .ds-search:focus-visible { outline: 2px solid var(--sfb-focus, #D45113); outline-offset: 2px; }"
+    },
+    {
+      "name": "FAQ Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "白板加墙线的容器，行与行之间用墙线隔开；问答点开看答案。",
+      "html": "<div class=\"ds-faq\"><details open><summary><span>收费吗？</span><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></summary><p>不收费。学校的代码开源，公开在 GitHub 上，谁都能看。</p></details><details><summary><span>钥匙丢了怎么办？</span><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></summary><p>钥匙丢了找不回来，但可以在插件里换一把新的。</p></details></div>",
+      "css": ".ds-faq { border: 1px solid var(--sfb-line, #EFE5DA); border-radius: 0.875rem; background: var(--sfb-surface, #FFFFFF); font-family: var(--sfb-font-body, \"PingFang SC\", \"Microsoft YaHei\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif); } .ds-faq details + details { border-top: 1px solid var(--sfb-line, #EFE5DA); } .ds-faq summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 3.5rem; padding: 0.875rem 1.25rem; color: var(--sfb-ink, #1F1410); font-size: 1rem; font-weight: 600; line-height: 1.5; list-style: none; cursor: pointer; } .ds-faq summary::-webkit-details-marker { display: none; } .ds-faq summary:hover span { color: var(--sfb-link, #813405); } .ds-faq summary:focus-visible { outline: 2px solid var(--sfb-focus, #D45113); outline-offset: -2px; border-radius: 0.875rem; } .ds-faq svg { flex: none; color: var(--sfb-mute, #5E4D43); } .ds-faq details[open] svg { transform: rotate(180deg); } .ds-faq p { margin: 0; padding: 0 1.25rem 1.25rem; color: var(--sfb-mute, #5E4D43); font-size: 0.9375rem; line-height: 1.8; }"
+    },
+    {
+      "name": "Status Strip",
+      "kind": "custom",
+      "refersTo": "status-strip",
+      "description": "学校状态：一条旧纸色的带子，图标加文字，不只靠颜色。",
+      "html": "<section class=\"ds-status\" aria-label=\"学校状态\"><span class=\"ds-ok\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m16 9-5.5 5.5L8 12\"/></svg></span><p role=\"status\">学校正常 · 学期中</p></section>",
+      "css": ".ds-status { display: flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 3rem; padding: 0.5rem 1rem; border-block: 1px solid var(--sfb-line, #EFE5DA); background: var(--sfb-bg-soft, #FBF7F1); color: var(--sfb-ink, #1F1410); font-family: var(--sfb-font-body, \"PingFang SC\", \"Microsoft YaHei\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif); font-size: 0.9rem; line-height: 1.5; } .ds-status p { margin: 0; } .ds-ok { display: inline-flex; color: var(--sfb-ok, #3F8A2C); }"
+    },
+    {
+      "name": "Classroom Window",
+      "kind": "custom",
+      "refersTo": "classroom-window",
+      "description": "首屏的课堂窗口：一个班的课堂聊天，永远带示意标签；四句话依次出现是全站唯一的动效。",
+      "html": "<figure class=\"ds-window\" aria-label=\"课堂示意\"><div class=\"ds-side\"><p class=\"ds-class\">初三（2）班</p><p>晚班</p><p class=\"ds-live\">上课中</p></div><ol class=\"ds-chat\"><li class=\"ds-teacher\"><span class=\"ds-who\">王老师</span><span>今天讲“为什么秋天叶子会变黄”。</span></li><li><span class=\"ds-who\">小鱼</span><span>是不是叶子也要过冬？</span></li></ol><span class=\"ds-tag\">示意</span></figure>",
+      "css": ".ds-window { position: relative; display: grid; grid-template-columns: minmax(9rem, 13rem) minmax(0, 1fr); max-width: 56rem; margin: 0; overflow: hidden; border: 1px solid var(--sfb-line, #EFE5DA); border-bottom: 0; border-radius: 0.875rem 0.875rem 0 0; background: var(--sfb-surface, #FFFFFF); box-shadow: 0 0.75rem 2.5rem -0.75rem rgb(90 40 8 / 0.2); font-family: var(--sfb-font-body, \"PingFang SC\", \"Microsoft YaHei\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif); } .ds-window p { margin: 0; } .ds-side { display: flex; flex-direction: column; align-items: flex-start; gap: 0.375rem; padding: 1.375rem 1.25rem; border-inline-end: 1px solid var(--sfb-line, #EFE5DA); background: var(--sfb-surface-side, #FFFAF2); color: var(--sfb-mute, #5E4D43); font-size: 0.875rem; line-height: 1.6; } .ds-class { color: var(--sfb-ink, #1F1410); font-size: 0.9375rem; font-weight: 600; } .ds-live { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.125rem 0.625rem; border-radius: 999px; background: var(--sfb-live-bg, #DDF9C1); color: var(--sfb-live-ink, #2C5A1D); font-size: 0.8125rem; font-weight: 600; } .ds-live::before { content: ''; width: 0.4375rem; height: 0.4375rem; border-radius: 50%; background: currentColor; } .ds-chat { display: grid; align-content: start; gap: 0.75rem; margin: 0; padding: 1.375rem 4.5rem 1.75rem 1.5rem; list-style: none; color: var(--sfb-ink, #1F1410); font-size: 0.9375rem; line-height: 1.7; } .ds-chat li { display: grid; grid-template-columns: 3.5em minmax(0, 1fr); column-gap: 0.75rem; animation: ds-say 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; } .ds-chat li:nth-child(1) { animation-delay: 0.3s; } .ds-chat li:nth-child(2) { animation-delay: 0.9s; } .ds-who { color: var(--sfb-classmate, #813405); font-weight: 600; white-space: nowrap; } .ds-teacher .ds-who { color: var(--sfb-teacher, #C24A10); } .ds-tag { position: absolute; top: 0.875rem; right: 0.875rem; padding: 0.05em 0.5em; border: 1px dashed var(--sfb-highlight, #D45113); border-radius: 0.25em; background: var(--sfb-surface, #FFFFFF); color: var(--sfb-mute, #5E4D43); font-size: 0.75rem; line-height: 1.5; } @keyframes ds-say { from { opacity: 0; transform: translateY(0.5rem); } } @media (prefers-reduced-motion: reduce) { .ds-chat li { animation: none; } }"
+    },
+    {
+      "name": "Brick Dado",
+      "kind": "custom",
+      "refersTo": "brick-dado",
+      "description": "每一页最底下的红砖墙裙：窗台、砖和灰缝，只作装饰。",
+      "html": "<div class=\"ds-dado\" aria-hidden=\"true\"></div>",
+      "css": ".ds-dado { position: relative; height: clamp(40px, 9vh, 76px); border-top: 4px solid var(--sfb-ledge, #5F2603); background: var(--sfb-brick, #813405); } .ds-dado::before { content: ''; position: absolute; inset: 0; background: var(--sfb-mortar, #BC8E6E); -webkit-mask: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='28'%3E%3Cpath d='M0 .75H64M0 14.75H64M8 0V14M40 0V14M24 14V28M56 14V28' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E\") center top / 64px 28px repeat; mask: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='28'%3E%3Cpath d='M0 .75H64M0 14.75H64M8 0V14M40 0V14M24 14V28M56 14V28' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E\") center top / 64px 28px repeat; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "红砖校舍",
+    "overview": "网站是一所学校的门面，不是又一个 AI 产品的落地页。它看起来像红砖校舍门口贴出来的开学通知：暖白的纸面，暖褐近黑的字，红砖棕的按钮和链接，柿子橙只点在标题里的一个词、图标和标志上。每一页的最底下都有一道红砖墙裙，和\"即将开学\"页（`holding/index.html`）是同一块砖。\n\n版面偏松，读起来像通知，不像控制台。首页每一节是一个居中的大标题，下面是这一节自己的排法：时间线、页签、校规单、仓库卡片、问答、列表。文档页用 Starlight 的三栏，换成学校的颜色和字。全站只有一处动效：首屏课堂窗口里的四句话依次出现。没有照片、插画和装饰图；首屏的\"图\"就是一扇课堂窗口，用页面本身的元素画出来。\n\n深色版叫\"晚自习\"，是同一所学校的晚上：底色换成近黑墨绿，字换成暖白，按钮和强调换成银杏黄，链接换成麦秆色，墙裙暗下来，只作装饰。默认跟着系统，顶栏上的开关可以手动切换。",
+    "keyCharacteristics": [
+      "两套主题共用一组语义色名（`--sfb-*`），组件里只写变量，不写颜色值。",
+      "大标题用裁剪过的思源黑体 Heavy，只用在页面标题和首页各节标题上；其余文字用系统自带的中文黑体。",
+      "图标只用 Lucide 的线条图标，构建时内联成 SVG。",
+      "一处动效、一种焦点环、一套圆角、一种 1px 分隔线。",
+      "示意的内容带\"示意\"小标签，缺的内容带\"待补\"小标签。",
+      "字体、图标、图片都放在网站自己这里，不从别的网站加载。"
+    ],
+    "rules": [
+      {
+        "name": "The Variables-Only Rule",
+        "body": "组件里只写 `var(--sfb-*)`，或者 `starlight.css` 里已经映射过的 `--sl-color-*`，不写颜色值。改颜色时在 `tokens.css` 里两套一起改；跟随系统的那一块必须和 `[data-theme='dark']` 那一块一模一样（有测试）。例外只有两处：阴影的颜色直接写（白天是暖褐 `rgb(90 40 8 / α)`，晚上是黑色）；浏览器地址栏的颜色（#FDF4E3 和 #141D19）在 `starlight/Head.astro` 和 `starlight/ThemeSelect.astro` 里各写一次，改的时候两处一起改。",
+        "section": "colors"
+      },
+      {
+        "name": "The Straw Wash Rule",
+        "body": "麦秆色只做很淡的一层或者小块底色。整页的\"米色底加赤陶色\"不是这所学校的样子。",
+        "section": "colors"
+      },
+      {
+        "name": "The Both-Themes Contrast Rule",
+        "body": "正文对比度 4.5 以上，大字和图形 3 以上，浅色和\"晚自习\"都要过。新的颜色组合要加进 `tests/unit/contrast.test.ts`。白天的砖墙裙按图形算，要过 3；晚上的砖墙裙是故意调暗的装饰，不参加对比度检查。",
+        "section": "colors"
+      },
+      {
+        "name": "The Cut-Font Rule",
+        "body": "标题字只给 `h1, h2[data-display-title]`。这个选择器写在 `src/config/display-titles.mjs`，样式、裁字脚本和测试都读它。`scripts/subset-heading-font.mjs` 在构建以后把字体裁到这些标题实际用到的字（再加上基本拉丁字符），所以别的文字用它会缺字。新的大标题只要匹配这个选择器，下次构建就会带上它的字；裁好的字体有 150 KB 的上限（有测试）。`npm run dev` 里没有裁好的字体，标题退回正文字体。",
+        "section": "typography"
+      },
+      {
+        "name": "The One-Weight Rule",
+        "body": "标题字只有 Heavy 一个字重，`font-weight` 改不了它的粗细。要分层次就改字号，不要指望字重。",
+        "section": "typography"
+      },
+      {
+        "name": "The Whole-Phrase Rule",
+        "body": "短的中文行用 `word-break: keep-all` 加 `overflow-wrap: anywhere`，只在标点和空格处断行；\"AI\" 和前后的字之间用不断行空格，不让 \"AI\" 单独掉到下一行。",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-Card Rule",
+        "body": "卡片、问答、公告、校规单、步骤面板都不加阴影；悬停时只把边框颜色加深。",
+        "section": "elevation"
+      },
+      {
+        "name": "The Hairline Rule",
+        "body": "分隔和边框都是 1px 墙线。不加粗的彩色侧条；提示框也只是一圈淡框加一层很淡的底色。",
+        "section": "shapes"
+      },
+      {
+        "name": "The One Motion Rule",
+        "body": "全站只有课堂窗口里的四句话会动：动画 `classroom-say`，每句 0.6s，`cubic-bezier(0.16, 1, 0.3, 1)`，从透明并下移 0.5rem 的位置出来，依次在 0.3s、0.9s、1.5s、2.1s 开始，只播一次，纯 CSS。读者设了\"减少动态效果\"时动画关掉，四句话直接显示。其他状态变化都是一下子过去：折叠箭头翻转、开关滑块移动、按钮按下 1px。Starlight 侧栏箭头原有的过渡在覆盖组件里去掉了。Starlight 和 Pagefind 自己的样式里还剩两处过渡：Markdown 里 `<details>` 的小三角，只在 `prefers-reduced-motion: no-preference` 下生效；Pagefind 的筛选勾选框，网站不显示筛选，所以看不到它。",
+        "section": "components"
+      },
+      {
+        "name": "The Lucide-Only Rule",
+        "body": "图标只用 `@lucide/astro`，一个一个地引入（`@lucide/astro/icons/<名字>`），构建时内联成 SVG，线宽 2。图标一律 `aria-hidden=\"true\"`，名字写在控件上。大小：跟着文字的 16px（箭头、折叠箭头、状态），文档目录按钮和侧栏的 18px，图标圆、翻页链接和问答的 20px，服务器卡片的 22px。颜色用 `currentColor`：图标圆里是 `highlight`，折叠箭头是 `mute`。不用 emoji 或 Unicode 符号当图标（有测试查 emoji）。",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "**Do** 用 `var(--sfb-*)` 写颜色，改颜色时在 `tokens.css` 里两套主题一起改。",
+      "**Do** 把新的颜色组合加进 `tests/unit/contrast.test.ts`：正文 4.5 以上，大字和图形 3 以上，两套主题都要过。",
+      "**Do** 用 `@lucide/astro` 的图标，加 `aria-hidden=\"true\"`，把名字写在控件上。",
+      "**Do** 给每个能聚焦的东西留出 2px 的焦点环；外面放不下时画在里面。",
+      "**Do** 首页新加的一节用 `HomeSection`；新的大标题加 `data-display-title`，让标题字和裁字脚本都认得它。",
+      "**Do** 示意的、还缺的内容用 `Placeholder` 标出来，同一次提交登记进 `PLACEHOLDERS.md`。",
+      "**Do** 在 320、375、800、1280 宽度下，浅色和\"晚自习\"各看一遍。"
+    ],
+    "donts": [
+      "**Don't** 把麦秆色铺成整页的底色，也不做\"米色底加赤陶色\"的整页配色。",
+      "**Don't** 把银杏黄放在浅底上当文字；\"晚自习\"里不用红砖棕。",
+      "**Don't** 加第二处动效，也不加悬停过渡和滚动动画。",
+      "**Don't** 用 emoji 或 Unicode 符号当图标，也不引进别的图标库。",
+      "**Don't** 用标题字写正文、按钮或文档的小节标题。",
+      "**Don't** 从别的网站加载字体、图标或图片，包括字体服务和 CDN。",
+      "**Don't** 给卡片加阴影或粗的彩色侧条。",
+      "**Don't** 只用颜色表达状态，要配图标和文字。"
+    ]
+  }
+}
