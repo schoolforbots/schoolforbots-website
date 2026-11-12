@@ -1,10 +1,12 @@
-// Cuts the heading font in fonts-src/ down to the characters that h1-h3 use in
-// the built pages (dist/**/*.html) and writes dist/fonts/heading.woff2, plus
-// dist/fonts/heading.chars.txt listing those characters. The rules page renders
-// its headings in the browser in the body font, so none of them reach dist/.
+// Cuts the heading font in fonts-src/ down to the characters the large titles
+// (src/config/display-titles.mjs) use in the built pages (dist/**/*.html) and
+// writes dist/fonts/heading.woff2, plus dist/fonts/heading.chars.txt listing the
+// characters requested.
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { Window } from 'happy-dom'
 import subsetFont from 'subset-font'
+import { displayTitleSelector } from '../src/config/display-titles.mjs'
 
 const srcDir = 'fonts-src'
 const distDir = 'dist'
@@ -21,24 +23,15 @@ if (sources.length !== 1) {
   fail(`expected exactly one .otf or .ttf font in ${srcDir}/, found ${sources.length}.`)
 }
 
-const entities = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' }
-function decode(text) {
-  return text.replace(/&(?:#(\d+)|#x([0-9a-f]+)|([a-z]+));/gi, (whole, dec, hex, name) => {
-    if (dec) return String.fromCodePoint(Number(dec))
-    if (hex) return String.fromCodePoint(parseInt(hex, 16))
-    return entities[name.toLowerCase()] ?? whole
-  })
-}
-
 const htmlFiles = readdirSync(distDir, { recursive: true, encoding: 'utf8' }).filter((f) => f.endsWith('.html'))
 const chars = new Set()
 // Basic Latin, so a heading edited in the browser or a number still has glyphs.
 for (let code = 0x21; code < 0x7f; code++) chars.add(String.fromCharCode(code))
+const parser = new new Window().DOMParser()
 for (const file of htmlFiles) {
-  const html = readFileSync(join(distDir, file), 'utf8')
-  for (const [, inner] of html.matchAll(/<h[123](?:\s[^>]*)?>([\s\S]*?)<\/h[123]>/g)) {
-    const text = decode(inner.replace(/<[^>]*>/g, ''))
-    for (const ch of text) if (!/\s/.test(ch)) chars.add(ch)
+  const page = parser.parseFromString(readFileSync(join(distDir, file), 'utf8'), 'text/html')
+  for (const title of page.querySelectorAll(displayTitleSelector)) {
+    for (const ch of title.textContent ?? '') if (!/\s/.test(ch)) chars.add(ch)
   }
 }
 
