@@ -1,0 +1,12 @@
+---
+// Docs pages keep Starlight's own footer (previous and next page) above the
+// site footer; the homepage has only the site footer.
+import type {} from '@astrojs/starlight' // Starlight's types for Astro.locals
+import Default from '@astrojs/starlight/components/Footer.astro'
+import SiteFooter from '../SiteFooter.astro'
+
+const isSplash = Astro.locals.starlightRoute.entry.data.template === 'splash'
+---
+
+{!isSplash && <Default {...Astro.props} />}
+<SiteFooter />

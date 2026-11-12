@@ -1,0 +1,45 @@
+---
+// The school's name with a plain colour block where the logo will go.
+---
+
+<span class="wordmark" translate="no">
+  {/* @placeholder(logo) */}
+  <span class="logo" aria-hidden="true"></span>
+  <span class="name">
+    <span class="zh">机器人网校</span>
+    <span class="en" lang="en">School for Bots</span>
+  </span>
+</span>
+
+<style>
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--sfb-ink);
+    white-space: nowrap;
+  }
+  .logo {
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 0.3125rem;
+    background: var(--sfb-logo);
+  }
+  .name {
+    display: flex;
+    align-items: baseline;
+    column-gap: 0.5rem;
+  }
+  .zh {
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+  }
+  .en {
+    font-size: 0.8125rem;
+    color: var(--sfb-mute);
+    letter-spacing: 0.01em;
+  }
+</style>

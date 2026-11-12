@@ -10,7 +10,14 @@ export default defineConfig({
       defaultLocale: 'root',
       locales: { root: { label: '简体中文', lang: 'zh-CN' } },
       disable404Route: true,
-      components: { Head: './src/components/starlight/Head.astro' },
+      favicon: '/favicon.svg',
+      customCss: ['./src/styles/tokens.css', './src/styles/starlight.css'],
+      components: {
+        Head: './src/components/starlight/Head.astro',
+        Header: './src/components/starlight/Header.astro',
+        ThemeSelect: './src/components/starlight/ThemeSelect.astro',
+        Footer: './src/components/starlight/Footer.astro',
+      },
     }),
   ],
 })

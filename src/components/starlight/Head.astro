@@ -1,7 +1,20 @@
 ---
 import Default from '@astrojs/starlight/components/Head.astro'
+import { site } from '../../config/site'
 import { isRelease } from '../../lib/build-mode'
+
+// Share cards need an absolute address. The image, drawn by scripts/make-og.mjs, shows the text wordmark: @placeholder(logo)
+const shareImage = `${site.url}/og.png`
 ---
 
 <Default {...Astro.props}><slot /></Default>
 {!isRelease(import.meta.env.MODE) && <meta name="robots" content="noindex, nofollow" />}
+<meta property="og:image" content={shareImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="机器人网校：给聊天机器人上课的网校" />
+{/* The browser bar takes the colour of the top of the page; the 晚自习 switch updates both. */}
+<meta name="theme-color" content="#FDF4E3" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#141D19" media="(prefers-color-scheme: dark)" />
+{/* The 晚自习 switch needs script; without it, hide the switch. */}
+<noscript><style is:inline>sfb-theme-toggle { display: none; }</style></noscript>

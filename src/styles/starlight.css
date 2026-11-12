@@ -1,0 +1,165 @@
+/*
+ * Starlight in the school's colours and type. tokens.css switches every --sfb-*
+ * value with the theme, so one mapping serves the light theme and 晚自习.
+ * These rules are unlayered, so they win over Starlight's cascade layers.
+ */
+:root {
+  --sl-font: var(--sfb-font-body);
+
+  /* Text and surfaces, strongest to faintest. */
+  --sl-color-white: var(--sfb-ink);
+  --sl-color-gray-1: var(--sfb-ink);
+  --sl-color-gray-2: color-mix(in srgb, var(--sfb-ink) 60%, var(--sfb-mute));
+  --sl-color-gray-3: var(--sfb-mute);
+  --sl-color-gray-4: color-mix(in srgb, var(--sfb-mute) 55%, var(--sfb-line));
+  --sl-color-gray-5: var(--sfb-line);
+  --sl-color-gray-6: var(--sfb-bg-soft);
+  --sl-color-gray-7: var(--sfb-bg-soft);
+  --sl-color-black: var(--sfb-bg);
+
+  --sl-color-text: var(--sfb-ink);
+  --sl-color-text-accent: var(--sfb-link);
+  --sl-color-text-invert: var(--sfb-btn-ink);
+  --sl-color-bg: var(--sfb-bg);
+  --sl-color-bg-nav: var(--sfb-bg);
+  --sl-color-bg-sidebar: var(--sfb-bg);
+  --sl-color-bg-inline-code: color-mix(in srgb, var(--sfb-line) 60%, var(--sfb-bg));
+  --sl-color-bg-accent: var(--sfb-btn);
+  --sl-color-hairline-light: var(--sfb-line);
+  --sl-color-hairline: var(--sfb-line);
+  --sl-color-hairline-shade: var(--sfb-line);
+
+  /* The accent: 红砖棕 by day, 银杏黄 at night. */
+  --sl-color-accent-low: color-mix(in srgb, var(--sfb-btn) 14%, var(--sfb-bg));
+  --sl-color-accent: var(--sfb-btn);
+  --sl-color-accent-high: var(--sfb-btn-hover);
+
+  /* Asides and badges. Note is neutral, tip and success are green, caution is 柿子橙, danger is red. */
+  --sl-color-blue-low: var(--sfb-bg-soft);
+  --sl-color-blue: var(--sfb-mute);
+  --sl-color-blue-high: var(--sfb-ink);
+  --sl-color-purple-low: color-mix(in srgb, var(--sfb-ok) 10%, var(--sfb-bg));
+  --sl-color-purple: var(--sfb-ok);
+  --sl-color-purple-high: var(--sfb-live-ink);
+  --sl-color-green-low: color-mix(in srgb, var(--sfb-ok) 10%, var(--sfb-bg));
+  --sl-color-green: var(--sfb-ok);
+  --sl-color-green-high: var(--sfb-live-ink);
+  --sl-color-orange-low: color-mix(in srgb, var(--sfb-highlight) 10%, var(--sfb-bg));
+  --sl-color-orange: var(--sfb-highlight);
+  --sl-color-orange-high: var(--sfb-link);
+  --sl-color-red-low: color-mix(in srgb, var(--sfb-danger) 9%, var(--sfb-bg));
+  --sl-color-red: var(--sfb-danger);
+  --sl-color-red-high: var(--sfb-danger);
+
+  /* Warm brown shadows by day. */
+  --sl-shadow-sm: 0 1px 2px rgb(90 40 8 / 0.08);
+  --sl-shadow-md: 0 8px 18px -12px rgb(90 40 8 / 0.3);
+  --sl-shadow-lg: 0 22px 44px -30px rgb(90 40 8 / 0.45);
+
+  /* One bar height at every width, so the 2.5rem controls fit it. */
+  --sl-nav-height: 4rem;
+  --sl-menu-button-size: 2.5rem;
+  /* The site footer closes every page, so main needs no padding below it. */
+  --sl-main-pad: 0;
+}
+
+:root,
+::backdrop {
+  --sl-color-backdrop-overlay: rgb(31 20 16 / 0.4);
+}
+
+:root[data-theme='dark'],
+[data-theme='dark'] ::backdrop {
+  --sl-color-backdrop-overlay: rgb(0 0 0 / 0.6);
+}
+
+:root[data-theme='dark'] {
+  --sl-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+  --sl-shadow-md: 0 8px 18px -12px rgb(0 0 0 / 0.6);
+  --sl-shadow-lg: 0 22px 44px -30px rgb(0 0 0 / 0.8);
+}
+
+/* Browser surfaces in the palette too. */
+html {
+  scrollbar-color: color-mix(in srgb, var(--sfb-mute) 50%, transparent) transparent;
+  caret-color: var(--sfb-highlight);
+}
+::selection {
+  background: color-mix(in srgb, var(--sfb-highlight) 26%, transparent);
+}
+:focus-visible {
+  outline: 2px solid var(--sfb-focus);
+  outline-offset: 2px;
+}
+/* The search box has its own border: draw the ring over it rather than around it. */
+#starlight__search .pagefind-ui__search-input:focus-visible {
+  outline-offset: -1px;
+}
+a[href],
+button,
+summary {
+  touch-action: manipulation;
+}
+
+.sl-markdown-content a:not(:where(.not-content *)) {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+.sl-markdown-content a:not(:where(.not-content *)):hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Asides: a hairline frame on a faint wash, no thick coloured stripe. */
+.starlight-aside {
+  border: 1px solid color-mix(in srgb, var(--sl-color-asides-border) 35%, transparent);
+  border-radius: 0.5rem;
+}
+
+/* The current docs page in the sidebar: a faint wash, not a solid block. */
+.sidebar-content a[aria-current='page'] {
+  background-color: var(--sl-color-accent-low);
+  color: var(--sfb-link);
+}
+
+/* Starlight's docs menu button on narrow screens, matched to the bar's own buttons. */
+.sl-menu-button {
+  border: 1px solid var(--sfb-line);
+  border-radius: 0.5rem;
+  padding: 0.6rem;
+  background-color: var(--sfb-bg);
+  color: var(--sfb-ink);
+  box-shadow: none;
+}
+.sl-menu-button:has(~ :popover-open) {
+  border-color: var(--sfb-mute);
+  background-color: var(--sfb-bg-soft);
+}
+
+/*
+ * The site footer sits at the bottom of the window even on a short page: main
+ * fills the window below the bar, and the block just above the footer takes
+ * the spare height. main is also what the footer's hairline and dado span:
+ * the whole window on the homepage, the area between the sidebars on docs pages.
+ */
+main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - var(--sl-nav-height) - var(--sl-mobile-toc-height));
+  min-height: calc(100svh - var(--sl-nav-height) - var(--sl-mobile-toc-height));
+}
+main > .content-panel:has([data-site-footer]) {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding-bottom: 0;
+}
+main > .content-panel:has([data-site-footer]) > .sl-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  width: 100%;
+}
+.sl-container > :has(+ [data-site-footer]) {
+  flex-grow: 1;
+}

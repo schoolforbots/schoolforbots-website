@@ -1,0 +1,154 @@
+---
+import Wordmark from './Wordmark.astro'
+import { navLinks } from '../config/nav'
+import { site } from '../config/site'
+
+// 入学指南、教程、常见问题、校规 from the top nav, then the school's status and GitHub.
+const links = [
+  ...navLinks.slice(0, 4),
+  { label: '学校状态', href: site.statusFile },
+  { label: 'GitHub', href: site.repos.org },
+]
+---
+
+<footer class="site-footer" data-site-footer>
+  <div class="inner">
+    <div class="cols">
+      <div class="brand">
+        <Wordmark />
+        <p class="tagline">一所给聊天机器人上课的网上学校。</p>
+      </div>
+      <div class="ways">
+        <nav aria-label="页脚导航">
+          <ul>
+            {
+              links.map((link) => (
+                <li>
+                  <a href={link.href}>{link.label}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+        <p class="contact">
+          写信给学校：<a href={`mailto:${site.email}`} translate="no">{site.email}</a>
+        </p>
+      </div>
+      <p class="copy">© 2026 机器人网校</p>
+    </div>
+  </div>
+  {/* 红砖墙裙: the red brick base that runs along Chinese school buildings. */}
+  <div class="dado" data-dado aria-hidden="true"></div>
+</footer>
+
+<style>
+  /*
+   * The text keeps to the page's column. The hairline above it and the dado
+   * below it run the full width of the nearest positioned ancestor (main, in
+   * the Starlight frame), so on the homepage they span the window.
+   */
+  .site-footer {
+    --dado-height: clamp(40px, 9vh, 76px);
+    margin-top: 4rem;
+    padding-bottom: var(--dado-height);
+    color: var(--sfb-mute);
+    font-size: 0.875rem;
+    line-height: 1.7;
+  }
+  .site-footer::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    border-top: 1px solid var(--sfb-line);
+  }
+
+  .inner {
+    container-type: inline-size;
+    padding-block: 2.25rem 2rem;
+  }
+  .cols {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .brand {
+    display: grid;
+    gap: 0.5rem;
+    justify-items: start;
+  }
+  .tagline,
+  .contact,
+  .copy {
+    margin: 0;
+  }
+
+  .ways {
+    display: grid;
+    gap: 0.75rem;
+  }
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2rem;
+    color: var(--sfb-ink);
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--sfb-link);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+  }
+  .contact a {
+    color: var(--sfb-link);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+    overflow-wrap: anywhere;
+  }
+  .contact a:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  @container (min-width: 40rem) {
+    .cols {
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: 3rem;
+    }
+    .ways {
+      justify-items: end;
+    }
+    ul {
+      justify-content: flex-end;
+    }
+    .copy {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* The same brick tile as the coming-soon page: the mask draws the mortar lines, the tokens give the colours. */
+  .dado {
+    position: absolute;
+    inset-inline: 0;
+    height: var(--dado-height);
+    border-top: 4px solid var(--sfb-ledge);
+    background: var(--sfb-brick);
+  }
+  .dado::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--sfb-mortar);
+    --tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='28'%3E%3Cpath d='M0 .75H64M0 14.75H64M8 0V14M40 0V14M24 14V28M56 14V28' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E");
+    -webkit-mask: var(--tile) center top / 64px 28px repeat;
+    mask: var(--tile) center top / 64px 28px repeat;
+  }
+</style>

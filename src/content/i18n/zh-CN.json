@@ -1,1 +1,5 @@
-{}
+{
+  "menuButton.accessibleLabel": "文档目录",
+  "page.previousLink": "上一篇",
+  "page.nextLink": "下一篇"
+}

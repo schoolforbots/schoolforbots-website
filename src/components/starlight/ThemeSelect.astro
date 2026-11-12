@@ -1,0 +1,146 @@
+---
+// 晚自习: the dark-mode switch, in place of Starlight's theme menu. The choice is
+// kept where Starlight keeps it, so Starlight's ThemeProvider applies it before
+// the first paint on every page.
+---
+
+<sfb-theme-toggle>
+  <button
+    type="button"
+    class="toggle"
+    aria-pressed="false"
+    aria-label="晚自习（深色模式）"
+    title="深色模式"
+  >
+    <span class="track" aria-hidden="true"><span class="knob"></span></span><span class="label">晚自习</span>
+  </button>
+</sfb-theme-toggle>
+
+{/* Inline so the switch is drawn in the right position on first paint; ThemeProvider has already set data-theme. */}
+<script is:inline>
+  document.querySelectorAll('sfb-theme-toggle button').forEach(function (button) {
+    button.setAttribute('aria-pressed', String(document.documentElement.dataset.theme === 'dark'))
+  })
+</script>
+
+<script>
+  type Theme = 'light' | 'dark'
+
+  // Starlight's key: 'light', 'dark', or '' to follow the system.
+  const storageKey = 'starlight-theme'
+  // The browser bar takes the colour of the top of the page.
+  const barColour: Record<Theme, string> = { light: '#FDF4E3', dark: '#141D19' }
+  const system = matchMedia('(prefers-color-scheme: dark)')
+
+  function chosen(): Theme | null {
+    try {
+      const value = localStorage.getItem(storageKey)
+      return value === 'light' || value === 'dark' ? value : null
+    } catch {
+      return null
+    }
+  }
+
+  function choose(theme: Theme): void {
+    try {
+      localStorage.setItem(storageKey, theme)
+    } catch {
+      // Storage is off: the choice lasts until the page is left.
+    }
+  }
+
+  // A choice paints both browser-bar colours; with none, each keeps the colour for its own system setting.
+  function show(theme: Theme, isChoice: boolean): void {
+    document.documentElement.dataset.theme = theme
+    document.querySelectorAll('sfb-theme-toggle button').forEach((button) => {
+      button.setAttribute('aria-pressed', String(theme === 'dark'))
+    })
+    document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => {
+      const own: Theme = meta.getAttribute('media')?.includes('dark') ? 'dark' : 'light'
+      meta.setAttribute('content', barColour[isChoice ? theme : own])
+    })
+  }
+
+  function follow(): void {
+    const choice = chosen()
+    show(choice ?? (system.matches ? 'dark' : 'light'), choice !== null)
+  }
+
+  class ThemeToggle extends HTMLElement {
+    connectedCallback() {
+      this.querySelector('button')?.addEventListener('click', () => {
+        const next: Theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'
+        choose(next)
+        show(next, true)
+      })
+    }
+  }
+  customElements.define('sfb-theme-toggle', ThemeToggle)
+
+  follow()
+  // No choice made: keep following the system, live.
+  system.addEventListener('change', () => {
+    if (!chosen()) follow()
+  })
+  // A choice made in another tab, or a page restored from the back-forward cache.
+  addEventListener('storage', (event) => {
+    if (event.key === storageKey) follow()
+  })
+  addEventListener('pageshow', (event) => {
+    if (event.persisted) follow()
+  })
+</script>
+
+<style>
+  sfb-theme-toggle {
+    display: contents;
+  }
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 2.5rem;
+    padding: 0 0.8rem;
+    border: 1px solid var(--sfb-line);
+    border-radius: 0.5rem;
+    background: transparent;
+    color: var(--sfb-ink);
+    font: inherit;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .toggle:hover {
+    background: var(--sfb-bg-soft);
+    border-color: var(--sfb-mute);
+  }
+  .toggle:active {
+    transform: translateY(1px);
+  }
+  .track {
+    position: relative;
+    flex: none;
+    width: 30px;
+    height: 18px;
+    border-radius: 9px;
+    background: var(--sfb-line);
+  }
+  .knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--sfb-mute);
+  }
+  .toggle[aria-pressed='true'] .track {
+    background: var(--sfb-btn);
+  }
+  .toggle[aria-pressed='true'] .knob {
+    transform: translateX(12px);
+    background: var(--sfb-btn-ink);
+  }
+</style>
