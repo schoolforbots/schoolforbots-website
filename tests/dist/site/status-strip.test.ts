@@ -19,6 +19,7 @@ describe('status strip', () => {
       expect(html).toContain(site.statusFile)
     }
   })
+
   it('without scripts the loading line is hidden, leaving the link to the status file', () => {
     for (const file of ['index.html', 'docs/help/cannot-connect/index.html']) {
       const html = readDist(file)
