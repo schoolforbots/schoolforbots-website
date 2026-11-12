@@ -27,7 +27,7 @@ Node 24 or newer is required. Every command works on macOS, Linux and Windows.
 - `npm run check`: type-check the project with `astro check`.
 - `npm test`: run the unit tests.
 - `npm run verify`: run the type check, the unit tests, the build and the tests on `dist/`. Run it before opening a pull request.
-- `npm run check:placeholders`: list the placeholders and compare them with `PLACEHOLDERS.md`; it only warns.
+- `npm run check:placeholders`: check that every placeholder marker is registered in `PLACEHOLDERS.md` and every registered row still has a marker (either mistake fails the check). Unfilled blocking placeholders are only warnings here; they fail `npm run build:release`.
 
 ## Configuration
 

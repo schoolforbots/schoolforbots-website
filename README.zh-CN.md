@@ -27,7 +27,7 @@
 - `npm run check`：用 `astro check` 做类型检查。
 - `npm test`：运行单元测试。
 - `npm run verify`：依次做类型检查、单元测试、构建，再测试 `dist/`。提交 PR 之前先运行它。
-- `npm run check:placeholders`：列出占位，并和 `PLACEHOLDERS.md` 核对，只给警告。
+- `npm run check:placeholders`：核对每个占位标记都登记进了 `PLACEHOLDERS.md`、每条登记都还有标记（这两种错误都会让检查失败）。还没填好的会阻塞发布的占位在这里只给警告，`npm run build:release` 才会因它们失败。
 
 ## 配置
 

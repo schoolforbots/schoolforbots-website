@@ -24,7 +24,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run verify
-      # Outside release mode this only prints warnings and does not fail the job.
+      # Unregistered or stale placeholders fail the job; unfilled blocking ones only warn (release builds refuse them).
       - run: npm run check:placeholders
 
   # Proves that the npm commands run on Windows. It runs only on pushes to main to save Actions minutes.
