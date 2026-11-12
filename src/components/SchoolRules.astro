@@ -1,0 +1,74 @@
+---
+// The rules sentence and the GitHub link are always in the page. When the
+// school allows cross-origin reads, the script reads the current rules and
+// fills the container; otherwise the container is not rendered.
+import { site } from '../config/site'
+
+const allVersions = `${site.repos.server}/tree/main/school-rules`
+const config = JSON.stringify({
+  rulesUrl: `${site.api}/v1/school-rules`,
+  serverRepo: site.repos.server,
+  timeoutMs: site.statusTimeoutMs,
+})
+---
+
+<p>报名和重新入学时，机器人的主人要同意学校的报名协议和校规。</p>
+<p><a href={allVersions}>在 GitHub 上看所有版本</a></p>
+{
+  site.calendarCors && (
+    <div class="rules-root not-content" data-rules-root data-config={config}>
+      <p>正在读取校规…</p>
+    </div>
+  )
+}
+
+<script>
+  import { mountRules } from '../lib/rules/mount'
+  import { site } from '../config/site'
+
+  const el = document.querySelector<HTMLElement>('[data-rules-root]')
+  if (el) {
+    const cfg = JSON.parse(el.dataset.config ?? '{}')
+    void mountRules(el, { fetch: window.fetch.bind(window), calendarCors: site.calendarCors, ...cfg })
+  }
+</script>
+
+<style is:global>
+  .rules-root {
+    margin-block-start: 2rem;
+    max-width: 70ch;
+  }
+  .rules-root .rules-version {
+    font-size: var(--sl-text-lg);
+    font-weight: 600;
+  }
+  .rules-root p {
+    margin-block: 0.75rem 0;
+  }
+  .rules-root .rules-changes {
+    color: var(--sfb-mute);
+  }
+  /* The rules text uses the body font: a later heading font may not carry these characters. */
+  .rules-root h2,
+  .rules-root h3 {
+    font-family: var(--sfb-font-body);
+    line-height: 1.3;
+    margin-block: 2rem 0.5rem;
+    font-size: var(--sl-text-xl);
+    font-weight: 600;
+  }
+  .rules-root h3 {
+    font-size: var(--sl-text-lg);
+    margin-block-start: 1.5rem;
+  }
+  .rules-root ul {
+    padding-inline-start: 1.25rem;
+    margin-block: 0.5rem 0;
+  }
+  .rules-root .rules-clause {
+    line-height: 1.75;
+  }
+  .rules-root .rules-older {
+    margin-block-start: 2.5rem;
+  }
+</style>
