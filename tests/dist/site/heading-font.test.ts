@@ -43,7 +43,8 @@ describe('heading font', () => {
   })
 
   it('docs content headings and the table of contents heading are not large titles', () => {
-    const page = readPage('/docs/enroll/')
+    const page = readPage('/docs/enroll/register/')
+    expect(page.querySelectorAll('.sl-markdown-content h2').length).toBeGreaterThan(0)
     const titles = new Set(page.querySelectorAll(displayTitleSelector))
     const others = [...page.querySelectorAll('h2, h3, h4')].filter((h) => !titles.has(h))
     expect(others.length).toBeGreaterThan(0)
