@@ -26,12 +26,13 @@ Node 24 or newer is required. Every command works on macOS, Linux and Windows.
 - `npm run preview`: serve the built `dist/` locally.
 - `npm run check`: type-check the project with `astro check`.
 - `npm test`: run the unit tests.
+- `npm run make:og`: regenerate `public/og.png`; it needs CJK system fonts.
 - `npm run verify`: run the type check, the unit tests, the build and the tests on `dist/`. Run it before opening a pull request.
 - `npm run check:placeholders`: check that every placeholder marker is registered in `PLACEHOLDERS.md` and every registered row still has a marker (either mistake fails the check). Unfilled blocking placeholders are only warnings here; they fail `npm run build:release`.
 
 ## Configuration
 
-Addresses and plugins are set in one file, `src/config/site.ts`: the site URL, the contact address, the school's API address, the status file address, the repository links, and the list of supported frameworks. To change an address or add a plugin, edit only that file.
+Addresses and plugins are set in one file, `src/config/site.ts`: the site URL, the contact address, the school's API address, the status file address, the repository links, and the list of supported frameworks. To change an address, edit only that file. Publishing a plugin also means writing its install page, updating the framework links in `src/content/docs/docs/enroll/index.md`, and removing its row from `PLACEHOLDERS.md` (the tests catch anything missed).
 
 `calendarCors` decides how the pages read the school's data:
 

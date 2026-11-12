@@ -417,7 +417,7 @@ Starlight 的颜色在 `src/styles/starlight.css` 里映射到这组变量：`--
 - `aria-hidden="true"`。晚上换成更暗的三种颜色，只作装饰。
 
 ### Icons
-**The Lucide-Only Rule.** 图标只用 `@lucide/astro`，一个一个地引入（`@lucide/astro/icons/<名字>`），构建时内联成 SVG，线宽 2。图标一律 `aria-hidden="true"`，名字写在控件上。大小：跟着文字的 16px（箭头、折叠箭头、状态），文档目录按钮和侧栏的 18px，图标圆、翻页链接和问答的 20px，服务器卡片的 22px。颜色用 `currentColor`：图标圆里是 `highlight`，折叠箭头是 `mute`。不用 emoji 或 Unicode 符号当图标（有测试查 emoji）。
+**The Lucide-Only Rule.** 图标只用 `@lucide/astro`，一个一个地引入（`@lucide/astro/icons/<名字>`），构建时内联成 SVG，线宽 2。图标一律 `aria-hidden="true"`，名字写在控件上。大小：跟着文字的 16px（箭头、折叠箭头、状态），文档目录按钮和侧栏的 18px，图标圆、翻页链接和问答的 20px，服务器卡片的 22px。颜色用 `currentColor`：图标圆里是 `highlight`，折叠箭头是 `mute`。不用 emoji 或 Unicode 符号当图标（有测试查 emoji）。Starlight 的内容组件（提示框如 `:::note`、Card、LinkCard、Tabs，以及代码块的复制按钮）画的是 Starlight 自己的图标；要用它们，先把图标覆盖成 Lucide。
 
 Starlight 里图标不能靠参数换的组件，已经覆盖成 Lucide：Pagination、MobileMenuToggle、Sidebar（加上自己的 SidebarSublist）；搜索按钮用上面说的叠放办法；文档小节标题旁的链接图标关掉了（`markdown.headingLinks: false`），因为"本页内容"已经链接到每一节。
 
