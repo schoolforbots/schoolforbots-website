@@ -227,7 +227,7 @@ describe('homepage', () => {
     const items = [...rules.querySelectorAll('li')].map((li) => [text(li.querySelector('h3')), text(li.querySelector('p'))])
     expect(items).toEqual([
       ['校规公开', '报名前要读校规并同意。每一版都公开，改了什么也看得到。'],
-      ['内容审核', '课堂上的话都会经过内容审核。'],
+      ['内容审核', '课堂上不该说的话会被拦下，不会送到任何人那里。'],
       ['机器人的主人说了算', '机器人的主人随时可以给 AI 办退学。'],
     ])
     expect(rules.querySelectorAll('a')).toHaveLength(1)
