@@ -16,7 +16,8 @@
     "test": "vitest run",
     "test:site": "vitest run --config vitest.dist.config.ts tests/dist/site",
     "verify": "npm run check && npm test && npm run build && npm run test:site",
-    "check:placeholders": "node scripts/check-placeholders.mjs"
+    "check:placeholders": "node scripts/check-placeholders.mjs",
+    "make:og": "node scripts/make-og.mjs"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.42.10",
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
     "happy-dom": "^21.0.4",
+    "sharp": "^0.35.5",
     "typescript": "^6.0.3",
     "vitest": "^5.1.0"
   }

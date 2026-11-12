@@ -78,8 +78,14 @@ const graphicPairs: Array<[string, string[]]> = [
   ['ok', ['bg', 'bg-soft']],
 ]
 
-function check(pairs: Array<[string, string[]]>, min: number): void {
-  for (const [name, tokens] of Object.entries(themes)) {
+// The brick dado is a graphic in the light theme; at night it is decoration, dim on purpose.
+const lightGraphicPairs: Array<[string, string[]]> = [
+  ['brick', ['bg']],
+  ['ledge', ['bg']],
+]
+
+function check(pairs: Array<[string, string[]]>, min: number, only: Record<string, Tokens> = themes): void {
+  for (const [name, tokens] of Object.entries(only)) {
     for (const [fg, backs] of pairs) {
       for (const back of backs) {
         const ratio = contrast(tokens[`--sfb-${fg}`], tokens[`--sfb-${back}`])
@@ -111,6 +117,8 @@ describe('colour tokens', () => {
   it('text pairs reach 4.5 in both themes', () => check(textPairs, 4.5))
 
   it('graphics reach 3 in both themes', () => check(graphicPairs, 3))
+
+  it('the brick dado reaches 3 in the light theme', () => check(lightGraphicPairs, 3, { light }))
 
   it('danger is a red that differs from 柿子橙', () => {
     const persimmon = hue('#D45113')
