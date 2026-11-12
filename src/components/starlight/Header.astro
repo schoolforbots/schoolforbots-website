@@ -3,6 +3,7 @@
 // and the main button fold into a <details> menu, so the menu works without script.
 import Search from '@astrojs/starlight/components/Search.astro'
 import ChevronDown from '@lucide/astro/icons/chevron-down'
+import Magnifier from '@lucide/astro/icons/search'
 import ThemeSelect from './ThemeSelect.astro'
 import Wordmark from '../Wordmark.astro'
 import { navCta, navLinks } from '../../config/nav'
@@ -29,7 +30,10 @@ const current = (href: string) => (href === here ? 'page' : undefined)
   </nav>
 
   <div class="tools">
-    <Search />
+    <div class="search" data-search>
+      <Search />
+      <Magnifier class="magnifier" aria-hidden="true" />
+    </div>
     <div class="wide">
       <ThemeSelect />
       <a class="cta" href={navCta.href}>{navCta.label}</a>
@@ -146,6 +150,36 @@ const current = (href: string) => (href === here ? 'page' : undefined)
     border-radius: 0.5rem;
   }
 
+  /*
+   * Starlight's search button draws its own magnifier and has no way to swap it.
+   * Its glyph is hidden but keeps its place, and a Lucide magnifier of the same
+   * size sits on that spot in the same grid cell. Clicks pass through it to the
+   * button, which keeps its own name.
+   */
+  .search {
+    display: grid;
+    align-items: center;
+  }
+  .search :global(button[data-open-modal]),
+  .magnifier {
+    grid-area: 1 / 1;
+  }
+  .search :global(button[data-open-modal] > svg) {
+    visibility: hidden;
+  }
+  .magnifier {
+    justify-self: start;
+    width: 0.875rem;
+    height: 0.875rem;
+    /* The button's border and its inline padding. */
+    margin-inline-start: calc(1px + 0.75rem);
+    color: var(--sl-color-gray-2);
+    pointer-events: none;
+  }
+  .search:hover .magnifier {
+    color: var(--sl-color-white);
+  }
+
   .menu {
     display: none;
   }
@@ -233,6 +267,16 @@ const current = (href: string) => (href === here ? 'page' : undefined)
     }
     .tools :global(button[data-open-modal] > :not(svg)) {
       display: none;
+    }
+    .magnifier {
+      justify-self: center;
+      width: 1rem;
+      height: 1rem;
+      margin: 0;
+    }
+    .magnifier,
+    .search:hover .magnifier {
+      color: var(--sfb-ink);
     }
   }
 

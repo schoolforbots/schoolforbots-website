@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { site, type FrameworkId } from '../../../src/config/site'
-import { distExists, listDist, readPage } from '../helpers'
+import { distExists, listDist, readDist, readPage } from '../helpers'
 
 const text = (el: { textContent: string | null } | null | undefined) =>
   el?.textContent?.replace(/\s+/g, ' ').trim() ?? ''
@@ -168,6 +168,24 @@ describe('docs', () => {
     }
     // No link icon beside the headings: the table of contents links every section.
     expect(page.querySelector('.sl-anchor-link')).toBeNull()
+  })
+
+  it('the docs contents button does not repeat the menu glyph, and its name is its tooltip', () => {
+    const button = readPage('/docs/enroll/register/').querySelector('.sl-menu-button')
+    expect(button?.getAttribute('title')).toBe('文档目录')
+    expect(text(button?.querySelector('.sr-only'))).toBe('文档目录')
+    expect(button?.querySelector('svg.open-menu')?.getAttribute('class')).toMatch(/(^|\s)lucide-list-tree(\s|$)/)
+    expect(button?.querySelector('svg.lucide-menu')).toBeNull()
+  })
+
+  it('without scripts the rules loading line is hidden', () => {
+    const html = readDist('docs/rules/index.html')
+    const head = html.slice(0, html.indexOf('</head>'))
+    const css = head.match(/<noscript><style>([^<]*)<\/style><\/noscript>/)?.[1] ?? ''
+    const hidden = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+      .filter(([, , body]) => /display:\s*none/.test(body))
+      .flatMap(([, list]) => list.split(',').map((s) => s.trim()))
+    expect(hidden).toContain('html [data-rules-status]')
   })
 
   it('pages without sections have no table of contents', () => {

@@ -90,6 +90,26 @@ describe('site shell', () => {
     }
   })
 
+  it('the search button shows a Lucide magnifier in place of Starlight’s own', () => {
+    for (const route of pages) {
+      const search = header(route).querySelector('[data-search]')
+      const button = search?.querySelector('button[data-open-modal]')
+      expect(button?.getAttribute('aria-label'), route).toBe('搜索')
+      const icon = [...(search?.children ?? [])].find((el) => el.tagName.toLowerCase() === 'svg')
+      expect(icon?.getAttribute('class'), route).toMatch(/(^|\s)lucide-search(\s|$)/)
+      expect(icon?.getAttribute('aria-hidden'), route).toBe('true')
+    }
+    // Starlight's glyph inside the button is hidden, and the Lucide one lets clicks through.
+    const css = listDist('.css').map(readDist).join('\n')
+    const body = (selector: RegExp) =>
+      rules(css)
+        .filter((r) => selector.test(r.selector))
+        .map((r) => r.body)
+        .join(';')
+    expect(body(/button\[data-open-modal\]\s*>\s*svg$/)).toMatch(/visibility:\s*hidden/)
+    expect(body(/^\.magnifier(:where\([^)]*\))?$/)).toMatch(/pointer-events:\s*none/)
+  })
+
   it('without scripts the theme switch is hidden', () => {
     for (const route of pages) {
       const html = readDist(route === '/' ? 'index.html' : `${route.slice(1)}index.html`)
