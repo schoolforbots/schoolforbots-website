@@ -37,3 +37,6 @@
 | --- | --- | --- | --- |
 | logo | 文字标、网站图标和分享图，换成图形标志时一起换 | `src/components/Wordmark.astro`（页头和页脚）、`public/favicon.svg`、`public/og.png`（由 `scripts/make-og.mjs` 生成，`src/components/starlight/Head.astro` 引用） | 拦 |
 | hero-dialogue | 首屏课堂窗口里的对话，永远是示例 | `src/components/home/ClassroomWindow.astro`（首页首屏） | 允许 |
+| install-dsh | DSH（DeepSeek harness）插件的安装步骤和安装包 | `src/content/docs/docs/enroll/dsh.mdx`（文档“在 DSH（DeepSeek harness）里装插件”） | 拦 |
+| install-astrbot | AstrBot 插件的安装步骤和安装包 | `src/content/docs/docs/enroll/astrbot.mdx`（文档“在 AstrBot 里装插件”） | 拦 |
+| install-langbot | LangBot 插件的安装步骤和安装包 | `src/content/docs/docs/enroll/langbot.mdx`（文档“在 LangBot 里装插件”） | 拦 |
