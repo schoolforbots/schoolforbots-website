@@ -1,0 +1,57 @@
+---
+// The button that opens the docs table of contents on narrow screens, drawn
+// with Lucide icons so the site keeps one icon set. Markup and behaviour
+// otherwise follow Starlight's own MobileMenuToggle; its look is set in
+// styles/starlight.css to match the bar's other buttons.
+import type {} from '@astrojs/starlight' // Starlight's types for Astro.locals
+import Menu from '@lucide/astro/icons/menu'
+import X from '@lucide/astro/icons/x'
+---
+
+<button popovertarget="starlight__sidebar" class="sl-menu-button sl-flex md:sl-hidden print:hidden">
+  <Menu class="open-menu" size={18} aria-hidden="true" />
+  <X class="close-menu" size={18} aria-hidden="true" />
+  <span class="sr-only">{Astro.locals.t('menuButton.accessibleLabel')}</span>
+</button>
+
+<style>
+  @layer starlight.core {
+    button {
+      position: fixed;
+      top: calc((var(--sl-nav-height) - var(--sl-menu-button-size)) / 2);
+      inset-inline-end: var(--sl-nav-pad-x);
+      z-index: var(--sl-z-index-navbar);
+      align-items: center;
+      justify-content: center;
+      width: var(--sl-menu-button-size);
+      height: var(--sl-menu-button-size);
+      cursor: pointer;
+    }
+
+    svg {
+      flex: none;
+    }
+
+    button:has(~ :popover-open) .open-menu {
+      display: none;
+    }
+
+    button:not(:has(~ :popover-open)) .close-menu {
+      display: none;
+    }
+  }
+</style>
+
+<style is:global>
+  @layer starlight.core {
+    body:has(#starlight__sidebar:popover-open) {
+      overflow: hidden;
+    }
+
+    @media (min-width: 50rem) {
+      body:has(#starlight__sidebar:popover-open) {
+        overflow: auto;
+      }
+    }
+  }
+</style>

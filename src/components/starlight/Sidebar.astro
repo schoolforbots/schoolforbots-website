@@ -1,0 +1,14 @@
+---
+// Starlight's docs sidebar, built from Starlight's own pieces except the list,
+// which is SidebarSublist.astro here so the group chevrons are Lucide icons.
+import type {} from '@astrojs/starlight' // Starlight's types for Astro.locals
+import MobileMenuFooter from '@astrojs/starlight/components/MobileMenuFooter.astro'
+import SidebarPersister from '@astrojs/starlight/components/SidebarPersister.astro'
+import SidebarSublist from './SidebarSublist.astro'
+
+const { sidebar } = Astro.locals.starlightRoute
+---
+
+<SidebarPersister><SidebarSublist sublist={sidebar} /></SidebarPersister>
+
+<div class="md:sl-hidden"><MobileMenuFooter /></div>

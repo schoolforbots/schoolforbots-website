@@ -42,6 +42,8 @@ export default defineConfig({
         'docs/rules',
         { label: '公告', collapsed: true, items: [{ autogenerate: { directory: 'docs/notices' } }] },
       ],
+      // No link icon beside each docs heading: the table of contents already links every section.
+      markdown: { headingLinks: false },
       customCss: ['./src/styles/tokens.css', './src/styles/starlight.css'],
       components: {
         Head: './src/components/starlight/Head.astro',
@@ -49,6 +51,10 @@ export default defineConfig({
         Hero: './src/components/starlight/Hero.astro',
         ThemeSelect: './src/components/starlight/ThemeSelect.astro',
         Footer: './src/components/starlight/Footer.astro',
+        // The rest swap Starlight's own icons for Lucide ones.
+        Pagination: './src/components/starlight/Pagination.astro',
+        MobileMenuToggle: './src/components/starlight/MobileMenuToggle.astro',
+        Sidebar: './src/components/starlight/Sidebar.astro',
       },
     }),
   ],

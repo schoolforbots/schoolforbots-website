@@ -158,4 +158,15 @@ describe('docs', () => {
       expect(section?.querySelector(`[data-placeholder="install-${f.id}"]`), f.id).not.toBeNull()
     }
   })
+
+  it('the sidebar, the docs menu button and the previous and next links draw Lucide icons', () => {
+    const page = readPage('/docs/enroll/register/')
+    for (const selector of ['#starlight__sidebar summary', '.sl-menu-button', '.pagination-links']) {
+      const icons = [...page.querySelectorAll(`${selector} svg`)]
+      expect(icons.length, selector).toBeGreaterThan(0)
+      for (const svg of icons) expect(svg.getAttribute('class'), selector).toMatch(/(^|\s)lucide(\s|$)/)
+    }
+    // No link icon beside the headings: the table of contents links every section.
+    expect(page.querySelector('.sl-anchor-link')).toBeNull()
+  })
 })
