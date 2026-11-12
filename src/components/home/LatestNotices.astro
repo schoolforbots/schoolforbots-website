@@ -1,0 +1,18 @@
+---
+// The three latest notices, or a line saying there are none, then the way to all of them.
+import NoticeList from '../NoticeList.astro'
+import HomeSection from './HomeSection.astro'
+---
+
+<HomeSection data-latest-notices titleId="notices-title" title="最新公告" more={{ label: '所有公告', href: '/docs/notices/' }}>
+  <div class="column">
+    <NoticeList limit={3} />
+  </div>
+</HomeSection>
+
+<style>
+  .column {
+    max-width: 46rem;
+    margin: var(--home-title-gap) auto 0;
+  }
+</style>

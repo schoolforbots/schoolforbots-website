@@ -1,0 +1,211 @@
+---
+// Where the code lives: the school server, then one card per bot framework in
+// config order. A framework whose plugin is not published yet gets a
+// 即将支持 tag and no link.
+import Server from '@lucide/astro/icons/server'
+import Puzzle from '@lucide/astro/icons/puzzle'
+import ArrowUpRight from '@lucide/astro/icons/arrow-up-right'
+import HomeSection from './HomeSection.astro'
+import { site } from '../../config/site'
+
+// "github.com/schoolforbots/server" from the full address.
+const shortRepo = (url: string) => url.replace(/^https?:\/\//, '').replace(/\/$/, '')
+// A space between Latin and Chinese, none after a full-width bracket: "AstrBot 插件", "DSH（DeepSeek harness）插件".
+const pluginTitle = (name: string) => (/[\x21-\x7e]$/.test(name) ? `${name} 插件` : `${name}插件`)
+---
+
+<HomeSection data-open-source titleId="open-source-title" title="开源" lead="学校和插件的代码都公开在 GitHub 上。">
+  <ul>
+    <li class="server" data-repo="server">
+      <a class="card" href={site.repos.server}>
+        <span class="mark">
+          <Server size={22} aria-hidden="true" />
+        </span>
+        <h3>学校服务器</h3>
+        <p>报名、分班和上课都在这里。</p>
+        <span class="repo" translate="no">
+          {shortRepo(site.repos.server)}
+          <ArrowUpRight size={16} aria-hidden="true" />
+        </span>
+      </a>
+    </li>
+    {
+      site.frameworks.map((f) =>
+        f.plugin ? (
+          <li data-repo={f.id}>
+            <a class="card plugin" href={f.plugin.repo}>
+              <span class="mark">
+                <Puzzle size={20} aria-hidden="true" />
+              </span>
+              <h3>{pluginTitle(f.name)}</h3>
+              <span class="repo" translate="no">
+                {shortRepo(f.plugin.repo)}
+                <ArrowUpRight size={16} aria-hidden="true" />
+              </span>
+            </a>
+          </li>
+        ) : (
+          <li data-repo={f.id}>
+            <div class="card plugin">
+              <span class="mark">
+                <Puzzle size={20} aria-hidden="true" />
+              </span>
+              <h3>{pluginTitle(f.name)}</h3>
+              <span class="soon">即将支持</span>
+            </div>
+          </li>
+        ),
+      )
+    }
+  </ul>
+</HomeSection>
+
+<style>
+  /* The school server on the left, the plugins stacked beside it. */
+  ul {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1rem;
+    max-width: 54rem;
+    margin: var(--home-title-gap) auto 0;
+    padding: 0;
+    list-style: none;
+  }
+  .server {
+    grid-row: span 3;
+  }
+
+  .card {
+    display: grid;
+    height: 100%;
+    border: 1px solid var(--sfb-line);
+    border-radius: 0.875rem;
+    background: var(--sfb-surface);
+    color: var(--sfb-ink);
+    text-decoration: none;
+  }
+  a.card:hover {
+    border-color: color-mix(in srgb, var(--sfb-mute) 45%, var(--sfb-line));
+  }
+  a.card:hover .repo {
+    text-decoration-thickness: 2px;
+  }
+
+  .mark {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--sfb-line);
+    border-radius: 50%;
+    background: var(--sfb-bg-soft);
+    color: var(--sfb-highlight);
+  }
+
+  h3 {
+    margin: 0;
+    color: var(--sfb-ink);
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  /* The school server: a tall card, the address at the foot. */
+  .server .card {
+    grid-template-rows: auto auto 1fr auto;
+    padding: 1.75rem;
+  }
+  .server h3 {
+    margin-top: 1.25rem;
+    font-size: 1.25rem;
+  }
+  .server p {
+    margin: 0.5rem 0 0;
+    color: var(--sfb-mute);
+    font-size: 0.9375rem;
+    line-height: 1.75;
+  }
+  .server .repo {
+    margin-top: 1.75rem;
+  }
+
+  /* A plugin: one row, the tag or the address on the right. */
+  .plugin {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 0.875rem;
+    padding: 1rem 1.25rem;
+  }
+  .plugin .mark {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+  .plugin h3 {
+    font-size: 1rem;
+    /* Keep a framework's name in one piece; long names wrap at the space before 插件. */
+    word-break: keep-all;
+  }
+
+  .repo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    justify-self: start;
+    color: var(--sfb-link);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+    overflow-wrap: anywhere;
+  }
+  .repo :global(svg) {
+    flex: none;
+  }
+
+  .soon {
+    padding: 0.0625rem 0.5rem;
+    border: 1px solid var(--sfb-line);
+    border-radius: 999px;
+    background: var(--sfb-bg-soft);
+    color: var(--sfb-mute);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+
+  /* Narrow screens: one column, the server first. */
+  @media (width < 48rem) {
+    ul {
+      grid-template-columns: minmax(0, 1fr);
+      max-width: 30rem;
+    }
+    .server {
+      grid-row: auto;
+    }
+    .server .card {
+      padding: 1.375rem 1.25rem;
+    }
+    .server h3 {
+      margin-top: 1rem;
+    }
+    .server .repo {
+      margin-top: 1rem;
+    }
+  }
+
+  /* Phones: the tag or the address goes under the plugin's name, so the name keeps the width. */
+  @media (width < 30rem) {
+    .plugin {
+      grid-template-columns: auto minmax(0, 1fr);
+      row-gap: 0.25rem;
+    }
+    .plugin .mark {
+      grid-row: span 2;
+    }
+    .plugin .soon,
+    .plugin .repo {
+      justify-self: start;
+    }
+  }
+</style>

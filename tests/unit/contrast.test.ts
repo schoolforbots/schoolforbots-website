@@ -60,8 +60,8 @@ const themes: Record<string, Tokens> = { light, dark }
 
 const textPairs: Array<[string, string[]]> = [
   ['ink', ['bg', 'surface']],
-  ['mute', ['bg', 'bg-soft', 'surface-side', 'hero-top']],
-  ['link', ['bg', 'bg-soft']],
+  ['mute', ['bg', 'bg-soft', 'surface', 'surface-side', 'hero-top']],
+  ['link', ['bg', 'bg-soft', 'surface']],
   ['btn-ink', ['btn', 'btn-hover']],
   ['nav-btn-ink', ['nav-btn']],
   ['teacher', ['surface']],
@@ -72,7 +72,7 @@ const textPairs: Array<[string, string[]]> = [
 ]
 
 const graphicPairs: Array<[string, string[]]> = [
-  ['highlight', ['bg', 'hero-top']],
+  ['highlight', ['bg', 'bg-soft', 'surface', 'hero-top']],
   ['logo', ['bg']],
   ['focus', ['bg']],
   ['ok', ['bg', 'bg-soft']],
