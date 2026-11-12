@@ -207,6 +207,13 @@ describe('homepage', () => {
     expect(still.length).toBeGreaterThan(0)
   })
 
+  // A repeated attribute is an HTML parse error, and the browser keeps only the first.
+  it('no section repeats its class attribute', () => {
+    const tags = readDist('index.html').match(/<section\b[^>]*>/g) ?? []
+    expect(tags.length).toBeGreaterThanOrEqual(8)
+    for (const tag of tags) expect(tag.match(/\sclass=/g)?.length ?? 0, tag).toBeLessThanOrEqual(1)
+  })
+
   it('every section title is a large title', () => {
     const titles = [...readPage('/').querySelectorAll('section > h2')]
     expect(titles.map((h) => [text(h), h.hasAttribute('data-display-title')])).toEqual(
