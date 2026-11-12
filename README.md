@@ -22,7 +22,7 @@ Node 24 or newer is required. Every command works on macOS, Linux and Windows.
 - `npm ci`: install the dependencies exactly as locked.
 - `npm run dev`: start the development server with live reload.
 - `npm run build`: build the preview site into `dist/`.
-- `npm run build:release`: check the placeholders, then build the release site into `dist/`.
+- `npm run build:release`: check the placeholders (and that `calendarCors` is on), then build the release site into `dist/`.
 - `npm run preview`: serve the built `dist/` locally.
 - `npm run check`: type-check the project with `astro check`.
 - `npm test`: run the unit tests.

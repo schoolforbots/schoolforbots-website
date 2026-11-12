@@ -27,7 +27,7 @@
 - `拦`：占位没填好之前，`npm run build:release` 会失败。日常的 `npm run check:placeholders` 只给警告。
 - `允许`：占位可以带着上线，正式发布也照常通过。
 
-`npm run build:release` 还要求至少有一个框架的插件已经发布，否则同样失败。
+`npm run build:release` 还要求至少有一个框架的插件已经发布，并且 `src/config/site.ts` 里的 `calendarCors` 已经打开，否则同样失败。
 
 ## 填好以后
 

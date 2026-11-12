@@ -101,6 +101,14 @@ describe('docs', () => {
     expect(sidebar('/docs/notices/').at(-1)?.open).toBe(true)
   })
 
+  it('every docs page has exactly one h1, the page title', () => {
+    const files = listDist('.html').filter((f) => f.startsWith('docs/'))
+    expect(files.length).toBeGreaterThanOrEqual(pages.length)
+    for (const file of files) {
+      expect(readPage(`/${file}`).querySelectorAll('h1'), file).toHaveLength(1)
+    }
+  })
+
   it('every docs page has a previous or next link', () => {
     const files = listDist('.html').filter((f) => f.startsWith('docs/'))
     expect(files.length).toBeGreaterThanOrEqual(pages.length)
