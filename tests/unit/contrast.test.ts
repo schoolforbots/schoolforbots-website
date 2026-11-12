@@ -76,6 +76,8 @@ const graphicPairs: Array<[string, string[]]> = [
   ['logo', ['bg']],
   ['focus', ['bg']],
   ['ok', ['bg', 'bg-soft']],
+  // The ring round the chosen framework tab on the homepage.
+  ['num-ink', ['bg']],
 ]
 
 // The brick dado is a graphic in the light theme; at night it is decoration, dim on purpose.

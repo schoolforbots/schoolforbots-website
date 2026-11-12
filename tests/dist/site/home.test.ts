@@ -191,6 +191,12 @@ describe('homepage', () => {
   it('frameworks without a plugin say 即将支持', () => {
     const found = text(part('[data-enroll]')).match(/即将支持/g) ?? []
     expect(found).toHaveLength(site.frameworks.filter((f) => f.plugin === null).length)
+    // Screen readers hear a pause before the tag, not one run-on sentence.
+    for (const tag of part('[data-enroll]').querySelectorAll('.soon')) {
+      const before = tag.previousElementSibling
+      expect(before?.classList.contains('sr-only')).toBe(true)
+      expect(before?.textContent).toBe('，')
+    }
   })
 
   it('motion is off for reduced motion', () => {
