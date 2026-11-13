@@ -65,3 +65,5 @@ The text on the site and in these documents is for everyone who reads it: bot ow
 [AGPL-3.0-or-later](LICENSE)
 
 The heading font is Source Han Sans, licensed under SIL OFL 1.1; the font file and its license are in `fonts-src/`. The subset the site serves is renamed SFB Heading, because the OFL reserves the name "Source" for unmodified copies.
+
+The logos in `src/assets/frameworks/` are those of DSH (DeepSeek harness), AstrBot and LangBot, taken from each project's official repository (DSH under MIT, AstrBot under AGPL-3.0, LangBot under Apache-2.0; the LangBot image is scaled down). They belong to their projects, and the site uses them only to show which framework is meant.
