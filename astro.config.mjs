@@ -13,6 +13,8 @@ export default defineConfig({
       favicon: '/favicon.svg',
       // The docs table of contents. Previous and next links follow this order.
       sidebar: [
+        // An overview of every guide below; the 教程 link in the top nav lands here.
+        'docs/tutorials',
         {
           label: '入学',
           items: [

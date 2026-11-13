@@ -1,0 +1,94 @@
+---
+// The 教程 page: every guide, group by group in sidebar order, each with the
+// one-line description from its own frontmatter. Built from the sidebar, so a
+// new page in the sidebar shows up here too. The notices are news, not guides.
+import type {} from '@astrojs/starlight' // Starlight's types for Astro.locals
+import { getCollection } from 'astro:content'
+
+type Entry = (typeof Astro.locals.starlightRoute.sidebar)[number]
+type Group = Extract<Entry, { type: 'group' }>
+type Link = Extract<Entry, { type: 'link' }>
+
+const docs = await getCollection('docs')
+// '/docs/enroll/register/' is the entry 'docs/enroll/register'.
+const description = (href: string) => docs.find((d) => d.id === href.replace(/^\/|\/$/g, ''))?.data.description ?? ''
+
+const links = (group: Group): Link[] => group.entries.filter((e): e is Link => e.type === 'link')
+const groups = Astro.locals.starlightRoute.sidebar.filter(
+  (e): e is Group => e.type === 'group' && !links(e).some((l) => l.href.startsWith('/docs/notices/')),
+)
+---
+
+<div class="tutorials not-content" data-tutorials>
+  {
+    groups.map((group, i) => (
+      <section aria-labelledby={`tutorials-${i}`}>
+        <h2 id={`tutorials-${i}`}>{group.label}</h2>
+        <ul>
+          {links(group).map((link) => (
+            <li>
+              <a href={link.href}>
+                <span class="title">{link.label}</span>
+                <span class="desc">{description(link.href)}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .tutorials {
+    margin-top: 2rem;
+  }
+  section + section {
+    margin-top: 2.5rem;
+  }
+  h2 {
+    margin: 0 0 1rem;
+    color: var(--sfb-ink);
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--sfb-line);
+    border-radius: 0.875rem;
+    background: var(--sfb-surface);
+    list-style: none;
+  }
+  li + li {
+    border-top: 1px solid var(--sfb-line);
+  }
+  a {
+    display: grid;
+    gap: 0.25rem;
+    padding: 1rem 1.25rem;
+    border-radius: 0.875rem;
+    color: inherit;
+    text-decoration: none;
+  }
+  a:focus-visible {
+    outline-offset: -2px;
+  }
+  .title {
+    color: var(--sfb-link);
+    font-weight: 600;
+    line-height: 1.5;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+  }
+  a:hover .title {
+    text-decoration-thickness: 2px;
+  }
+  .desc {
+    color: var(--sfb-mute);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+</style>
