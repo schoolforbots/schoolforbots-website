@@ -64,4 +64,4 @@ The text on the site and in these documents is for everyone who reads it: bot ow
 
 [AGPL-3.0-or-later](LICENSE)
 
-The heading font is Source Han Sans, licensed under SIL OFL 1.1; the font file and its license are in `fonts-src/`.
+The heading font is Source Han Sans, licensed under SIL OFL 1.1; the font file and its license are in `fonts-src/`. The subset the site serves is renamed SFB Heading, because the OFL reserves the name "Source" for unmodified copies.

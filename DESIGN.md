@@ -286,7 +286,7 @@ Starlight 的颜色在 `src/styles/starlight.css` 里映射到这组变量：`--
 - **Tag**（0.75rem，行高 1.5）："即将支持"、"示意"、"待补"这些小标签。日期和步骤编号用 `tabular-nums`。
 
 ### Named Rules
-**The Cut-Font Rule.** 标题字只给 `h1, h2[data-display-title]`。这个选择器写在 `src/config/display-titles.mjs`，样式、裁字脚本和测试都读它。`scripts/subset-heading-font.mjs` 在构建以后把字体裁到这些标题实际用到的字（再加上基本拉丁字符），所以别的文字用它会缺字。新的大标题只要匹配这个选择器，下次构建就会带上它的字；裁好的字体有 150 KB 的上限（有测试）。`npm run dev` 里没有裁好的字体，标题退回正文字体。
+**The Cut-Font Rule.** 标题字只给 `h1, h2[data-display-title]`。这个选择器写在 `src/config/display-titles.mjs`，样式、裁字脚本和测试都读它。`scripts/subset-heading-font.mjs` 在构建以后把字体裁到这些标题实际用到的字（再加上基本拉丁字符），所以别的文字用它会缺字。新的大标题只要匹配这个选择器，下次构建就会带上它的字；裁好的字体有 150 KB 的上限（有测试）。裁好的字体改名叫 `SFB Heading`，因为 SIL OFL 把 "Source" 这个名字留给没有改动过的原版。`npm run dev` 里没有裁好的字体，标题退回正文字体。
 
 **The One-Weight Rule.** 标题字只有 Heavy 一个字重，`font-weight` 改不了它的粗细。要分层次就改字号，不要指望字重。
 
