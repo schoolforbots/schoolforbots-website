@@ -2,7 +2,7 @@ import { Window } from 'happy-dom'
 import { describe, expect, it, vi } from 'vitest'
 import { mountRules } from '../../../src/lib/rules/mount'
 
-const server = 'https://github.com/schoolforbots/server'
+const server = 'https://github.com/schoolforbots/schoolforbots-server'
 const rulesUrl = 'https://api.test/v1/school-rules'
 const body = (text: string) => ({
   version: '2026-11-11',
