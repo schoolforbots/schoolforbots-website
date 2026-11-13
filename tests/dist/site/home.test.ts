@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { site } from '../../../src/config/site'
-import { readDist, readPage } from '../helpers'
+import { distExists, readDist, readPage } from '../helpers'
 
 const text = (el: { textContent: string | null } | null | undefined) =>
   el?.textContent?.replace(/\s+/g, ' ').trim() ?? ''
@@ -186,6 +186,57 @@ describe('homepage', () => {
       expect(text(steps[1].querySelector('p')), f.id).toBe('在插件里填邮箱、收验证码、同意校规。')
       expect(text(steps[2].querySelector('p')), f.id).toBe('第二天 0 点分班，然后按时去上课。')
     }
+  })
+
+  it('every framework tab and plugin card shows the framework logo, served from this site', () => {
+    const enroll = part('[data-enroll]')
+    const open = part('[data-open-source]')
+    for (const f of site.frameworks) {
+      const places = {
+        tab: enroll.querySelector(`label[for="framework-${f.id}"]`),
+        card: open.querySelector(`[data-repo="${f.id}"]`),
+      }
+      for (const [where, el] of Object.entries(places)) {
+        const logos = [...(el?.querySelectorAll('img[data-framework-logo]') ?? [])]
+        // DSH's mark is black, so it has a white one for the dark theme.
+        expect(logos.map((img) => img.getAttribute('data-theme-variant')), `${f.id} ${where}`).toEqual(
+          f.id === 'dsh' ? ['light', 'dark'] : [null],
+        )
+        for (const img of logos) {
+          // Decorative: the framework's name is written beside it.
+          expect(img.getAttribute('alt'), `${f.id} ${where}`).toBe('')
+          const src = img.getAttribute('src') ?? ''
+          expect(src, `${f.id} ${where}`).toMatch(/^\/[^/]/)
+          expect(distExists(src.slice(1)), src).toBe(true)
+        }
+      }
+      expect(places.card?.querySelector('svg.lucide-puzzle'), f.id).toBeNull()
+    }
+  })
+
+  it('a dark-theme logo shows only in the dark theme', () => {
+    const css = homepageCss()
+    // Each selector that hides a logo of the given variant (the minifier joins rules into selector lists).
+    const hides = (variant: string) =>
+      rules(css)
+        .filter((r) => /display\s*:\s*none/.test(r.body))
+        .flatMap((r) => r.selector.split(','))
+        .filter((selector) => new RegExp(`data-theme-variant=["']?${variant}`).test(selector))
+    // Hidden by default, and the light one hidden under the dark theme, chosen or followed from the system.
+    expect(hides('dark').some((selector) => !/data-theme=/.test(selector))).toBe(true)
+    expect(hides('light').some((selector) => /data-theme=["']?dark/.test(selector))).toBe(true)
+    expect(hides('light').some((selector) => /:not\(\[data-theme=["']?light/.test(selector))).toBe(true)
+  })
+
+  it('switching frameworks fades the steps in and eases the tab, except for reduced motion', () => {
+    const css = homepageCss()
+    const steps = (selector: string) => /\.steps(?![\w-])/.test(selector)
+    const tab = (selector: string) => /(^|[\s,>+~])label/.test(selector)
+    expect(rules(css).some((r) => steps(r.selector) && /animation(-name)?\s*:\s*(?!none)/.test(r.body))).toBe(true)
+    expect(rules(css).some((r) => tab(r.selector) && /transition(-property)?\s*:\s*(?!none)/.test(r.body))).toBe(true)
+    const still = reducedMotionBlocks(css).flatMap(rules)
+    expect(still.some((r) => steps(r.selector) && /animation\s*:\s*none/.test(r.body))).toBe(true)
+    expect(still.some((r) => tab(r.selector) && /transition\s*:\s*none/.test(r.body))).toBe(true)
   })
 
   it('frameworks without a plugin say 即将支持', () => {

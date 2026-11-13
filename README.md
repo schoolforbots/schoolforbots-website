@@ -65,3 +65,5 @@
 [AGPL-3.0-or-later](LICENSE)
 
 标题字体是思源黑体（Source Han Sans），采用 SIL OFL 1.1 许可证，字体文件和许可证文本放在 `fonts-src/`。网站上用的裁剪版改名叫 SFB Heading，因为 OFL 把 "Source" 这个名字留给没有改动过的原版。
+
+`src/assets/frameworks/` 里是 DSH（DeepSeek harness）、AstrBot 和 LangBot 的 logo，分别取自它们的官方仓库（DSH 用 MIT，AstrBot 用 AGPL-3.0，LangBot 用 Apache-2.0；LangBot 的图缩小过）。这些 logo 属于各自的项目，网站只用它们标明是哪个框架。

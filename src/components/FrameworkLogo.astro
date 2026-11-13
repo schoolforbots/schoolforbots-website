@@ -1,0 +1,61 @@
+---
+// A bot framework's own logo, from its official repository, shown beside its
+// name. Decorative: the name is always written next to it, so alt is empty.
+import type { FrameworkId } from '../config/site'
+import dsh from '../assets/frameworks/dsh.svg'
+import dshDark from '../assets/frameworks/dsh-dark.svg'
+import astrbot from '../assets/frameworks/astrbot.svg'
+import langbot from '../assets/frameworks/langbot.png'
+
+interface Props {
+  id: FrameworkId
+  size: number
+}
+
+const { id, size } = Astro.props
+
+// DSH's mark is black, so the dark theme uses its white version.
+const logos: Record<FrameworkId, { light: ImageMetadata; dark?: ImageMetadata }> = {
+  dsh: { light: dsh, dark: dshDark },
+  astrbot: { light: astrbot },
+  langbot: { light: langbot },
+}
+const { light, dark } = logos[id]
+---
+
+{
+  dark ? (
+    <>
+      <img class="logo" src={light.src} width={size} height={size} alt="" data-framework-logo data-theme-variant="light" />
+      <img class="logo" src={dark.src} width={size} height={size} alt="" data-framework-logo data-theme-variant="dark" />
+    </>
+  ) : (
+    <img class="logo" src={light.src} width={size} height={size} alt="" data-framework-logo />
+  )
+}
+
+<style>
+  .logo {
+    display: block;
+    flex: none;
+    object-fit: contain;
+  }
+  /* One of a pair shows at a time, following the theme the same way tokens.css does. */
+  [data-theme-variant='dark'] {
+    display: none;
+  }
+  :global(:root[data-theme='dark']) [data-theme-variant='light'] {
+    display: none;
+  }
+  :global(:root[data-theme='dark']) [data-theme-variant='dark'] {
+    display: block;
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) [data-theme-variant='light'] {
+      display: none;
+    }
+    :global(:root:not([data-theme='light'])) [data-theme-variant='dark'] {
+      display: block;
+    }
+  }
+</style>

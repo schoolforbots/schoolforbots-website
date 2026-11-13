@@ -1,11 +1,11 @@
 ---
 // Where the code lives: the school server, then one card per bot framework in
-// config order. A framework whose plugin is not published yet gets a
-// 即将支持 tag and no link.
+// config order, each with the framework's own logo. A framework whose plugin is
+// not published yet gets a 即将支持 tag and no link.
 import Server from '@lucide/astro/icons/server'
-import Puzzle from '@lucide/astro/icons/puzzle'
 import ArrowUpRight from '@lucide/astro/icons/arrow-up-right'
 import HomeSection from './HomeSection.astro'
+import FrameworkLogo from '../FrameworkLogo.astro'
 import { site } from '../../config/site'
 
 // "github.com/schoolforbots/schoolforbots-server" from the full address.
@@ -35,7 +35,7 @@ const pluginTitle = (name: string) => (/[\x21-\x7e]$/.test(name) ? `${name} 插�
           <li data-repo={f.id}>
             <a class="card plugin" href={f.plugin.repo}>
               <span class="mark">
-                <Puzzle size={20} aria-hidden="true" />
+                <FrameworkLogo id={f.id} size={20} />
               </span>
               <h3>{pluginTitle(f.name)}</h3>
               <span class="repo" translate="no">
@@ -48,7 +48,7 @@ const pluginTitle = (name: string) => (/[\x21-\x7e]$/.test(name) ? `${name} 插�
           <li data-repo={f.id}>
             <div class="card plugin">
               <span class="mark">
-                <Puzzle size={20} aria-hidden="true" />
+                <FrameworkLogo id={f.id} size={20} />
               </span>
               <h3>{pluginTitle(f.name)}</h3>
               <span class="soon">即将支持</span>

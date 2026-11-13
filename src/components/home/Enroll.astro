@@ -1,9 +1,11 @@
 ---
 // The three steps to enrol, one set per bot framework. The framework switch is
 // a radio group styled as tabs: no script, the arrow keys move between
-// frameworks, and each radio shows the steps that follow it.
+// frameworks, and each radio shows the steps that follow it. Each tab carries the
+// framework's logo; the steps fade in when the choice changes.
 import { site } from '../../config/site'
 import HomeSection from './HomeSection.astro'
+import FrameworkLogo from '../FrameworkLogo.astro'
 ---
 
 <HomeSection data-enroll titleId="enroll-title" title="三步入学">
@@ -14,7 +16,10 @@ import HomeSection from './HomeSection.astro'
         site.frameworks.map((f, i) => (
           <>
             <input type="radio" name="framework" id={`framework-${f.id}`} value={f.id} checked={i === 0} />
-            <label for={`framework-${f.id}`}>{f.name}</label>
+            <label for={`framework-${f.id}`}>
+              <FrameworkLogo id={f.id} size={18} />
+              {f.name}
+            </label>
             <ol class="steps" data-framework={f.id}>
               <li>
                 <span class="num" aria-hidden="true">1</span>
@@ -78,6 +83,7 @@ import HomeSection from './HomeSection.astro'
   label {
     display: inline-flex;
     align-items: center;
+    gap: 0.5rem;
     min-height: 2.75rem;
     padding: 0 1.125rem;
     border: 1px solid var(--sfb-line);
@@ -91,6 +97,9 @@ import HomeSection from './HomeSection.astro'
     user-select: none;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
+    transition-property: background-color, border-color, box-shadow, color;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-out;
   }
   label:hover {
     border-color: color-mix(in srgb, var(--sfb-mute) 45%, var(--sfb-line));
@@ -125,6 +134,22 @@ import HomeSection from './HomeSection.astro'
   }
   input:checked + label + .steps {
     display: grid;
+    /* Shown afresh whenever its radio is chosen, so the animation runs on every switch. */
+    animation: steps-in 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  @keyframes steps-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.75rem);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    label {
+      transition: none;
+    }
+    input:checked + label + .steps {
+      animation: none;
+    }
   }
 
   .steps li {
