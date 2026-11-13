@@ -8,7 +8,7 @@ import ArrowUpRight from '@lucide/astro/icons/arrow-up-right'
 import HomeSection from './HomeSection.astro'
 import { site } from '../../config/site'
 
-// "github.com/schoolforbots/server" from the full address.
+// "github.com/schoolforbots/schoolforbots-server" from the full address.
 const shortRepo = (url: string) => url.replace(/^https?:\/\//, '').replace(/\/$/, '')
 // A space between Latin and Chinese, none after a full-width bracket: "AstrBot 插件", "DSH（DeepSeek harness）插件".
 const pluginTitle = (name: string) => (/[\x21-\x7e]$/.test(name) ? `${name} 插件` : `${name}插件`)

@@ -33,8 +33,8 @@ export const site: SiteConfig = {
   statusCacheMs: 300000,
   repos: {
     org: 'https://github.com/schoolforbots',
-    server: 'https://github.com/schoolforbots/server',
-    website: 'https://github.com/schoolforbots/website',
+    server: 'https://github.com/schoolforbots/schoolforbots-server',
+    website: 'https://github.com/schoolforbots/schoolforbots-website',
   },
   frameworks: [
     { id: 'dsh', name: 'DSH（DeepSeek harness）', plugin: null },
