@@ -15,6 +15,7 @@ const installTitle = (id: FrameworkId) => `在 ${framework(id).name} 里装插�
 
 // The docs table of contents: every page, in sidebar order, with its title.
 const groups: { label: string | null; pages: [string, string][] }[] = [
+  { label: null, pages: [['/docs/tutorials/', '教程']] },
   {
     label: '入学',
     pages: [
@@ -99,6 +100,30 @@ describe('docs', () => {
       expect(notices?.open, route).toBe(false)
     }
     expect(sidebar('/docs/notices/').at(-1)?.open).toBe(true)
+  })
+
+  // The 教程 link in the top nav lands on an overview of every guide, not on one of them.
+  it('the 教程 page lists every guide in sidebar order, each with its own description', () => {
+    const tutorials = [...readPage('/').querySelectorAll('.site-header a')].filter((a) => text(a) === '教程')
+    expect(tutorials.length).toBeGreaterThan(0)
+    for (const a of tutorials) expect(a.getAttribute('href')).toBe('/docs/tutorials/')
+
+    const page = readPage('/docs/tutorials/')
+    const sections = [...page.querySelectorAll('[data-tutorials] section')]
+    // Every group of guides; the notices are news, not guides.
+    const wanted = groups.filter((g) => g.label !== null && g.label !== '公告')
+    expect(sections.map((s) => text(s.querySelector('h2')))).toEqual(wanted.map((g) => g.label))
+    sections.forEach((section, i) => {
+      const rows = [...section.querySelectorAll('li')]
+      expect(rows.map((li) => [li.querySelector('a')?.getAttribute('href'), text(li.querySelector('.title'))])).toEqual(
+        wanted[i].pages,
+      )
+      rows.forEach((li, j) => {
+        const route = wanted[i].pages[j][0]
+        const description = readPage(route).querySelector('meta[name="description"]')?.getAttribute('content')
+        expect(text(li.querySelector('.desc')), route).toBe(description)
+      })
+    })
   })
 
   it('every docs page has exactly one h1, the page title', () => {

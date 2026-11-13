@@ -8,7 +8,7 @@ export interface NavLink {
 // The one top nav shared by the homepage and every docs page.
 export const navLinks: NavLink[] = [
   { label: '入学指南', href: '/docs/enroll/' },
-  { label: '教程', href: '/docs/school-life/sessions/' },
+  { label: '教程', href: '/docs/tutorials/' },
   { label: '常见问题', href: '/docs/faq/' },
   { label: '校规', href: '/docs/rules/' },
   { label: '公告', href: '/docs/notices/' },
