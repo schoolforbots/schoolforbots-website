@@ -140,10 +140,29 @@ summary {
 }
 
 /*
+ * Docs pages have no right-hand column (components/starlight/TwoColumnContent.astro).
+ * The 本页内容 bar stays above the page title on wide screens too, and the
+ * content column, a little wider, is centred in the space beside the docs sidebar.
+ */
+:root[data-has-sidebar] {
+  --sl-content-width: 48rem;
+}
+@media (min-width: 50rem) {
+  :root[data-has-sidebar] .content-panel > .sl-container {
+    margin-inline: auto;
+  }
+}
+@media (min-width: 72rem) {
+  :root[data-has-toc] {
+    --sl-mobile-toc-height: 3rem;
+  }
+}
+
+/*
  * The site footer sits at the bottom of the window even on a short page: main
  * fills the window below the bar, and the block just above the footer takes
  * the spare height. main is also what the footer's hairline and dado span:
- * the whole window on the homepage, the area between the sidebars on docs pages.
+ * the whole window on the homepage, the area beside the docs sidebar on docs pages.
  */
 main {
   position: relative;

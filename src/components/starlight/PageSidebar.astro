@@ -1,0 +1,9 @@
+---
+// A page's table of contents: Starlight's "本页内容" bar above the page title,
+// at every width. Starlight would swap it for a right-hand column on wide
+// screens; this site has no such column (TwoColumnContent.astro).
+import type {} from '@astrojs/starlight' // Starlight's types for Astro.locals
+import MobileTableOfContents from '@astrojs/starlight/components/MobileTableOfContents.astro'
+---
+
+{Astro.locals.starlightRoute.toc && <MobileTableOfContents />}

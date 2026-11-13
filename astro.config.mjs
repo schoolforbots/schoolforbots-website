@@ -51,6 +51,9 @@ export default defineConfig({
         Hero: './src/components/starlight/Hero.astro',
         ThemeSelect: './src/components/starlight/ThemeSelect.astro',
         Footer: './src/components/starlight/Footer.astro',
+        // No right-hand column: the table of contents is the bar above the page title at every width.
+        TwoColumnContent: './src/components/starlight/TwoColumnContent.astro',
+        PageSidebar: './src/components/starlight/PageSidebar.astro',
         // The rest swap Starlight's own icons for Lucide ones.
         Pagination: './src/components/starlight/Pagination.astro',
         MobileMenuToggle: './src/components/starlight/MobileMenuToggle.astro',

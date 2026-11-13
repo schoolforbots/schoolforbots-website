@@ -1,0 +1,21 @@
+---
+// Starlight's page body without its right-hand column. A page's table of
+// contents is the bar above the page title at every width (PageSidebar.astro),
+// so the content column is centred in the space beside the docs sidebar.
+import type {} from '@astrojs/starlight' // Starlight's types for Astro.locals
+---
+
+{
+  Astro.locals.starlightRoute.toc && (
+    <div class="print:hidden">
+      <slot name="right-sidebar" />
+    </div>
+  )
+}
+<div class="main-pane"><slot /></div>
+
+<style>
+  .main-pane {
+    isolation: isolate;
+  }
+</style>
