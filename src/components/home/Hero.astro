@@ -29,10 +29,18 @@ import { site } from '../../config/site'
   }
 
   .hero {
+    position: relative;
     margin: 0;
     padding-top: clamp(3rem, 1.5rem + 6vw, 6.5rem);
     text-align: center;
-    /* A faint 麦秆 wash across the whole window; border-image paints past the column without widening the page. */
+  }
+  /* A faint 麦秆 wash across the whole window; border-image paints past the column without widening the page.
+     It sits under the seasons canvas (z-index -1), which sits under the content. */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -2;
     border-image: linear-gradient(var(--sfb-hero-top), var(--sfb-bg) 85%) fill 0 / 0 / 0 100vmax;
   }
 

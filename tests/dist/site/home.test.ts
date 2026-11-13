@@ -213,6 +213,31 @@ describe('homepage', () => {
     expect(still.length).toBeGreaterThan(0)
   })
 
+  it('the seasons sit behind the homepage only, and go for reduced motion', () => {
+    const canvases = [...readPage('/').querySelectorAll('canvas[data-seasons]')]
+    expect(canvases).toHaveLength(1)
+    expect(canvases[0].getAttribute('aria-hidden')).toBe('true')
+    expect(readPage('/docs/enroll/').querySelector('canvas[data-seasons]')).toBeNull()
+
+    const cls = [...canvases[0].classList].find((c) => !c.startsWith('astro-'))
+    expect(cls).toBeDefined()
+    const targets = (selector: string) => new RegExp(`\\.${cls}(?![\\w-])`).test(selector)
+    const css = homepageCss()
+    const behind = rules(css).filter(
+      (r) => targets(r.selector) && /position\s*:\s*fixed/.test(r.body) && /z-index\s*:\s*-1\b/.test(r.body),
+    )
+    expect(behind.length).toBeGreaterThan(0)
+    const gone = reducedMotionBlocks(css)
+      .flatMap(rules)
+      .filter((r) => targets(r.selector) && /display\s*:\s*none/.test(r.body))
+    expect(gone.length).toBeGreaterThan(0)
+    // The hero's faint wash is painted under the canvas, not over it.
+    const wash = rules(css).filter(
+      (r) => /::?before/.test(r.selector) && /z-index\s*:\s*-2\b/.test(r.body) && /border-image/.test(r.body),
+    )
+    expect(wash.length).toBeGreaterThan(0)
+  })
+
   // A repeated attribute is an HTML parse error, and the browser keeps only the first.
   it('no section repeats its class attribute', () => {
     const tags = readDist('index.html').match(/<section\b[^>]*>/g) ?? []

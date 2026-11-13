@@ -1,0 +1,29 @@
+---
+// The four seasons behind the homepage (src/lib/seasons/sky.ts). The canvas sits
+// behind the content: cards and the status strip hide it, the open page shows it.
+---
+
+<canvas class="seasons" aria-hidden="true" data-seasons></canvas>
+
+<style>
+  .seasons {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .seasons {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { mountSeasons } from '../../lib/seasons/sky'
+
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-seasons]')
+  if (canvas) mountSeasons(canvas)
+</script>
