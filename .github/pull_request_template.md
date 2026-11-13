@@ -12,5 +12,5 @@
 - [ ] Every commit has a `Signed-off-by` sign-off (commit with `git commit -s`)
 - [ ] `npm run verify` passes locally
 - [ ] Every new placeholder is registered in `PLACEHOLDERS.md`
-- [ ] The text follows "How to write" in README.md
+- [ ] The text follows "怎么写" in README.md ("How to write" in README.en.md)
 - [ ] No secrets, `.env`, real configuration, or personal information are committed
