@@ -194,7 +194,19 @@ describe('docs', () => {
       expect(page.querySelector('starlight-toc'), route).toBeNull()
       expect(page.querySelector('mobile-starlight-toc'), route).toBeNull()
     }
-    expect(readPage('/docs/enroll/register/').querySelector('starlight-toc')).not.toBeNull()
+    expect(readPage('/docs/enroll/register/').querySelector('mobile-starlight-toc')).not.toBeNull()
+  })
+
+  // At every width the table of contents is the bar above the page title; there is no right-hand column.
+  it('pages with sections show the contents bar and no right-hand column', () => {
+    for (const route of ['/docs/enroll/', '/docs/enroll/register/', '/docs/help/cannot-connect/']) {
+      const page = readPage(route)
+      expect(page.querySelectorAll('mobile-starlight-toc'), route).toHaveLength(1)
+      expect(page.querySelector('starlight-toc'), route).toBeNull()
+      expect(page.querySelector('.right-sidebar-container, .right-sidebar, .right-sidebar-panel'), route).toBeNull()
+      // Not wrapped in Starlight's "hide on wide screens" class.
+      expect(page.querySelector('mobile-starlight-toc')?.closest('.lg\\:sl-hidden'), route).toBeNull()
+    }
   })
 
   it('search speaks Chinese', () => {
