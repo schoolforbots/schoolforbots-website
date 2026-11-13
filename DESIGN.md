@@ -220,15 +220,15 @@ components:
 
 网站是一所学校的门面，不是又一个 AI 产品的落地页。它看起来像红砖校舍门口贴出来的开学通知：暖白的纸面，暖褐近黑的字，红砖棕的按钮和链接，柿子橙只点在标题里的一个词、图标和标志上。每一页的最底下都有一道红砖墙裙，和"即将开学"页（`holding/index.html`）是同一块砖。
 
-版面偏松，读起来像通知，不像控制台。首页每一节是一个居中的大标题，下面是这一节自己的排法：时间线、页签、校规单、仓库卡片、问答、列表。文档页用 Starlight 的三栏，换成学校的颜色和字。全站只有一处动效：首屏课堂窗口里的四句话依次出现。没有照片、插画和装饰图；首屏的"图"就是一扇课堂窗口，用页面本身的元素画出来。
+版面偏松，读起来像通知，不像控制台。首页每一节是一个居中的大标题，下面是这一节自己的排法：时间线、页签、校规单、仓库卡片、问答、列表。文档页用 Starlight 的三栏，换成学校的颜色和字。全站有三处动效：首屏课堂窗口里的四句话依次出现；首页背后随滚动换季的飘落物（春樱花、夏绿叶、秋银杏叶、冬雪）和一层很淡的季节底色；三步入学换框架时步骤淡入。没有照片和插画；首屏的"图"就是一扇课堂窗口，用页面本身的元素画出来。
 
 深色版叫"晚自习"，是同一所学校的晚上：底色换成近黑墨绿，字换成暖白，按钮和强调换成银杏黄，链接换成麦秆色，墙裙暗下来，只作装饰。默认跟着系统，顶栏上的开关可以手动切换。
 
 **Key Characteristics:**
 - 两套主题共用一组语义色名（`--sfb-*`），组件里只写变量，不写颜色值。
 - 大标题用裁剪过的思源黑体 Heavy，只用在页面标题和首页各节标题上；其余文字用系统自带的中文黑体。
-- 图标只用 Lucide 的线条图标，构建时内联成 SVG。
-- 一处动效、一种焦点环、一套圆角、一种 1px 分隔线。
+- 图标只用 Lucide 的线条图标，构建时内联成 SVG；框架的 logo 除外。
+- 三处动效、一种焦点环、一套圆角、一种 1px 分隔线。
 - 示意的内容带"示意"小标签，缺的内容带"待补"小标签。
 - 字体、图标、图片都放在网站自己这里，不从别的网站加载。
 
@@ -262,7 +262,7 @@ components:
 Starlight 的颜色在 `src/styles/starlight.css` 里映射到这组变量：`--sl-color-white` 和 `gray-1` 是 `ink`，`gray-2` 是 `ink` 和 `mute` 六四混合，`gray-3` 是 `mute`，`gray-5` 是 `line`，`gray-6`、`gray-7` 是 `bg-soft`，`black` 是 `bg`，强调色是 `btn`。提示框里，"注意"是中性色，"提示"是绿色，"警告"是柿子橙，"危险"是红色；标记成功的小徽章也是绿色。
 
 ### Named Rules
-**The Variables-Only Rule.** 组件里只写 `var(--sfb-*)`，或者 `starlight.css` 里已经映射过的 `--sl-color-*`，不写颜色值。改颜色时在 `tokens.css` 里两套一起改；跟随系统的那一块必须和 `[data-theme='dark']` 那一块一模一样（有测试）。例外只有两处：阴影的颜色直接写（白天是暖褐 `rgb(90 40 8 / α)`，晚上是黑色）；浏览器地址栏的颜色（#FDF4E3 和 #141D19）在 `starlight/Head.astro` 和 `starlight/ThemeSelect.astro` 里各写一次，改的时候两处一起改。
+**The Variables-Only Rule.** 组件里只写 `var(--sfb-*)`，或者 `starlight.css` 里已经映射过的 `--sl-color-*`，不写颜色值。改颜色时在 `tokens.css` 里两套一起改；跟随系统的那一块必须和 `[data-theme='dark']` 那一块一模一样（有测试）。例外有三处：阴影的颜色直接写（白天是暖褐 `rgb(90 40 8 / α)`，晚上是黑色）；浏览器地址栏的颜色（#FDF4E3 和 #141D19）在 `starlight/Head.astro` 和 `starlight/ThemeSelect.astro` 里各写一次，改的时候两处一起改；首页四季的颜色（飘落物和季节底色）画在画布上，读不到 CSS 变量，写在 `src/lib/seasons/palette.ts`，季节底色叠到页面底色上以后的对比度由 `tests/unit/seasons.test.ts` 检查。
 
 **The Straw Wash Rule.** 麦秆色只做很淡的一层或者小块底色。整页的"米色底加赤陶色"不是这所学校的样子。
 
@@ -356,11 +356,12 @@ Starlight 的颜色在 `src/styles/starlight.css` 里映射到这组变量：`--
 - **示意 / 待补:** `src/components/Placeholder.astro` 画的占位标签，0.75rem，`mute` 字，1px 柿子橙虚线框。每一处示意或缺的内容都带它，并登记在 `PLACEHOLDERS.md`。
 
 ### Tabs
-三步入学的框架切换。它是一组单选按钮，画成页签，不用脚本：方向键在框架之间移动，选中哪个就显示哪个框架的三步。
+三步入学的框架切换。它是一组单选按钮，画成页签，不用脚本：方向键在框架之间移动，选中哪个就显示哪个框架的三步。每个页签在名字前面放这个框架的 logo（18px）。
 - **未选中:** 胶囊，`surface` 底，1px 墙线，`mute` 字，2.75rem 高；悬停时边框加深、字变成 `ink`。
 - **选中:** `num-bg` 底，`num-ink` 字 600，外加一圈 2px 的 `num-ink` 环，不只靠底色和字重区分。强制颜色模式下用系统的选中色（SelectedItem）。
 - **焦点:** 焦点环画在获得焦点的单选按钮对应的页签上。
 - **步骤面板:** 页签下面是一张容器圆角的白板，三步并排，用墙线隔开；每一步前面是一个 2rem 的 `num-bg` 圆，里面是 `num-ink` 的数字。
+- **过渡:** 页签的底色、边框、环和字色用 0.3s 过渡过去。换框架时步骤面板用动画 `steps-in` 出来：0.6s，`cubic-bezier(0.33, 1, 0.68, 1)`，从透明并下移 0.75rem 的位置出来。读者设了"减少动态效果"时都没有。
 
 ### Cards / Containers
 - **Corner Style:** 容器圆角（0.875rem）。
@@ -369,7 +370,7 @@ Starlight 的颜色在 `src/styles/starlight.css` 里映射到这组变量：`--
 - **Border:** 1px `line`；卡片里的多行之间也用墙线隔开。
 - **Internal Padding:** 1.25rem 到 1.75rem。
 - **可点的卡片:** 开源仓库卡片整张都是链接。悬停时边框加深，地址的下划线从 1px 变成 2px。
-- **图标圆:** 2.75rem 的圆，1px 墙线，`surface` 或 `bg-soft` 底，里面是一个 20px 的 Lucide 图标，颜色是 `highlight`。
+- **图标圆:** 2.75rem 的圆，1px 墙线，`surface` 或 `bg-soft` 底，里面是一个 20px 的 Lucide 图标，颜色是 `highlight`。插件卡片的图标圆里放的是框架的 logo（20px）。
 
 ### Inputs / Fields
 网站本身没有表单。唯一的输入框是搜索对话框里的 Pagefind 搜索框，沿用 Starlight 和 Pagefind 的样式，颜色来自上面的映射。它有自己的边框，所以焦点环画在边框上面（偏移 -1px）。
@@ -407,8 +408,16 @@ Starlight 的颜色在 `src/styles/starlight.css` 里映射到这组变量：`--
 - 40rem 以下，班级信息变成窗口顶上的一条。
 - 里面的班级和对话都是编出来的，一直带"示意"标签；不写人数，也不写钟点。
 
+### 首页四季
+首页背后的一块画布（`src/components/home/Seasons.astro`，动画在 `src/lib/seasons/`），只在首页。
+- 页面从上到下分四段：春天樱花瓣、夏天绿叶、秋天银杏叶、冬天雪花（圆点和六角雪花）。同一时刻只有一个季节；越过分界一点（四分之一页的 3%）才换，停在分界处不会来回闪。
+- 换季时上一季 0.45s 淡出，下一季在整个窗口里 0.6s 淡入；季节底色同时用 0.6s 渐变过去：春淡粉、夏淡绿、秋暖黄、冬冰蓝，"晚自习"里更淡。
+- 飘落物按远近分大小、快慢和深浅，银杏叶落得最快，雪最慢；花瓣和叶子边落边翻转。滚动时它们跟着移动一点，近的多、远的少。窗口越大数量越多，14 到 46 个。
+- 画布 `position: fixed`、`z-index: -1`，在内容后面：卡片、状态条和墙裙挡住它，首屏、各节之间的空白和页脚看得到。首屏的淡渐变画在 `.hero::before` 上（`z-index: -2`），在画布下面。
+- 画布 `aria-hidden="true"`，不接收点击。标签页隐藏时暂停。读者设了"减少动态效果"时整块画布不显示，底色也不变；没有脚本时同样什么都没有。
+
 ### Motion
-**The One Motion Rule.** 全站只有课堂窗口里的四句话会动：动画 `classroom-say`，每句 0.6s，`cubic-bezier(0.16, 1, 0.3, 1)`，从透明并下移 0.5rem 的位置出来，依次在 0.3s、0.9s、1.5s、2.1s 开始，只播一次，纯 CSS。读者设了"减少动态效果"时动画关掉，四句话直接显示。其他状态变化都是一下子过去：折叠箭头翻转、开关滑块移动、按钮按下 1px。Starlight 侧栏箭头原有的过渡在覆盖组件里去掉了。Starlight、Pagefind 和 Expressive Code 自己的样式里还剩三处过渡：Markdown 里 `<details>` 的小三角，只在 `prefers-reduced-motion: no-preference` 下生效；Pagefind 的筛选勾选框，网站不显示筛选，所以看不到它；代码块的复制按钮，它的样式只在有代码块的页面加载。
+**The Three Motions Rule.** 全站只有三处会动，读者设了"减少动态效果"时全部关掉。第一处是课堂窗口里的四句话：动画 `classroom-say`，每句 0.6s，`cubic-bezier(0.16, 1, 0.3, 1)`，从透明并下移 0.5rem 的位置出来，依次在 0.3s、0.9s、1.5s、2.1s 开始，只播一次，纯 CSS。读者设了"减少动态效果"时动画关掉，四句话直接显示。第二处是首页四季（见"首页四季"）。第三处是三步入学的页签（见 Tabs）。除此之外，状态变化都是一下子过去：折叠箭头翻转、开关滑块移动、按钮按下 1px。Starlight 侧栏箭头原有的过渡在覆盖组件里去掉了。Starlight、Pagefind 和 Expressive Code 自己的样式里还剩三处过渡：Markdown 里 `<details>` 的小三角，只在 `prefers-reduced-motion: no-preference` 下生效；Pagefind 的筛选勾选框，网站不显示筛选，所以看不到它；代码块的复制按钮，它的样式只在有代码块的页面加载。
 
 ### 红砖墙裙
 每一页的最后一样东西，放在页脚下面。它来自中国学校教学楼底部的红砖墙裙。
@@ -417,7 +426,7 @@ Starlight 的颜色在 `src/styles/starlight.css` 里映射到这组变量：`--
 - `aria-hidden="true"`。晚上换成更暗的三种颜色，只作装饰。
 
 ### Icons
-**The Lucide-Only Rule.** 图标只用 `@lucide/astro`，一个一个地引入（`@lucide/astro/icons/<名字>`），构建时内联成 SVG，线宽 2。图标一律 `aria-hidden="true"`，名字写在控件上。大小：跟着文字的 16px（箭头、折叠箭头、状态），文档目录按钮和侧栏的 18px，图标圆、翻页链接和问答的 20px，服务器卡片的 22px。颜色用 `currentColor`：图标圆里是 `highlight`，折叠箭头是 `mute`。不用 emoji 或 Unicode 符号当图标（有测试查 emoji）。Starlight 的内容组件（提示框如 `:::note`、Card、LinkCard、Tabs，以及代码块的复制按钮）画的是 Starlight 自己的图标；要用它们，先把图标覆盖成 Lucide。
+**The Lucide-Only Rule.** 图标只用 `@lucide/astro`，一个一个地引入（`@lucide/astro/icons/<名字>`），构建时内联成 SVG，线宽 2。图标一律 `aria-hidden="true"`，名字写在控件上。大小：跟着文字的 16px（箭头、折叠箭头、状态），文档目录按钮和侧栏的 18px，图标圆、翻页链接和问答的 20px，服务器卡片的 22px。颜色用 `currentColor`：图标圆里是 `highlight`，折叠箭头是 `mute`。不用 emoji 或 Unicode 符号当图标（有测试查 emoji）。Starlight 的内容组件（提示框如 `:::note`、Card、LinkCard、Tabs，以及代码块的复制按钮）画的是 Starlight 自己的图标；要用它们，先把图标覆盖成 Lucide。框架的 logo 不算图标，不受这一条管：它们是各框架官方仓库里的原图，放在 `src/assets/frameworks/`，由 `src/components/FrameworkLogo.astro` 画成 `alt` 为空的 `<img>`，名字写在旁边；DSH 的黑色 logo 在"晚自习"里换成白色那张。
 
 Starlight 里图标不能靠参数换的组件，已经覆盖成 Lucide：Pagination、MobileMenuToggle、Sidebar（加上自己的 SidebarSublist）；搜索按钮用上面说的叠放办法；文档小节标题旁的链接图标关掉了（`markdown.headingLinks: false`），因为"本页内容"已经链接到每一节。
 
@@ -449,7 +458,7 @@ Starlight 里图标不能靠参数换的组件，已经覆盖成 Lucide：Pagina
 ### Don't:
 - **Don't** 把麦秆色铺成整页的底色，也不做"米色底加赤陶色"的整页配色。
 - **Don't** 把银杏黄放在浅底上当文字；"晚自习"里不用红砖棕。
-- **Don't** 加第二处动效，也不加悬停过渡和滚动动画。
+- **Don't** 在三处动效之外再加动效，也不加悬停过渡和别的滚动动画。
 - **Don't** 用 emoji 或 Unicode 符号当图标，也不引进别的图标库。
 - **Don't** 用标题字写正文、按钮或文档的小节标题。
 - **Don't** 从别的网站加载字体、图标或图片，包括字体服务和 CDN。
