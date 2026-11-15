@@ -73,7 +73,6 @@ const textPairs: Array<[string, string[]]> = [
 
 const graphicPairs: Array<[string, string[]]> = [
   ['highlight', ['bg', 'bg-soft', 'surface', 'hero-top']],
-  ['logo', ['bg']],
   ['focus', ['bg']],
   ['ok', ['bg', 'bg-soft']],
   // The ring round the chosen framework tab on the homepage.

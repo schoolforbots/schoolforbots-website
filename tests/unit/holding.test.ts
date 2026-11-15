@@ -38,6 +38,14 @@ describe('holding page', () => {
     for (const el of doc.querySelectorAll('img[src]')) expect(local(el.getAttribute('src')), el.outerHTML).toBe(true)
   })
 
+  it('uses the logo as its icon, inlined', () => {
+    const href = doc.querySelector('link[rel="icon"]')?.getAttribute('href') ?? ''
+    expect(href.startsWith('data:image/svg+xml,'), href.slice(0, 40)).toBe(true)
+    const logo = readFileSync(fileURLToPath(new URL('../../public/favicon.svg', import.meta.url)), 'utf8')
+    const shapes = (svg: string) => svg.match(/d=["'][^"']+["']/g)?.map((d) => d.slice(3, -1))
+    expect(shapes(decodeURIComponent(href))).toEqual(shapes(logo))
+  })
+
   it('is small', () => {
     expect(statSync(file).size).toBeLessThan(30 * 1024)
   })

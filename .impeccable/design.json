@@ -484,36 +484,6 @@
           "#FDEBDB"
         ]
       },
-      "logo": {
-        "role": "secondary",
-        "displayName": "柿子橙 Persimmon",
-        "canonical": "#D45113",
-        "tonalRamp": [
-          "#1A0400",
-          "#421201",
-          "#6E2400",
-          "#9E3701",
-          "#D0531C",
-          "#EE835A",
-          "#FFB79D",
-          "#FFE9E2"
-        ]
-      },
-      "logo-night": {
-        "role": "secondary",
-        "displayName": "银杏黄 Ginkgo Yellow（晚自习）",
-        "canonical": "#F9A03F",
-        "tonalRamp": [
-          "#150800",
-          "#371D00",
-          "#5D3501",
-          "#864E04",
-          "#B76C03",
-          "#D9934C",
-          "#F0C093",
-          "#FDEBDB"
-        ]
-      },
       "teacher": {
         "role": "secondary",
         "displayName": "深柿子 Deep Persimmon",
@@ -984,8 +954,8 @@
       "kind": "nav",
       "refersTo": "button-nav",
       "description": "首页和文档页共用的顶栏：名字、导航链接、搜索、主按钮。",
-      "html": "<header class=\"ds-nav\"><a class=\"ds-home\" href=\"#\"><span class=\"ds-logo\" aria-hidden=\"true\"></span><span class=\"ds-zh\">机器人网校</span></a><nav aria-label=\"网站导航\"><a href=\"#\" aria-current=\"page\">入学指南</a><a href=\"#\">教程</a><a href=\"#\">常见问题</a><a href=\"#\">校规</a><a href=\"#\">公告</a></nav><button type=\"button\" class=\"ds-search\" aria-label=\"搜索\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m21 21-4.34-4.34\"/><circle cx=\"11\" cy=\"11\" r=\"8\"/></svg></button><a class=\"ds-btn-nav\" href=\"#\">让机器人去上学</a></header>",
-      "css": ".ds-nav { display: flex; align-items: center; gap: 1rem; height: 4rem; padding: 0 1.5rem; border-bottom: 1px solid var(--sfb-line, #EFE5DA); background: var(--sfb-bg, #FFFDF9); font-family: var(--sfb-font-body, \"PingFang SC\", \"Microsoft YaHei\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif); } .ds-home { display: flex; align-items: center; gap: 0.55rem; margin-inline-end: auto; color: var(--sfb-ink, #1F1410); text-decoration: none; } .ds-logo { width: 1.25rem; height: 1.25rem; border-radius: 0.3125rem; background: var(--sfb-logo, #D45113); } .ds-zh { font-size: 1.125rem; font-weight: 700; letter-spacing: 0.04em; } .ds-nav nav { display: flex; gap: 0.25rem; } .ds-nav nav a { display: flex; align-items: center; min-height: 2.5rem; padding: 0 0.55rem; border-radius: 0.375rem; color: var(--sfb-mute, #5E4D43); font-size: 0.9375rem; text-decoration: none; } .ds-nav nav a:hover { color: var(--sfb-ink, #1F1410); } .ds-nav nav a[aria-current='page'] { color: var(--sfb-ink, #1F1410); font-weight: 600; } .ds-search { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; padding: 0; border: 1px solid var(--sfb-line, #EFE5DA); border-radius: 0.5rem; background: var(--sfb-bg, #FFFDF9); color: var(--sfb-ink, #1F1410); cursor: pointer; } .ds-search:hover { border-color: var(--sfb-mute, #5E4D43); } .ds-btn-nav { display: inline-flex; align-items: center; min-height: 2.5rem; padding: 0 1rem; border-radius: 0.5rem; background: var(--sfb-nav-btn, #1F1410); color: var(--sfb-nav-btn-ink, #FFFFFF); font-size: 0.875rem; font-weight: 600; text-decoration: none; white-space: nowrap; } .ds-btn-nav:hover { background: color-mix(in srgb, var(--sfb-nav-btn, #1F1410) 84%, var(--sfb-bg, #FFFDF9)); } .ds-btn-nav:active { transform: translateY(1px); } .ds-nav a:focus-visible, .ds-search:focus-visible { outline: 2px solid var(--sfb-focus, #D45113); outline-offset: 2px; }"
+      "html": "<header class=\"ds-nav\"><a class=\"ds-home\" href=\"#\"><img class=\"ds-logo\" src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%23D45113'/%3E%3Cpath fill='%23813405' d='M256 132C172 132 124 192 118 274C113 350 96 420 48 470C40 478 46 488 58 488H454C466 488 472 478 464 470C416 420 399 350 394 274C388 192 340 132 256 132Z'/%3E%3Cg fill='%23F8DDA4'%3E%3Cpath d='M196 488V444C196 412 222 396 256 396C290 396 316 412 316 444V488Z'/%3E%3Cellipse cx='194' cy='452' rx='15' ry='24'/%3E%3Cellipse cx='318' cy='452' rx='15' ry='24'/%3E%3Crect x='148' y='194' width='216' height='180' rx='82'/%3E%3C/g%3E%3Crect x='204' y='256' width='30' height='50' rx='15' fill='%23813405'/%3E%3Crect x='278' y='256' width='30' height='50' rx='15' fill='%23813405'/%3E%3Cpath fill='none' stroke='%23F8DDA4' stroke-width='26' stroke-linecap='round' d='M62 247L232 136Q256 121 280 136L450 247'/%3E%3Cpath fill='none' stroke='%23813405' stroke-width='44' stroke-linecap='round' stroke-linejoin='round' d='M46 222L228 104Q256 86 284 104L466 222'/%3E%3C/svg%3E\" alt=\"\"><span class=\"ds-zh\">机器人网校</span></a><nav aria-label=\"网站导航\"><a href=\"#\" aria-current=\"page\">入学指南</a><a href=\"#\">教程</a><a href=\"#\">常见问题</a><a href=\"#\">校规</a><a href=\"#\">公告</a></nav><button type=\"button\" class=\"ds-search\" aria-label=\"搜索\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m21 21-4.34-4.34\"/><circle cx=\"11\" cy=\"11\" r=\"8\"/></svg></button><a class=\"ds-btn-nav\" href=\"#\">让机器人去上学</a></header>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 1rem; height: 4rem; padding: 0 1.5rem; border-bottom: 1px solid var(--sfb-line, #EFE5DA); background: var(--sfb-bg, #FFFDF9); font-family: var(--sfb-font-body, \"PingFang SC\", \"Microsoft YaHei\", \"Source Han Sans SC\", \"Noto Sans CJK SC\", sans-serif); } .ds-home { display: flex; align-items: center; gap: 0.55rem; margin-inline-end: auto; color: var(--sfb-ink, #1F1410); text-decoration: none; } .ds-logo { width: 1.5rem; height: 1.5rem; } .ds-zh { font-size: 1.125rem; font-weight: 700; letter-spacing: 0.04em; } .ds-nav nav { display: flex; gap: 0.25rem; } .ds-nav nav a { display: flex; align-items: center; min-height: 2.5rem; padding: 0 0.55rem; border-radius: 0.375rem; color: var(--sfb-mute, #5E4D43); font-size: 0.9375rem; text-decoration: none; } .ds-nav nav a:hover { color: var(--sfb-ink, #1F1410); } .ds-nav nav a[aria-current='page'] { color: var(--sfb-ink, #1F1410); font-weight: 600; } .ds-search { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; padding: 0; border: 1px solid var(--sfb-line, #EFE5DA); border-radius: 0.5rem; background: var(--sfb-bg, #FFFDF9); color: var(--sfb-ink, #1F1410); cursor: pointer; } .ds-search:hover { border-color: var(--sfb-mute, #5E4D43); } .ds-btn-nav { display: inline-flex; align-items: center; min-height: 2.5rem; padding: 0 1rem; border-radius: 0.5rem; background: var(--sfb-nav-btn, #1F1410); color: var(--sfb-nav-btn-ink, #FFFFFF); font-size: 0.875rem; font-weight: 600; text-decoration: none; white-space: nowrap; } .ds-btn-nav:hover { background: color-mix(in srgb, var(--sfb-nav-btn, #1F1410) 84%, var(--sfb-bg, #FFFDF9)); } .ds-btn-nav:active { transform: translateY(1px); } .ds-nav a:focus-visible, .ds-search:focus-visible { outline: 2px solid var(--sfb-focus, #D45113); outline-offset: 2px; }"
     },
     {
       "name": "FAQ Card",

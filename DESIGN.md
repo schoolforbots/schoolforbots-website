@@ -34,8 +34,6 @@ colors:
   focus-night: "#F9A03F"
   highlight: "#D45113"
   highlight-night: "#F9A03F"
-  logo: "#D45113"
-  logo-night: "#F9A03F"
   teacher: "#C24A10"
   teacher-night: "#F9A03F"
   classmate: "#813405"
@@ -107,7 +105,6 @@ typography:
 rounded:
   inline-link: "2px"
   link: "0.25rem"
-  logo: "0.3125rem"
   bar-link: "0.375rem"
   control: "0.5rem"
   container: "0.875rem"
@@ -238,10 +235,10 @@ components:
 
 ### Primary
 - **红砖棕 Brick Brown**（`btn`、`link`、`num-ink`，#813405）：白天的主按钮、链接、正文里的强调、步骤编号的字、选中页签的环。主按钮悬停时加深为 `btn-hover`（#6A2A03）。"晚自习"里不用。
-- **银杏黄 Ginkgo Yellow**（`btn-night`、`highlight-night`、`focus-night`，#F9A03F）："晚自习"的主按钮（上面放深色字 `btn-ink-night`）、强调词、图标、焦点环、标志、步骤编号的字。白天不用在浅底的文字上。
+- **银杏黄 Ginkgo Yellow**（`btn-night`、`highlight-night`、`focus-night`，#F9A03F）："晚自习"的主按钮（上面放深色字 `btn-ink-night`）、强调词、图标、焦点环、步骤编号的字。白天不用在浅底的文字上。
 
 ### Secondary
-- **柿子橙 Persimmon**（`highlight`、`focus`、`logo`，#D45113）：白天标题里的强调词（首屏的"上课"）、图标、焦点环、标志色块、占位标签的虚线框。它在白底上的对比度是 4.21，只够大字和图形，所以不用于正文大小的字。课堂窗口里老师的名字是小字，用更深的 `teacher`（#C24A10）。
+- **柿子橙 Persimmon**（`highlight`、`focus`，#D45113）：白天标题里的强调词（首屏的"上课"）、图标、焦点环、标志的底色、占位标签的虚线框。它在白底上的对比度是 4.21，只够大字和图形，所以不用于正文大小的字。课堂窗口里老师的名字是小字，用更深的 `teacher`（#C24A10）。
 
 ### Tertiary
 - **麦秆色 Straw**（`num-bg`，#F8DDA4）：白天只做小块底色，比如步骤编号的圆和选中的框架页签。"晚自习"里它是链接和同学名字的颜色（`link-night`、`classmate-night`）。
@@ -332,7 +329,7 @@ Starlight 的颜色在 `src/styles/starlight.css` 里映射到这组变量：`--
 - **容器**（0.875rem）：卡片、问答、公告、步骤面板、校规单，以及课堂窗口的上面两个角。窗口下边不圆也不画边，像从首屏底边露出来的一截；40rem 以下圆角是 0.75rem。
 - **胶囊**（999px）：框架页签、"即将支持"、"上课中"。
 - **圆**：图标圆（2.75rem，插件卡片里 2.25rem）、步骤编号（2rem）、"上课中"前面的小圆点、开关的滑块。开关的滑轨两头是半圆（9px，滑轨高的一半）。
-- **标志色块**：1.25rem 见方，圆角 0.3125rem，柿子橙（晚上银杏黄）。这是登记在 `PLACEHOLDERS.md` 里的占位 `logo`。
+- **标志**：一个圆角方块，柿子橙底上一个披着红砖棕兜帽、头顶扣着一本打开的书的小机器人，脸是麦秆色。白天和"晚自习"用同一张。文件是 `public/favicon.svg`，顶栏和页脚里画成 1.5rem 见方的 `<img>`（`alt` 为空，名字就写在旁边），同时也是网站图标；iOS 存到主屏的图标 `apple-touch-icon.png` 和分享图 `og.png` 由 `scripts/make-og.mjs` 从它画出来。
 - **顶栏的文字链接**（0.375rem）：名字和导航链接，焦点环跟着这个圆角。
 - **侧栏链接**（0.25rem）、**占位标签**（0.25em），以及状态条里链接的焦点环（2px）。
 
@@ -376,7 +373,7 @@ Starlight 的颜色在 `src/styles/starlight.css` 里映射到这组变量：`--
 网站本身没有表单。唯一的输入框是搜索对话框里的 Pagefind 搜索框，沿用 Starlight 和 Pagefind 的样式，颜色来自上面的映射。它有自己的边框，所以焦点环画在边框上面（偏移 -1px）。
 
 ### Navigation
-- **顶栏:** 左边是名字：一个标志色块，加上"机器人网校"（1.125rem 700，字距 0.04em）和灰褐色的 School for Bots（0.8125rem）。中间是导航链接：`mute` 色，悬停变 `ink`，当前页是 `ink` 600。右边是搜索、"晚自习"开关和顶栏主按钮。首页和文档页用同一个顶栏（`src/components/starlight/Header.astro`）。
+- **顶栏:** 左边是名字：标志，加上"机器人网校"（1.125rem 700，字距 0.04em）和灰褐色的 School for Bots（0.8125rem）。中间是导航链接：`mute` 色，悬停变 `ink`，当前页是 `ink` 600。右边是搜索、"晚自习"开关和顶栏主按钮。首页和文档页用同一个顶栏（`src/components/starlight/Header.astro`）。
 - **菜单（50rem 以下）:** 一个 `<details>`，不用脚本也能开关。按钮有 1px 墙线和控件圆角，"菜单"二字后面是一个 chevron-down，打开时翻转，没有过渡。打开后，顶栏下面是一块整宽的面板（`bg` 底，弹出层阴影），链接每行 3rem、用墙线隔开，当前页是 `link` 色 600；面板最下面是"晚自习"开关和主按钮。它没有脚本，所以按 Esc 关不上，再点一次按钮就关上了。
 - **搜索按钮:** Starlight 的搜索（Pagefind）。72rem 以上是一个带边框的框，里面是放大镜、"搜索"和快捷键；以下是一个 2.5rem 的方形图标按钮。放大镜是 Lucide 的 search 图标：Starlight 自己的图标没法换，所以它在原位隐藏（`visibility: hidden`，位置还占着），同一个格子里叠一个同样大小的 Lucide 图标，带 `pointer-events: none` 和 `aria-hidden="true"`。点击穿过图标落在按钮上，按钮的名字仍然是"搜索"。
 - **文档目录按钮（文档页，50rem 以下）:** 覆盖了 Starlight 的 MobileMenuToggle。关着时是 Lucide 的 list-tree，打开时是 x，和"菜单"的图标不一样；名字和 `title` 都是"文档目录"。样子和顶栏的其他按钮一样。
@@ -431,7 +428,7 @@ Starlight 的颜色在 `src/styles/starlight.css` 里映射到这组变量：`--
 - `aria-hidden="true"`。晚上换成更暗的三种颜色，只作装饰。
 
 ### Icons
-**The Lucide-Only Rule.** 图标只用 `@lucide/astro`，一个一个地引入（`@lucide/astro/icons/<名字>`），构建时内联成 SVG，线宽 2。图标一律 `aria-hidden="true"`，名字写在控件上。大小：跟着文字的 16px（箭头、折叠箭头、状态），文档目录按钮和侧栏的 18px，图标圆、翻页链接和问答的 20px，服务器卡片的 22px。颜色用 `currentColor`：图标圆里是 `highlight`，折叠箭头是 `mute`。不用 emoji 或 Unicode 符号当图标（有测试查 emoji）。Starlight 的内容组件（提示框如 `:::note`、Card、LinkCard、Tabs，以及代码块的复制按钮）画的是 Starlight 自己的图标；要用它们，先把图标覆盖成 Lucide。框架的 logo 不算图标，不受这一条管：它们是各框架官方仓库里的原图，放在 `src/assets/frameworks/`，由 `src/components/FrameworkLogo.astro` 画成 `alt` 为空的 `<img>`，名字写在旁边；DSH 的黑色 logo 在"晚自习"里换成白色那张。
+**The Lucide-Only Rule.** 图标只用 `@lucide/astro`，一个一个地引入（`@lucide/astro/icons/<名字>`），构建时内联成 SVG，线宽 2。图标一律 `aria-hidden="true"`，名字写在控件上。大小：跟着文字的 16px（箭头、折叠箭头、状态），文档目录按钮和侧栏的 18px，图标圆、翻页链接和问答的 20px，服务器卡片的 22px。颜色用 `currentColor`：图标圆里是 `highlight`，折叠箭头是 `mute`。不用 emoji 或 Unicode 符号当图标（有测试查 emoji）。Starlight 的内容组件（提示框如 `:::note`、Card、LinkCard、Tabs，以及代码块的复制按钮）画的是 Starlight 自己的图标；要用它们，先把图标覆盖成 Lucide。学校自己的标志和框架的 logo 都不算图标，不受这一条管。框架的 logo它们是各框架官方仓库里的原图，放在 `src/assets/frameworks/`，由 `src/components/FrameworkLogo.astro` 画成 `alt` 为空的 `<img>`，名字写在旁边；DSH 的黑色 logo 在"晚自习"里换成白色那张。
 
 Starlight 里图标不能靠参数换的组件，已经覆盖成 Lucide：Pagination、MobileMenuToggle、Sidebar（加上自己的 SidebarSublist）；搜索按钮用上面说的叠放办法；文档小节标题旁的链接图标关掉了（`markdown.headingLinks: false`），因为"本页内容"已经链接到每一节。
 
