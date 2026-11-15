@@ -224,10 +224,19 @@ describe('site shell', () => {
     }
   })
 
-  it('the favicon is the logo block', () => {
+  it('the favicon is the logo', () => {
     for (const route of pages) {
       expect(readPage(route).querySelector('link[rel~="icon"]')?.getAttribute('href'), route).toBe('/favicon.svg')
     }
     expect(readDist('favicon.svg')).toContain('#D45113')
+  })
+
+  it('iOS gets a 180 by 180 PNG of the logo for a page saved to the home screen', () => {
+    for (const route of pages) {
+      expect(readPage(route).querySelector('link[rel="apple-touch-icon"]')?.getAttribute('href'), route).toBe('/apple-touch-icon.png')
+    }
+    const png = readFileSync(distPath('apple-touch-icon.png'))
+    expect(png.subarray(1, 4).toString('latin1')).toBe('PNG')
+    expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([180, 180])
   })
 })
