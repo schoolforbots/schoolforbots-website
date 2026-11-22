@@ -290,3 +290,29 @@ main > .content-panel:has([data-site-footer]) > .sl-container {
     background: CanvasText;
   }
 }
+
+/*
+ * Cards that are links rise a little under the pointer: up 3px, a deeper shadow,
+ * a darker edge. Not for reduced motion, where only the edge changes.
+ */
+:where(.lift) {
+  transition:
+    transform 0.2s ease-out,
+    box-shadow 0.2s ease-out,
+    border-color 0.2s ease-out;
+}
+:where(.lift:hover) {
+  transform: translateY(-3px);
+  box-shadow: 0 0.75rem 1.75rem -0.875rem rgb(90 40 8 / 0.3);
+}
+:root[data-theme='dark'] :where(.lift:hover) {
+  box-shadow: 0 0.75rem 1.75rem -0.875rem rgb(0 0 0 / 0.85);
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.lift) {
+    transition: none;
+  }
+  :where(.lift:hover) {
+    transform: none;
+  }
+}

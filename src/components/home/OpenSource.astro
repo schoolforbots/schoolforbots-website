@@ -14,9 +14,9 @@ const pluginTitle = (name: string) => (/[\x21-\x7e]$/.test(name) ? `${name} 插�
 ---
 
 <HomeSection data-open-source titleId="open-source-title" title="开源" lead="学校和插件的代码都公开在 GitHub 上。">
-  <ul>
+  <ul data-reveal-stagger>
     <li class="server" data-repo="server">
-      <a class="card" href={site.repos.server}>
+      <a class="card lift" href={site.repos.server}>
         <span class="mark">
           <Server size={22} aria-hidden="true" />
         </span>
@@ -32,7 +32,7 @@ const pluginTitle = (name: string) => (/[\x21-\x7e]$/.test(name) ? `${name} 插�
       site.frameworks.map((f) =>
         f.plugin ? (
           <li data-repo={f.id}>
-            <a class="card plugin" href={f.plugin.repo}>
+            <a class="card plugin lift" href={f.plugin.repo}>
               <span class="mark">
                 <FrameworkLogo id={f.id} size={20} />
               </span>

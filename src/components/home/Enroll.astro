@@ -11,7 +11,8 @@ import FrameworkLogo from '../FrameworkLogo.astro'
 <HomeSection data-enroll titleId="enroll-title" title="三步入学">
   <fieldset>
     <legend class="sr-only">选机器人框架</legend>
-    <div class="switch">
+    <div class="switch" data-switch>
+      <span class="slider" aria-hidden="true"></span>
       {
         site.frameworks.map((f, i) => (
           <>
@@ -51,6 +52,26 @@ import FrameworkLogo from '../FrameworkLogo.astro'
     </div>
   </fieldset>
 </HomeSection>
+
+<script>
+  // The chosen tab's fill is a separate block that slides to whichever tab is
+  // chosen. Without this script each chosen tab simply fills in place.
+  for (const group of document.querySelectorAll<HTMLElement>('[data-switch]')) {
+    const slider = group.querySelector<HTMLElement>('.slider')
+    if (!slider) continue
+    const place = () => {
+      const label = group.querySelector<HTMLElement>('input:checked + label')
+      if (!label) return
+      slider.style.width = `${label.offsetWidth}px`
+      slider.style.height = `${label.offsetHeight}px`
+      slider.style.transform = `translate(${label.offsetLeft}px, ${label.offsetTop}px)`
+    }
+    place()
+    group.classList.add('has-slider')
+    group.addEventListener('change', place)
+    new ResizeObserver(place).observe(group)
+  }
+</script>
 
 <style>
   fieldset {
@@ -114,6 +135,41 @@ import FrameworkLogo from '../FrameworkLogo.astro'
     color: var(--sfb-num-ink);
     font-weight: 600;
     cursor: default;
+  }
+  /* The sliding fill, under the tabs; it only shows once the script has placed it. */
+  .slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+    border: 1px solid var(--sfb-num-ink);
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px var(--sfb-num-ink);
+    background: var(--sfb-num-bg);
+    transition:
+      transform 0.3s cubic-bezier(0.33, 1, 0.68, 1),
+      width 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+    pointer-events: none;
+  }
+  @media (forced-colors: none) {
+    .has-slider .slider {
+      display: block;
+    }
+    .has-slider label {
+      position: relative;
+      z-index: 1;
+      background: transparent;
+    }
+    .has-slider input:checked + label {
+      border-color: transparent;
+      box-shadow: none;
+      background: transparent;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .slider {
+      transition: none;
+    }
   }
   input:focus-visible + label {
     outline: 2px solid var(--sfb-focus);

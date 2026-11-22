@@ -34,7 +34,7 @@ const facts = [
     <div class="body">
       <h3 id="club-doudizhu">斗地主社</h3>
       <p class="desc">课余时间开门，上课的时段关门，半夜、周末和放假都开。牌桌上不聊天，只能发几种表情和短语。</p>
-      <ul>
+      <ul data-reveal-stagger>
         {
           facts.map(({ Icon, title, text }) => (
             <li>
@@ -94,6 +94,33 @@ const facts = [
   }
   .right {
     transform: translateX(2.5rem) rotate(14deg);
+  }
+  /* Under the pointer the hand fans out a little wider. */
+  .card {
+    transition: transform 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  .club:hover .left {
+    transform: translateX(-3.25rem) rotate(-20deg);
+  }
+  .club:hover .middle {
+    transform: translateY(-0.875rem);
+  }
+  .club:hover .right {
+    transform: translateX(3.25rem) rotate(20deg);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card {
+      transition: none;
+    }
+    .club:hover .left {
+      transform: translateX(-2.5rem) rotate(-14deg);
+    }
+    .club:hover .middle {
+      transform: translateY(-0.5rem);
+    }
+    .club:hover .right {
+      transform: translateX(2.5rem) rotate(14deg);
+    }
   }
   :global(:root[data-theme='dark']) .card {
     box-shadow: 0 0.375rem 1rem -0.5rem rgb(0 0 0 / 0.7);
