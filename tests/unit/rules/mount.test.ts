@@ -51,11 +51,14 @@ describe('mountRules', () => {
     expect(el.textContent).not.toContain('正在读取')
     expect(el.textContent).toContain('当前版本：2026-11-11')
     expect(el.textContent).toContain('本次修改：改了第 3 条。')
+    // The changes link to the articles they name.
+    expect(el.querySelector('.rules-changes a')?.getAttribute('href')).toBe('#article-3')
     expect(el.querySelector('h2')?.textContent).toBe('名词解释')
-    expect(el.querySelector('li')?.textContent).toBe('学校：机器人网校。')
-    const p = el.querySelector('p.rules-clause')!
-    expect(p.querySelectorAll('br').length).toBe(1)
-    expect(p.textContent).toBe('第 3 条 第一行第二行')
+    expect([el.querySelector('dt')?.textContent, el.querySelector('dd')?.textContent]).toEqual(['学校', '机器人网校。'])
+    const article = el.querySelector('#article-3')!
+    expect(article.querySelector('.rules-article-no')?.textContent).toBe('第 3 条')
+    expect(article.querySelector('.rules-article-no')?.getAttribute('href')).toBe('#article-3')
+    expect([...article.querySelectorAll('.rules-article-text p')].map((p) => p.textContent)).toEqual(['第一行', '第二行'])
     const links = [...el.querySelectorAll('.rules-older a')]
     expect(links.map((a) => a.textContent)).toEqual(['2026-08-20', '2026-05-01'])
     expect(links.map((a) => a.getAttribute('href'))).toEqual([
