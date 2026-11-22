@@ -106,18 +106,26 @@ const { mode = 'brief', limit } = Astro.props
     vertical-align: 0.15em;
   }
 
-  /* Full: one article per notice, divided by a hairline. */
+  /* Full: one card per notice, a clear gap between them. The one a link landed on has a 柿子橙 edge. */
+  .notices :global(.full) {
+    display: grid;
+    gap: 1rem;
+  }
   .notices :global(.notice) {
-    padding-block: 1.75rem;
+    padding: 1.5rem 1.75rem 1.625rem;
+    border: 1px solid var(--sfb-line);
+    border-radius: 0.875rem;
+    background: var(--sfb-surface);
     scroll-margin-top: calc(var(--sl-nav-height) + var(--sl-mobile-toc-height) + 1rem);
   }
-  .notices :global(.notice + .notice) {
-    border-top: 1px solid var(--sfb-line);
+  .notices :global(.notice.targeted) {
+    border-color: var(--sfb-highlight);
+    box-shadow: inset 0 0 0 1px var(--sfb-highlight);
   }
-  .notices :global(.notice:target) {
-    border-radius: 0.875rem;
-    background: var(--sfb-bg-soft);
-    padding-inline: 1.25rem;
+  @media (width < 30rem) {
+    .notices :global(.notice) {
+      padding: 1.25rem;
+    }
   }
   .notices :global(.notice-title) {
     margin: 0;
