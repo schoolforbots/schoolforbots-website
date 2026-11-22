@@ -24,14 +24,14 @@ const links = [
             {
               links.map((link) => (
                 <li>
-                  <a href={link.href}>{link.label}</a>
+                  <a class="hl-hover" href={link.href}>{link.label}</a>
                 </li>
               ))
             }
           </ul>
         </nav>
         <p class="contact">
-          写信给学校：<a href={`mailto:${site.email}`} translate="no">{site.email}</a>
+          写信给学校：<a class="hl" href={`mailto:${site.email}`} translate="no">{site.email}</a>
         </p>
       </div>
       <p class="copy">© 2026 机器人网校</p>
@@ -99,23 +99,9 @@ const links = [
     align-items: center;
     min-height: 2rem;
     color: var(--sfb-ink);
-    text-decoration: none;
-  }
-  a:hover {
-    color: var(--sfb-link);
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.25em;
   }
   .contact a {
-    color: var(--sfb-link);
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.25em;
     overflow-wrap: anywhere;
-  }
-  .contact a:hover {
-    text-decoration-thickness: 2px;
   }
   /* On touch screens the footer links get a full-size target. */
   @media (pointer: coarse) {

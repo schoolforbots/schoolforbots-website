@@ -35,7 +35,7 @@ const longDate = (date: string) => {
         {notices.map(({ entry, date }) => (
           <li>
             <time datetime={date}>{longDate(date)}</time>
-            <a href={`/${entry.id}/`}>{entry.data.title}</a>
+            <a class="hl-hover" href={`/${entry.id}/`}>{entry.data.title}</a>
           </li>
         ))}
       </ul>
@@ -91,13 +91,6 @@ const longDate = (date: string) => {
   a {
     color: var(--sfb-ink);
     font-weight: 600;
-    text-decoration: none;
-  }
-  a:hover {
-    color: var(--sfb-link);
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.25em;
   }
 
   /* Phones: the date sits above the title. */

@@ -28,7 +28,7 @@ const groups = Astro.locals.starlightRoute.sidebar.filter(
           {links(group).map((link) => (
             <li>
               <a href={link.href}>
-                <span class="title">{link.label}</span>
+                <span class="title"><span class="hl">{link.label}</span></span>
                 <span class="desc">{description(link.href)}</span>
               </a>
             </li>
@@ -79,12 +79,6 @@ const groups = Astro.locals.starlightRoute.sidebar.filter(
     color: var(--sfb-link);
     font-weight: 600;
     line-height: 1.5;
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.25em;
-  }
-  a:hover .title {
-    text-decoration-thickness: 2px;
   }
   .desc {
     color: var(--sfb-mute);

@@ -36,12 +36,11 @@ const lines = [
     display: grid;
     grid-template-columns: minmax(9rem, 13rem) minmax(0, 1fr);
     width: 100%;
-    max-width: 56rem;
+    max-width: var(--sfb-home-width);
     margin: 0 auto;
     overflow: hidden;
     border: 1px solid var(--sfb-line);
-    border-bottom: 0;
-    border-radius: 0.875rem 0.875rem 0 0;
+    border-radius: 0.875rem;
     background: var(--sfb-surface);
     box-shadow: 0 0.75rem 2.5rem -0.75rem rgb(90 40 8 / 0.2);
     text-align: start;
@@ -167,7 +166,7 @@ const lines = [
   @media (width < 40rem) {
     .window {
       grid-template-columns: minmax(0, 1fr);
-      border-radius: 0.75rem 0.75rem 0 0;
+      border-radius: 0.75rem;
     }
     .side {
       flex-direction: row;
