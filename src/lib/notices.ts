@@ -46,7 +46,7 @@ export function noticeTime(id: string, published: Date | undefined): string | nu
   return schoolClock(published)
 }
 
-type NoticeEntry = { id: string; data?: { published?: Date } }
+type NoticeEntry = { id: string; data?: { published?: Date; [field: string]: unknown } }
 
 // The n most recent notices, newest first: by date, then by time on the same day
 // (a notice with a time before one without), then by file name.

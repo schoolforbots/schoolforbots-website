@@ -1,7 +1,8 @@
 ---
-// Starlight's previous and next links at the foot of a docs page, drawn with
-// Lucide arrows so the site keeps one icon set. Markup and styles otherwise
-// follow Starlight's own Pagination component.
+// The previous and next links at the foot of a docs page: two quiet cards, a
+// small 上一篇 or 下一篇 over the page title and a round arrow that nudges the
+// way it leads on hover. A lone 下一篇 keeps to the right-hand column. Lucide
+// arrows, so the site keeps one icon set.
 import type {} from '@astrojs/starlight' // Starlight's types for Astro.locals
 import ArrowLeft from '@lucide/astro/icons/arrow-left'
 import ArrowRight from '@lucide/astro/icons/arrow-right'
@@ -13,14 +14,15 @@ const PrevArrow = isRtl ? ArrowRight : ArrowLeft
 const NextArrow = isRtl ? ArrowLeft : ArrowRight
 ---
 
-<div class="pagination-links print:hidden" dir={dir}>
+<nav class="pagination-links print:hidden" dir={dir} aria-label="翻页">
   {
     prev && (
-      <a class="lift" href={prev.href} rel="prev">
-        <PrevArrow size={20} aria-hidden="true" />
-        <span>
-          {Astro.locals.t('page.previousLink')}
-          <br />
+      <a class="card prev lift" href={prev.href} rel="prev">
+        <span class="mark">
+          <PrevArrow size={18} aria-hidden="true" />
+        </span>
+        <span class="text">
+          <span class="kind">{Astro.locals.t('page.previousLink')}</span>
           <span class="link-title">{prev.label}</span>
         </span>
       </a>
@@ -28,59 +30,108 @@ const NextArrow = isRtl ? ArrowLeft : ArrowRight
   }
   {
     next && (
-      <a class="lift" href={next.href} rel="next">
-        <NextArrow size={20} aria-hidden="true" />
-        <span>
-          {Astro.locals.t('page.nextLink')}
-          <br />
+      <a class="card next lift" href={next.href} rel="next">
+        <span class="text">
+          <span class="kind">{Astro.locals.t('page.nextLink')}</span>
           <span class="link-title">{next.label}</span>
+        </span>
+        <span class="mark">
+          <NextArrow size={18} aria-hidden="true" />
         </span>
       </a>
     )
   }
-</div>
+</nav>
 
 <style>
-  @layer starlight.core {
+  .pagination-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .card {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    min-height: 4.5rem;
+    padding: 0.875rem 1.125rem;
+    border: 1px solid var(--sfb-line);
+    border-radius: 0.875rem;
+    background: var(--sfb-surface);
+    color: var(--sfb-ink);
+    text-decoration: none;
+  }
+  .card:hover {
+    border-color: color-mix(in srgb, var(--sfb-mute) 45%, var(--sfb-line));
+  }
+  .next {
+    grid-column: 2;
+    justify-content: flex-end;
+    text-align: end;
+  }
+  .text {
+    display: grid;
+    gap: 0.125rem;
+    min-width: 0;
+  }
+  .kind {
+    color: var(--sfb-mute);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+  .link-title {
+    color: var(--sfb-ink);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+    transition: color 0.2s ease-out;
+  }
+  .card:hover .link-title {
+    color: var(--sfb-link);
+  }
+  .mark {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--sfb-line);
+    border-radius: 50%;
+    background: var(--sfb-bg-soft);
+    color: var(--sfb-highlight);
+    transition: transform 0.2s ease-out;
+  }
+  .prev:hover .mark {
+    transform: translateX(-3px);
+  }
+  .next:hover .mark {
+    transform: translateX(3px);
+  }
+  :global([dir='rtl']) .prev:hover .mark {
+    transform: translateX(3px);
+  }
+  :global([dir='rtl']) .next:hover .mark {
+    transform: translateX(-3px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .link-title,
+    .mark {
+      transition: none;
+    }
+    .card:hover .mark {
+      transform: none;
+    }
+  }
+
+  /* Narrow screens: one card per row, a lone 下一篇 included. */
+  @media (width < 36rem) {
     .pagination-links {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
-      gap: 1rem;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.75rem;
     }
-
-    a {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 0.5rem;
-      width: 100%;
-      flex-basis: calc(50% - 0.5rem);
-      flex-grow: 1;
-      border: 1px solid var(--sl-color-gray-5);
-      border-radius: 0.5rem;
-      padding: 1rem;
-      text-decoration: none;
-      color: var(--sl-color-gray-2);
-      box-shadow: var(--sl-shadow-md);
-      overflow-wrap: anywhere;
-    }
-    [rel='next'] {
-      justify-content: end;
-      text-align: end;
-      flex-direction: row-reverse;
-    }
-    a:hover {
-      border-color: var(--sl-color-gray-2);
-    }
-
-    .link-title {
-      color: var(--sl-color-white);
-      font-size: var(--sl-text-2xl);
-      line-height: var(--sl-line-height-headings);
-    }
-
-    svg {
-      flex-shrink: 0;
+    .next {
+      grid-column: auto;
     }
   }
 </style>

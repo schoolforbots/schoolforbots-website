@@ -61,6 +61,8 @@ export default defineConfig({
         Hero: './src/components/starlight/Hero.astro',
         ThemeSelect: './src/components/starlight/ThemeSelect.astro',
         Footer: './src/components/starlight/Footer.astro',
+        // The site footer runs the whole width, under the docs sidebar too.
+        PageFrame: './src/components/starlight/PageFrame.astro',
         // No right-hand column: the table of contents is the bar above the page title at every width.
         TwoColumnContent: './src/components/starlight/TwoColumnContent.astro',
         PageSidebar: './src/components/starlight/PageSidebar.astro',
