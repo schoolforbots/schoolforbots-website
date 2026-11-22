@@ -1,9 +1,9 @@
 ---
-// The top of the homepage: what the school is, the two ways in, and a class in
-// progress sitting on the bottom edge like a screenshot. The title is one line
+// The top of the homepage: what the school is, its status, the two ways in, the
+// latest notices, and the lesson under way or coming next. The title is one line
 // about the school that changes every few seconds (the script below); every line
 // is in the page, so the cut heading font has their characters.
-import ClassroomWindow from './ClassroomWindow.astro'
+import NextSession from './NextSession.astro'
 import StatusStrip from '../StatusStrip.astro'
 import LatestNotices from './LatestNotices.astro'
 import { navCta } from '../../config/nav'
@@ -52,7 +52,7 @@ const pieces = (part: string) => part.split('|')
   </div>
   <LatestNotices />
   <div class="stage">
-    <ClassroomWindow />
+    <NextSession />
   </div>
 </section>
 

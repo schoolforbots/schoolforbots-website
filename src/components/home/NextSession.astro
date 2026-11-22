@@ -1,0 +1,178 @@
+---
+// The hero's card: the lesson under way or coming next, read from the school in
+// the browser (lib/school/next-session-mount.ts): when, which time slot, and for
+// each division with classes its subject and lesson title. Only what the school
+// writes itself; nothing students say.
+import CalendarClock from '@lucide/astro/icons/calendar-clock'
+---
+
+<section class="next-session" data-next-session aria-labelledby="next-session-title" aria-live="polite">
+  <h2 id="next-session-title" class="sr-only">下一节课</h2>
+  <span class="mark" aria-hidden="true"><CalendarClock size={22} /></span>
+  <div class="content" data-next-session-body>
+    <p class="quiet" data-next-session-loading>正在查下一节课…</p>
+    <noscript><p class="quiet">下一节课的安排要在浏览器里打开脚本才能看到。</p></noscript>
+  </div>
+</section>
+
+<script>
+  import { mountNextSession } from '../../lib/school/next-session-mount'
+  mountNextSession()
+</script>
+
+<style>
+  .next-session {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 1.25rem;
+    align-items: start;
+    max-width: var(--sfb-home-width);
+    margin: 0 auto;
+    padding: 1.5rem 1.75rem 1.75rem;
+    border: 1px solid var(--sfb-line);
+    border-radius: 0.875rem;
+    background: var(--sfb-surface);
+    box-shadow: 0 0.75rem 2.5rem -0.75rem rgb(90 40 8 / 0.2);
+    text-align: start;
+  }
+  :global(:root[data-theme='dark']) .next-session {
+    box-shadow: 0 0.75rem 2.5rem -0.75rem rgb(0 0 0 / 0.7);
+  }
+  .mark {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--sfb-line);
+    border-radius: 50%;
+    background: var(--sfb-bg-soft);
+    color: var(--sfb-highlight);
+  }
+  .content {
+    min-width: 0;
+    min-height: 2.75rem;
+  }
+  .content :global(.quiet) {
+    margin: 0;
+    color: var(--sfb-mute);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+  .content > :global(.quiet:only-child) {
+    padding-top: 0.6rem;
+  }
+
+  .content :global(.head) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.875rem;
+  }
+  .content :global(.badge) {
+    align-self: center;
+    padding: 0.125rem 0.625rem;
+    border-radius: 999px;
+    background: var(--sfb-num-bg);
+    color: var(--sfb-num-ink);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+  .content :global(.badge.live) {
+    background: var(--sfb-live-bg);
+    color: var(--sfb-live-ink);
+  }
+  .content :global(.badge.live)::before {
+    content: '';
+    display: inline-block;
+    width: 0.4rem;
+    height: 0.4rem;
+    margin-inline-end: 0.375rem;
+    border-radius: 50%;
+    background: currentColor;
+    vertical-align: 0.12em;
+  }
+  .content :global(.when) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.625rem;
+    margin: 0;
+  }
+  .content :global(.day) {
+    color: var(--sfb-ink);
+    font-size: 1.375rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.4;
+  }
+  .content :global(.slot) {
+    color: var(--sfb-ink);
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+  .content :global(.doors) {
+    margin: 0;
+    color: var(--sfb-mute);
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .content :global(.divisions) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
+    gap: 0.75rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .content :global(.divisions li) {
+    padding: 0.875rem 1rem 1rem;
+    border: 1px solid var(--sfb-line);
+    border-radius: 0.625rem;
+    background: var(--sfb-bg-soft);
+  }
+  .content :global(.division-head) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .content :global(.division) {
+    color: var(--sfb-ink);
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+  .content :global(.subject) {
+    padding: 0 0.5rem;
+    border: 1px solid color-mix(in srgb, var(--sfb-highlight) 45%, var(--sfb-line));
+    border-radius: 999px;
+    color: var(--sfb-link);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+  .content :global(.topic) {
+    margin: 0.5rem 0 0;
+    color: var(--sfb-ink);
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  .content :global(.topic.quiet) {
+    color: var(--sfb-mute);
+    font-size: 0.9375rem;
+  }
+
+  @media (width < 40rem) {
+    .next-session {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 0.875rem;
+      padding: 1.25rem;
+      border-radius: 0.75rem;
+    }
+    .mark {
+      display: none;
+    }
+  }
+</style>

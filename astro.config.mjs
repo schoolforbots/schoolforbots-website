@@ -50,7 +50,8 @@ export default defineConfig({
         },
         'docs/faq',
         'docs/rules',
-        { label: '公告', collapsed: true, items: [{ autogenerate: { directory: 'docs/notices' } }] },
+        // The notices are read from the school in the browser, all on one page.
+        'docs/notices',
       ],
       // No link icon beside each docs heading: the table of contents already links every section.
       markdown: { headingLinks: false },

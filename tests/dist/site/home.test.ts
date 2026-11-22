@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { site } from '../../../src/config/site'
 import { distExists, readDist, readPage } from '../helpers'
@@ -63,11 +63,6 @@ function faqSource(): { question: string; order: number; featured: boolean }[] {
     .sort((a, b) => a.order - b.order)
 }
 
-// The notices in src/content/docs/docs/notices/, not counting the list page itself.
-const noticesDir = new URL('../../../src/content/docs/docs/notices/', import.meta.url)
-const noticeFiles = existsSync(noticesDir)
-  ? readdirSync(noticesDir).filter((f) => /\.mdx?$/.test(f) && !/^index\./.test(f))
-  : []
 
 // The section's last link: [text, href].
 function lastLink(section: ReturnType<typeof part>): [string, string | null] {
@@ -76,20 +71,13 @@ function lastLink(section: ReturnType<typeof part>): [string, string | null] {
   return [text(a), a?.getAttribute('href') ?? null]
 }
 
-const lines = [
-  ['王老师', '今天讲“为什么秋天叶子会变黄”。'],
-  ['小鱼', '是不是叶子也要过冬？'],
-  ['豆包', '白天变短了，叶绿素就少了！'],
-  ['王老师', '说得对。点名啦，小鱼说说昨天学了什么？'],
-]
-
 describe('homepage', () => {
-  it('runs from the hero (status, notices, classroom) down in the design order, then the footer', () => {
+  it('runs from the hero (status, notices, next lesson) down in the design order, then the footer', () => {
     const parts = [
       '[data-home-hero]',
       '[data-status-strip]',
       '[data-latest-notices]',
-      '[data-classroom]',
+      '[data-next-session]',
       '[data-school-day]',
       '[data-clubs]',
       '[data-enroll]',
@@ -104,7 +92,7 @@ describe('homepage', () => {
     }
   })
 
-  it('the hero has the title, both buttons and the 示意 tag', () => {
+  it('the hero has the title, the status, both buttons and nothing illustrative', () => {
     const doc = readPage('/')
     const h1s = doc.querySelectorAll('h1')
     expect(h1s).toHaveLength(1)
@@ -141,27 +129,20 @@ describe('homepage', () => {
       ['GitHub', site.repos.org],
     ])
 
-    const tag = hero.querySelector('[data-classroom] [data-placeholder="hero-dialogue"]')
-    expect(text(tag)).toBe('示意')
+    // Everything in the hero is real: no made-up classroom, no 示意 tag.
+    expect(hero.querySelector('[data-placeholder]')).toBeNull()
   })
 
   it('the tab title names the school once', () => {
     expect(readPage('/').title).toBe('机器人网校 · 给聊天机器人上课的网校')
   })
 
-  it('the classroom window shows no head counts or clock times', () => {
-    const win = part('[data-classroom]')
-    expect(win.getAttribute('aria-label')).toBe('课堂示意')
-    const all = text(win)
-    expect(all).toContain('初三（2）班')
-    expect(all).toContain('晚班')
-    expect(all).toContain('上课中')
-    expect(all).not.toMatch(/\d+\s*\/\s*\d+|\d{1,2}[:：]\d{2}/)
-    const said = [...win.querySelectorAll('[data-line]')].map((li) => [
-      text(li.querySelector('[data-who]')),
-      text(li.querySelector('[data-said]')),
-    ])
-    expect(said).toEqual(lines)
+  it('the next lesson card is read from the school, with a loading line until then', () => {
+    const card = part('[data-next-session]')
+    expect(text(card.querySelector('h2'))).toBe('下一节课')
+    expect(text(card.querySelector('[data-next-session-loading]'))).toBe('正在查下一节课…')
+    // What the card shows comes from the school in the browser; nothing about a lesson is written into the page.
+    expect(text(card.querySelector('[data-next-session-body]'))).not.toMatch(/\d{1,2}[:：]\d{2}|班/)
   })
 
   it('the day at school has four steps in order', () => {
@@ -268,20 +249,6 @@ describe('homepage', () => {
     }
   })
 
-  it('motion is off for reduced motion', () => {
-    const line = part('[data-classroom] [data-line]')
-    const cls = [...line.classList].find((c) => !c.startsWith('astro-'))
-    expect(cls).toBeDefined()
-    const targetsLine = (selector: string) => new RegExp(`\\.${cls}(?![\\w-])`).test(selector)
-    const css = homepageCss()
-    const moving = rules(css).filter((r) => targetsLine(r.selector) && /animation(-name)?\s*:\s*(?!none)/.test(r.body))
-    expect(moving.length).toBeGreaterThan(0)
-    const still = reducedMotionBlocks(css)
-      .flatMap(rules)
-      .filter((r) => targetsLine(r.selector) && /animation\s*:\s*none/.test(r.body))
-    expect(still.length).toBeGreaterThan(0)
-  })
-
   it('the seasons sit behind the homepage only, and go for reduced motion', () => {
     const canvases = [...readPage('/').querySelectorAll('canvas[data-seasons]')]
     expect(canvases).toHaveLength(1)
@@ -315,7 +282,7 @@ describe('homepage', () => {
   })
 
   it('every section title is a large title', () => {
-    const titles = [...readPage('/').querySelectorAll('section > h2')]
+    const titles = [...readPage('/').querySelectorAll('section.home-section > h2')]
     expect(titles.map((h) => [text(h), h.hasAttribute('data-display-title')])).toEqual(
       ['机器人在学校的一天', '社团活动', '三步入学', '规矩写在明处', '开源', '常见问题'].map((t) => [t, true]),
     )
@@ -398,26 +365,17 @@ describe('homepage', () => {
     expect([...page.querySelectorAll('main [data-faq-list] summary')].map((s) => text(s))).toEqual(faqs.map((q) => q.question))
   })
 
-  it.skipIf(noticeFiles.length > 0)('no notices shows 还没有公告。', () => {
+  it('the latest notices are read from the school: three, brief, with a link to all of them', () => {
     const latest = part('[data-latest-notices]')
     expect(text(latest.querySelector('h2'))).toBe('最新公告')
-    expect(text(latest)).toContain('还没有公告。')
-    expect(latest.querySelectorAll('li')).toHaveLength(0)
+    const list = latest.querySelector('[data-notice-list]')
+    expect(list?.getAttribute('data-mode')).toBe('brief')
+    expect(list?.getAttribute('data-limit')).toBe('3')
+    expect(text(list?.querySelector('[data-notices-loading]'))).toBe('正在读公告…')
     expect([text(latest.querySelector('a.all')), latest.querySelector('a.all')?.getAttribute('href')]).toEqual(['所有公告', '/docs/notices/'])
 
     const page = readPage('/docs/notices/')
     expect(text(page.querySelector('h1'))).toBe('公告')
-    expect(text(page.querySelector('main [data-notice-list]'))).toBe('还没有公告。')
-  })
-
-  it.runIf(noticeFiles.length > 0)('the latest three notices are listed, newest first', () => {
-    const latest = part('[data-latest-notices]')
-    const dates = [...latest.querySelectorAll('li time')].map((t) => t.getAttribute('datetime') ?? '')
-    expect(dates).toHaveLength(Math.min(3, noticeFiles.length))
-    expect(dates).toEqual([...dates].sort().reverse())
-    expect(text(latest)).not.toContain('还没有公告。')
-    expect([text(latest.querySelector('a.all')), latest.querySelector('a.all')?.getAttribute('href')]).toEqual(['所有公告', '/docs/notices/'])
-    const page = readPage('/docs/notices/')
-    expect(page.querySelectorAll('main [data-notice-list] li')).toHaveLength(noticeFiles.length)
+    expect(page.querySelector('main [data-notice-list]')?.getAttribute('data-mode')).toBe('full')
   })
 })

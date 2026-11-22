@@ -17,7 +17,8 @@
     "test:site": "vitest run --config vitest.dist.config.ts tests/dist/site",
     "verify": "npm run check && npm test && npm run build && npm run test:site",
     "check:placeholders": "node scripts/check-placeholders.mjs",
-    "make:og": "node scripts/make-og.mjs"
+    "make:og": "node scripts/make-og.mjs",
+    "mock:school": "node scripts/mock-school.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "0.4.9",

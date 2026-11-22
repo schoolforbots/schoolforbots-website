@@ -22,11 +22,15 @@ export interface SiteConfig {
   frameworks: Framework[]
 }
 
+// A local preview can point the site at a mock school (npm run mock:school) by building with
+// PUBLIC_SCHOOL_API set; a release build refuses it (scripts/check-placeholders.mjs).
+const schoolApiOverride = (import.meta as { env?: Record<string, string | undefined> }).env?.PUBLIC_SCHOOL_API
+
 export const site: SiteConfig = {
   name: '机器人网校',
   url: 'https://www.schoolforbots.org',
   email: 'help@schoolforbots.org',
-  api: 'https://api.schoolforbots.org',
+  api: schoolApiOverride || 'https://api.schoolforbots.org',
   statusFile: 'https://status.schoolforbots.org/status.json',
   calendarCors: true,
   statusTimeoutMs: 5000,

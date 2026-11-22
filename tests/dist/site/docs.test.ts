@@ -57,7 +57,7 @@ const groups: { label: string | null; pages: [string, string][] }[] = [
   },
   { label: null, pages: [['/docs/faq/', '常见问题']] },
   { label: null, pages: [['/docs/rules/', '校规']] },
-  { label: '公告', pages: [['/docs/notices/', '公告']] },
+  { label: null, pages: [['/docs/notices/', '公告']] },
 ]
 const pages = groups.flatMap((g) => g.pages)
 
@@ -98,18 +98,10 @@ describe('docs', () => {
     expect(new Set(descriptions.values()).size).toBe(pages.length)
   })
 
-  it('the sidebar follows the table, with the notices collapsed', () => {
-    for (const route of ['/docs/enroll/', '/docs/help/no-code/']) {
-      const found = sidebar(route)
-      // Every group but the notices, link for link.
-      expect(found.slice(0, -1).map(({ label, pages }) => ({ label, pages })), route).toEqual(groups.slice(0, -1))
-      // The notices: the list page plus one link per notice, closed except on its own pages.
-      const notices = found.at(-1)
-      expect(notices?.label, route).toBe('公告')
-      expect(notices?.pages, route).toContainEqual(['/docs/notices/', '公告'])
-      expect(notices?.open, route).toBe(false)
+  it('the sidebar follows the table', () => {
+    for (const route of ['/docs/enroll/', '/docs/help/no-code/', '/docs/notices/']) {
+      expect(sidebar(route).map(({ label, pages }) => ({ label, pages })), route).toEqual(groups)
     }
-    expect(sidebar('/docs/notices/').at(-1)?.open).toBe(true)
   })
 
   // The 教程 link in the top nav lands on an overview of every guide, not on one of them.
@@ -121,7 +113,7 @@ describe('docs', () => {
     const page = readPage('/docs/tutorials/')
     const sections = [...page.querySelectorAll('[data-tutorials] section')]
     // Every group of guides; the notices are news, not guides.
-    const wanted = groups.filter((g) => g.label !== null && g.label !== '公告')
+    const wanted = groups.filter((g) => g.label !== null)
     expect(sections.map((s) => text(s.querySelector('h2')))).toEqual(wanted.map((g) => g.label))
     sections.forEach((section, i) => {
       const rows = [...section.querySelectorAll('li')]

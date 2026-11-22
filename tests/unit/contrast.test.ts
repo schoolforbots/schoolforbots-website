@@ -60,13 +60,11 @@ const themes: Record<string, Tokens> = { light, dark }
 
 const textPairs: Array<[string, string[]]> = [
   ['ink', ['bg', 'surface']],
-  ['mute', ['bg', 'bg-soft', 'surface', 'surface-side', 'hero-top']],
+  ['mute', ['bg', 'bg-soft', 'surface', 'hero-top']],
   // A link reads on the page and on its highlighter band, hovered or not.
   ['link', ['bg', 'bg-soft', 'surface', 'mark']],
   ['btn-ink', ['btn', 'btn-hover']],
   ['nav-btn-ink', ['nav-btn']],
-  ['teacher', ['surface']],
-  ['classmate', ['surface']],
   ['live-ink', ['live-bg']],
   ['num-ink', ['num-bg']],
   ['danger', ['bg', 'bg-soft']],
