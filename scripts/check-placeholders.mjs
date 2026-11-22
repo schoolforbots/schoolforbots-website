@@ -12,6 +12,10 @@ const { errors, warnings } = checkPlaceholders(registry, markers, {
   frameworks: site.frameworks,
   calendarCors: site.calendarCors,
 })
+// A preview may read a mock school; the real site never does.
+if (release && process.env.PUBLIC_SCHOOL_API) {
+  errors.push('正式发布不能设 PUBLIC_SCHOOL_API：它只用于在本机连模拟学校预览')
+}
 
 for (const warning of warnings) {
   const at = warning.match(/^(\S+):(\d+) /)

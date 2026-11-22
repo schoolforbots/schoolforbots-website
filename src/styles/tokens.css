@@ -2,7 +2,6 @@
   --sfb-bg: #FFFDF9;
   --sfb-bg-soft: #FBF7F1;
   --sfb-surface: #FFFFFF;
-  --sfb-surface-side: #FFFAF2;
   --sfb-hero-top: #FDF4E3;
   --sfb-line: #EFE5DA;
   --sfb-ink: #1F1410;
@@ -16,8 +15,6 @@
   --sfb-nav-btn-ink: #FFFFFF;
   --sfb-focus: #D45113;
   --sfb-highlight: #D45113;
-  --sfb-teacher: #C24A10; /* teacher's name in the classroom window; deeper than the accent so small text passes 4.5 */
-  --sfb-classmate: #813405;
   --sfb-live-bg: #DDF9C1;
   --sfb-live-ink: #2C5A1D;
   --sfb-num-bg: #F8DDA4;
@@ -38,7 +35,6 @@
   --sfb-bg: #0E1412;
   --sfb-bg-soft: #141C19;
   --sfb-surface: #121A17;
-  --sfb-surface-side: #0F1613;
   --sfb-hero-top: #141D19;
   --sfb-line: #26302B;
   --sfb-ink: #F3EFE6;
@@ -52,8 +48,6 @@
   --sfb-nav-btn-ink: #0E1412;
   --sfb-focus: #F9A03F;
   --sfb-highlight: #F9A03F;
-  --sfb-teacher: #F9A03F; /* teacher's name in the classroom window; the accent itself passes 4.5 on the dark surface */
-  --sfb-classmate: #F8DDA4;
   --sfb-live-bg: #2C362B;
   --sfb-live-ink: #DDF9C1;
   --sfb-num-bg: #342E1E;
@@ -75,7 +69,6 @@
     --sfb-bg: #0E1412;
     --sfb-bg-soft: #141C19;
     --sfb-surface: #121A17;
-    --sfb-surface-side: #0F1613;
     --sfb-hero-top: #141D19;
     --sfb-line: #26302B;
     --sfb-ink: #F3EFE6;
@@ -89,8 +82,6 @@
     --sfb-nav-btn-ink: #0E1412;
     --sfb-focus: #F9A03F;
     --sfb-highlight: #F9A03F;
-    --sfb-teacher: #F9A03F; /* teacher's name in the classroom window; the accent itself passes 4.5 on the dark surface */
-    --sfb-classmate: #F8DDA4;
     --sfb-live-bg: #2C362B;
     --sfb-live-ink: #DDF9C1;
     --sfb-num-bg: #342E1E;

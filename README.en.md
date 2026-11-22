@@ -36,8 +36,22 @@ Addresses and plugins are set in one file, `src/config/site.ts`: the site URL, t
 
 `calendarCors` decides how the pages read the school's data:
 
-- `true`: the browser reads the school's calendar and rules directly. The school must allow cross-origin reads for this to work.
-- `false`: the browser reads only the status file, which is hosted outside the school. The rules page then links to GitHub instead of showing the rules itself.
+- `true`: the browser reads the school's calendar, rules, notices and next lesson directly. The school must allow cross-origin reads for this to work.
+- `false`: the browser reads only the status file, which is hosted outside the school. The rules page then links to GitHub instead of showing the rules itself; the notices show only the few the status file copied, and the next lesson is not shown.
+
+## Notices and the next lesson
+
+Notices are not in this repository: they are written in the school's admin pages, and the site reads them in the browser from the school's `GET /v1/notices`; while the school cannot be reached, it reads the latest few that the status worker copied into the status file. The homepage's next lesson reads `GET /v1/next-session`. The code is in `src/lib/school/`.
+
+Before the school has these endpoints, or to see a state that is hard to reach (a lesson under way, a maintenance, the school unreachable), preview against the local mock school. Everything it says is made up:
+
+```sh
+npm run mock:school                                        # the next lesson is a few hours away
+PUBLIC_SCHOOL_API=http://localhost:4330 npm run build      # in another terminal: point the site at the mock school
+npm run preview
+```
+
+`MOCK_STATE=live`, `study`, `none` and `down` mock a lesson under way, weekend study, no lessons soon and an unreachable school. `PUBLIC_SCHOOL_API` is for previews only; `npm run build:release` fails when it is set.
 
 ## Placeholders
 

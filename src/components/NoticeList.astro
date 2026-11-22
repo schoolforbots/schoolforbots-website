@@ -1,140 +1,183 @@
 ---
-// The school's notices, newest first: all of them on the notices page, the
-// latest few on the homepage. With none yet, a line says so.
-import { getCollection } from 'astro:content'
-import Megaphone from '@lucide/astro/icons/megaphone'
-import { isNotice, latestNotices, noticeDate, noticeTime } from '../lib/notices'
+// The school's notices, read in the browser (lib/school/notices-mount.ts):
+// brief on the homepage (a line each, newest first, linking to the notice on
+// the notices page), full on the notices page (each with its text). Until the
+// script has read them a line says so; without script, a line points to the
+// school's status file.
+import { site } from '../config/site'
 
 interface Props {
+  mode?: 'brief' | 'full'
   limit?: number
 }
 
-const { limit = Infinity } = Astro.props
-
-const notices = latestNotices(await getCollection('docs', ({ id }) => isNotice(id)), limit).map((entry) => ({
-  entry,
-  date: noticeDate(entry.id),
-  time: noticeTime(entry.id, entry.data.published),
-}))
-
-// "2026-12-01" as 2026年12月1日.
-const longDate = (date: string) => {
-  const [y, m, d] = date.split('-').map(Number)
-  return `${y}年${m}月${d}日`
-}
+const { mode = 'brief', limit } = Astro.props
 ---
 
-<div class="notices not-content" data-notice-list>
-  {
-    notices.length === 0 ? (
-      <p class="empty">
-        <Megaphone size={20} aria-hidden="true" />
-        还没有公告。
-      </p>
-    ) : (
-      <ul>
-        {notices.map(({ entry, date, time }) => (
-          <li>
-            <a href={`/${entry.id}/`}>
-              <time datetime={time ? entry.data.published!.toISOString() : date}>
-                {longDate(date)}
-                {time && <span class="clock">{time}</span>}
-              </time>
-              <span class="title">{entry.data.title}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    )
-  }
+<div class:list={['notices', 'not-content', mode]} data-notice-list data-mode={mode} data-limit={limit} aria-live="polite">
+  <p class="state" data-notices-loading>正在读公告…</p>
+  <noscript><p class="state">公告要在浏览器里打开脚本才能看到。学校现在的状态见 <a href={site.statusFile}>状态文件</a>。</p></noscript>
 </div>
 
+<script>
+  import { mountAllNoticeLists } from '../lib/school/notices-mount'
+  void mountAllNoticeLists()
+</script>
+
 <style>
-  .notices {
+  .brief {
     border: 1px solid var(--sfb-line);
     border-radius: 0.875rem;
     background: var(--sfb-surface);
   }
-
-  .empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+  .notices :global(.state) {
     margin: 0;
-    padding: 1.75rem 1.25rem;
+    padding: 1.25rem;
     color: var(--sfb-mute);
     font-size: 0.9375rem;
     line-height: 1.6;
+    text-align: center;
   }
-  .empty :global(svg) {
-    flex: none;
-    color: var(--sfb-highlight);
+  .full :global(.state) {
+    padding-inline: 0;
+    text-align: start;
+  }
+  .brief :global(.state + ul.rows) {
+    border-top: 1px solid var(--sfb-line);
   }
 
-  ul {
+  /* Brief: the whole row is the link. Under the pointer it darkens: a deeper fill, the title in the link colour. */
+  .notices :global(ul.rows) {
     margin: 0;
     padding: 0;
     list-style: none;
   }
-  li + li {
+  .notices :global(ul.rows li + li) {
     border-top: 1px solid var(--sfb-line);
   }
-  /* The whole row is the link. Under the pointer it darkens: a deeper fill, the title in the link colour. */
-  a {
+  .notices :global(ul.rows a) {
     display: grid;
-    grid-template-columns: 12em minmax(0, 1fr);
+    grid-template-columns: 9.5em minmax(0, 1fr);
     align-items: baseline;
     column-gap: 1rem;
     padding: 1rem 1.25rem;
     color: var(--sfb-ink);
     line-height: 1.6;
     text-decoration: none;
-    transition:
-      background-color 0.2s ease-out,
-      color 0.2s ease-out;
+    transition: background-color 0.2s ease-out;
   }
-  li:first-child a {
-    border-radius: 0.875rem 0.875rem 0 0;
+  .notices :global(ul.rows li:first-child a) {
+    border-start-start-radius: 0.875rem;
+    border-start-end-radius: 0.875rem;
   }
-  li:last-child a {
-    border-radius: 0 0 0.875rem 0.875rem;
+  .notices :global(ul.rows li:last-child a) {
+    border-end-start-radius: 0.875rem;
+    border-end-end-radius: 0.875rem;
   }
-  li:only-child a {
-    border-radius: 0.875rem;
-  }
-  a:hover {
+  .notices :global(ul.rows a:hover) {
     background: var(--sfb-bg-soft);
   }
-  a:hover .title {
-    color: var(--sfb-link);
-  }
-  a:focus-visible {
+  .notices :global(ul.rows a:focus-visible) {
     outline-offset: -2px;
   }
-  time {
+  .notices :global(.when) {
     color: var(--sfb-mute);
     font-size: 0.875rem;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
-  .clock {
-    margin-inline-start: 0.5em;
-  }
-  .title {
+  .notices :global(ul.rows .title) {
     font-weight: 600;
     transition: color 0.2s ease-out;
   }
+  .notices :global(ul.rows a:hover .title) {
+    color: var(--sfb-link);
+  }
+  .notices :global(.tag) {
+    display: inline-block;
+    margin-inline-start: 0.5rem;
+    padding: 0 0.5rem;
+    border: 1px solid color-mix(in srgb, var(--sfb-highlight) 45%, var(--sfb-line));
+    border-radius: 999px;
+    color: var(--sfb-link);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.6;
+    vertical-align: 0.15em;
+  }
+
+  /* Full: one article per notice, divided by a hairline. */
+  .notices :global(.notice) {
+    padding-block: 1.75rem;
+    scroll-margin-top: calc(var(--sl-nav-height) + var(--sl-mobile-toc-height) + 1rem);
+  }
+  .notices :global(.notice + .notice) {
+    border-top: 1px solid var(--sfb-line);
+  }
+  .notices :global(.notice:target) {
+    border-radius: 0.875rem;
+    background: var(--sfb-bg-soft);
+    padding-inline: 1.25rem;
+  }
+  .notices :global(.notice-title) {
+    margin: 0;
+    color: var(--sfb-ink);
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.45;
+  }
+  .notices :global(.meta) {
+    margin: 0.375rem 0 0;
+    color: var(--sfb-mute);
+    font-size: 0.875rem;
+  }
+  .notices :global(.window) {
+    margin: 0.875rem 0 0;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid color-mix(in srgb, var(--sfb-highlight) 35%, var(--sfb-line));
+    border-radius: 0.5rem;
+    background: color-mix(in srgb, var(--sfb-num-bg) 30%, var(--sfb-surface));
+    color: var(--sfb-ink);
+    font-size: 0.9375rem;
+  }
+  .notices :global(.body) {
+    margin-top: 0.875rem;
+    color: color-mix(in srgb, var(--sfb-ink) 82%, var(--sfb-mute));
+    line-height: 1.8;
+  }
+  .notices :global(.body p),
+  .notices :global(.body ul) {
+    margin: 0;
+  }
+  .notices :global(.body * + p),
+  .notices :global(.body * + ul) {
+    margin-top: 0.75rem;
+  }
+  .notices :global(.body li::marker) {
+    color: var(--sfb-highlight);
+  }
+  .notices :global(.body a) {
+    color: var(--sfb-link);
+    text-decoration: none;
+    background: linear-gradient(var(--sfb-mark), var(--sfb-mark)) 0 100% / 100% 0.42em no-repeat;
+  }
+  .notices :global(.body a:hover) {
+    background-size: 100% 100%;
+  }
+  .notices :global(.body strong) {
+    color: var(--sfb-ink);
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    a,
-    .title {
+    .notices :global(ul.rows a),
+    .notices :global(ul.rows .title) {
       transition: none;
     }
   }
 
   /* Phones: the date sits above the title. */
   @media (width < 30rem) {
-    a {
+    .notices :global(ul.rows a) {
       grid-template-columns: minmax(0, 1fr);
       row-gap: 0.125rem;
     }
