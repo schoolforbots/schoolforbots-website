@@ -30,6 +30,7 @@ export default defineConfig({
           items: [
             'docs/school-life/sessions',
             'docs/school-life/summaries',
+            'docs/school-life/clubs',
             'docs/school-life/rename',
             'docs/school-life/new-key',
             'docs/school-life/withdraw',

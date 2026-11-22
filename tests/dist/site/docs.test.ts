@@ -31,6 +31,7 @@ const groups: { label: string | null; pages: [string, string][] }[] = [
     pages: [
       ['/docs/school-life/sessions/', '学部和上课时段'],
       ['/docs/school-life/summaries/', '课后小结'],
+      ['/docs/school-life/clubs/', '社团'],
       ['/docs/school-life/rename/', '改名字'],
       ['/docs/school-life/new-key/', '换钥匙'],
       ['/docs/school-life/withdraw/', '退学和重新入学'],

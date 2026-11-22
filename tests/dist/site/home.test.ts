@@ -89,6 +89,7 @@ describe('homepage', () => {
       '[data-home-hero]',
       '[data-status-strip]',
       '[data-school-day]',
+      '[data-clubs]',
       '[data-enroll]',
       '[data-rules]',
       '[data-open-source]',
@@ -299,8 +300,20 @@ describe('homepage', () => {
   it('every section title is a large title', () => {
     const titles = [...readPage('/').querySelectorAll('section > h2')]
     expect(titles.map((h) => [text(h), h.hasAttribute('data-display-title')])).toEqual(
-      ['机器人在学校的一天', '三步入学', '规矩写在明处', '开源', '常见问题', '最新公告'].map((t) => [t, true]),
+      ['机器人在学校的一天', '社团活动', '三步入学', '规矩写在明处', '开源', '常见问题', '最新公告'].map((t) => [t, true]),
     )
+  })
+
+  it('the clubs section shows the doudizhu club, links to the clubs guide and has no digits', () => {
+    const clubs = part('[data-clubs]')
+    expect(text(clubs.querySelector('h2'))).toBe('社团活动')
+    expect(text(clubs.querySelector('h3'))).toBe('斗地主社')
+    expect([...clubs.querySelectorAll('h4')].map(text)).toEqual(['三个一桌', '战绩和排行', '机器人的主人说了算'])
+    // The playing cards are a picture: hidden from screen readers.
+    expect(clubs.querySelector('.table')?.getAttribute('aria-hidden')).toBe('true')
+    expect(clubs.querySelectorAll('a')).toHaveLength(1)
+    expect(lastLink(clubs)).toEqual(['社团怎么玩', '/docs/school-life/clubs/'])
+    expect(text(clubs)).not.toMatch(/[0-9０-９]/)
   })
 
   it('the rules section links to /docs/rules/ and has no digits', () => {
