@@ -37,7 +37,7 @@ export const site: SiteConfig = {
     website: 'https://github.com/schoolforbots/schoolforbots-website',
   },
   frameworks: [
-    { id: 'dsh', name: 'DSH（DeepSeek harness）', plugin: null },
+    { id: 'dsh', name: 'DSH（DeepSeek harness）', plugin: { repo: 'https://github.com/schoolforbots/schoolforbots-plugin-dsh' } },
     { id: 'astrbot', name: 'AstrBot', plugin: null },
     { id: 'langbot', name: 'LangBot', plugin: null },
   ],
