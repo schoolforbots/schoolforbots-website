@@ -1,39 +1,103 @@
 // @vitest-environment happy-dom
+// The same cases as the school's admin preview (schoolforbots-server admin/src/notice-markdown.test.tsx),
+// so a notice looks the same in the admin pages and on the site.
 import { describe, expect, it } from 'vitest'
-import { parseBody, parseInline, renderBody } from '../../../src/lib/school/notice-body'
+import { parseBody, renderBody } from '../../../src/lib/school/notice-body'
 
-describe('notice text', () => {
-  it('reads paragraphs, lists, bold and https links', () => {
-    expect(parseBody('第一段\n还是第一段\n\n- 一\n- 二\n\n第三段')).toEqual([
-      { kind: 'p', lines: [[{ kind: 'text', text: '第一段' }], [{ kind: 'text', text: '还是第一段' }]] },
-      { kind: 'ul', items: [[{ kind: 'text', text: '一' }], [{ kind: 'text', text: '二' }]] },
-      { kind: 'p', lines: [[{ kind: 'text', text: '第三段' }]] },
+/** The body as the page renders it: the HTML of the nodes. */
+function html(body: string): string {
+  const box = document.createElement('div')
+  box.append(renderBody(document, body))
+  return box.innerHTML
+}
+
+describe('the notice body', () => {
+  it('shows HTML as the text it is', () => {
+    expect(html('<b>粗</b> & <script>alert(1)</script>')).toBe(
+      '<p>&lt;b&gt;粗&lt;/b&gt; &amp; &lt;script&gt;alert(1)&lt;/script&gt;</p>',
+    )
+    expect(html('<img src=x onerror="alert(1)">')).toBe('<p>&lt;img src=x onerror="alert(1)"&gt;</p>')
+  })
+
+  it('makes a paragraph of each run of lines between blank lines, the lines within it broken where they were', () => {
+    expect(html('第一段\n还是第一段\n\n第二段')).toBe('<p>第一段<br>还是第一段</p><p>第二段</p>')
+    // Lines of spaces count as blank; more than one blank line is still one break; CRLF and CR read like LF.
+    expect(html('一\r\n  \r\n\r\n\n二\n')).toBe('<p>一</p><p>二</p>')
+    expect(html('一\r\r二')).toBe('<p>一</p><p>二</p>')
+    // A full-width space is whitespace too.
+    expect(html('一\n　\n二')).toBe('<p>一</p><p>二</p>')
+  })
+
+  it('shows nothing for an empty body', () => {
+    expect(html('')).toBe('')
+    expect(html('\n \n')).toBe('')
+  })
+
+  it('makes a list of lines that start with "- "', () => {
+    expect(html('维护期间：\n- 社团暂停\n- 上课照常\n\n完')).toBe(
+      '<p>维护期间：</p><ul><li>社团暂停</li><li>上课照常</li></ul><p>完</p>',
+    )
+    // Only a hyphen and a space at the very start: these stay text.
+    expect(html('-没有空格\n - 前面有空格\n* 星号')).toBe('<p>-没有空格<br> - 前面有空格<br>* 星号</p>')
+  })
+
+  it('starts a new paragraph after a list without a blank line', () => {
+    expect(html('- 一\n- 二\n后面的话')).toBe('<ul><li>一</li><li>二</li></ul><p>后面的话</p>')
+  })
+
+  it('makes **text** bold, on one line, and leaves a lone ** as it is', () => {
+    expect(html('这是**重点**，那是**另一处**')).toBe('<p>这是<strong>重点</strong>，那是<strong>另一处</strong></p>')
+    expect(html('- **加粗**的条目')).toBe('<ul><li><strong>加粗</strong>的条目</li></ul>')
+    expect(html('只有**一半')).toBe('<p>只有**一半</p>')
+    expect(html('空的****不算')).toBe('<p>空的****不算</p>')
+    expect(html('**跨\n行**')).toBe('<p>**跨<br>行**</p>')
+  })
+
+  it('makes a link of [text](https://…), opening apart from the page', () => {
+    expect(html('看[状态页](https://status.schoolforbots.org/)。')).toBe(
+      '<p>看<a href="https://status.schoolforbots.org/" target="_blank" rel="noopener noreferrer">状态页</a>。</p>',
+    )
+    expect(html('[带查询](https://example.com/a?x=1&y=2)')).toBe(
+      '<p><a href="https://example.com/a?x=1&amp;y=2" target="_blank" rel="noopener noreferrer">带查询</a></p>',
+    )
+  })
+
+  it('leaves every other link as plain text', () => {
+    for (const link of [
+      '[点我](javascript:alert(1))',
+      '[点我](http://example.com)',
+      '[点我](HTTPS://example.com)',
+      '[点我](//example.com)',
+      '[点我](data:text/html,x)',
+      '[点我]( https://example.com)',
+      '[点我](https://)',
+      '[](https://example.com)',
+    ]) {
+      const box = document.createElement('div')
+      box.append(renderBody(document, link))
+      expect(box.querySelector('a'), link).toBeNull()
+      expect(box.textContent, link).toBe(link)
+    }
+  })
+
+  it('ends the address at a space or the first )', () => {
+    expect(html('[a](https://x.org/b c)')).toBe('<p>[a](https://x.org/b c)</p>')
+    expect(html('[a](https://x.org/(b))')).toBe(
+      '<p><a href="https://x.org/(b" target="_blank" rel="noopener noreferrer">a</a>)</p>',
+    )
+  })
+
+  it('does not nest: the text of a link or of bold is plain, and the one starting first wins', () => {
+    expect(html('[**粗**](https://x.org)')).toBe(
+      '<p><a href="https://x.org" target="_blank" rel="noopener noreferrer">**粗**</a></p>',
+    )
+    expect(html('**[a](https://x.org)**')).toBe('<p><strong>[a](https://x.org)</strong></p>')
+  })
+
+  it('gives the blocks as data too', () => {
+    expect(parseBody('甲\n\n- 乙\n- **丙**')).toEqual([
+      { kind: 'p', lines: [[{ kind: 'text', text: '甲' }]] },
+      { kind: 'ul', items: [[{ kind: 'text', text: '乙' }], [{ kind: 'bold', text: '丙' }]] },
     ])
-    expect(parseInline('见[入学指南](https://www.schoolforbots.org/docs/enroll/)，**别忘了**')).toEqual([
-      { kind: 'text', text: '见' },
-      { kind: 'link', text: '入学指南', href: 'https://www.schoolforbots.org/docs/enroll/' },
-      { kind: 'text', text: '，' },
-      { kind: 'bold', text: '别忘了' },
-    ])
-  })
-
-  it('links only https addresses', () => {
-    expect(parseInline('[点这里](javascript:alert(1))')).toEqual([{ kind: 'text', text: '[点这里](javascript:alert(1))' }])
-    expect(parseInline('[旧站](http://example.com)')).toEqual([{ kind: 'text', text: '[旧站](http://example.com)' }])
-  })
-
-  it('never turns the text into markup', () => {
-    const box = document.createElement('div')
-    box.append(renderBody(document, '<img src=x onerror=alert(1)> **<b>粗</b>**\n\n- <script>x</script>'))
-    expect(box.querySelector('img, script, b')).toBeNull()
-    expect(box.querySelector('p')?.textContent).toBe('<img src=x onerror=alert(1)> <b>粗</b>')
-    expect(box.querySelector('strong')?.textContent).toBe('<b>粗</b>')
-    expect(box.querySelector('li')?.textContent).toBe('<script>x</script>')
-  })
-
-  it('keeps line breaks inside a paragraph', () => {
-    const box = document.createElement('div')
-    box.append(renderBody(document, '一行\n二行'))
-    expect(box.innerHTML).toBe('<p>一行<br>二行</p>')
   })
 })
