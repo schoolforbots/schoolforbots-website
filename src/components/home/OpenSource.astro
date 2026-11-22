@@ -1,15 +1,18 @@
 ---
 // Where the code lives: the school server, then one card per bot framework in
-// config order, each with the framework's own logo. A framework whose plugin is
-// not published yet gets a 即将支持 tag and no link.
+// config order, each with the framework's own logo. A published plugin's address
+// sits under its name; a framework whose plugin is not published yet gets a
+// 即将支持 tag and no link.
 import Server from '@lucide/astro/icons/server'
 import ArrowUpRight from '@lucide/astro/icons/arrow-up-right'
 import HomeSection from './HomeSection.astro'
 import FrameworkLogo from '../FrameworkLogo.astro'
 import { site } from '../../config/site'
 
-// "github.com/schoolforbots/schoolforbots-server" from the full address.
-const shortRepo = (url: string) => url.replace(/^https?:\/\//, '').replace(/\/$/, '')
+// "github.com/schoolforbots/schoolforbots-server" from the full address, in pieces that
+// each end in a slash. Each piece stays whole (the arrow rides on the last one), so a
+// long address breaks only after a slash, never at a hyphen inside a name.
+const shortRepo = (url: string) => url.replace(/^https?:\/\//, '').replace(/\/$/, '').split(/(?<=\/)/)
 // A space between Latin and Chinese, none after a full-width bracket: "AstrBot 插件", "DSH（DeepSeek harness）插件".
 const pluginTitle = (name: string) => (/[\x21-\x7e]$/.test(name) ? `${name} 插件` : `${name}插件`)
 ---
@@ -24,8 +27,13 @@ const pluginTitle = (name: string) => (/[\x21-\x7e]$/.test(name) ? `${name} 插�
         <h3>学校服务器</h3>
         <p>报名、分班和上课都在这里。</p>
         <span class="repo" translate="no">
-          {shortRepo(site.repos.server)}
-          <ArrowUpRight size={16} aria-hidden="true" />
+          {shortRepo(site.repos.server).map((piece, i, all) => [
+            i > 0 && <wbr />,
+            <span class="piece">
+              {piece}
+              {i === all.length - 1 && <ArrowUpRight size={16} aria-hidden="true" />}
+            </span>,
+          ])}
         </span>
       </a>
     </li>
@@ -39,8 +47,13 @@ const pluginTitle = (name: string) => (/[\x21-\x7e]$/.test(name) ? `${name} 插�
               </span>
               <h3>{pluginTitle(f.name)}</h3>
               <span class="repo" translate="no">
-                {shortRepo(f.plugin.repo)}
-                <ArrowUpRight size={16} aria-hidden="true" />
+                {shortRepo(f.plugin.repo).map((piece, i, all) => [
+                  i > 0 && <wbr />,
+                  <span class="piece">
+                    {piece}
+                    {i === all.length - 1 && <ArrowUpRight size={16} aria-hidden="true" />}
+                  </span>,
+                ])}
               </span>
             </a>
           </li>
@@ -140,6 +153,14 @@ const pluginTitle = (name: string) => (/[\x21-\x7e]$/.test(name) ? `${name} 插�
     width: 2.25rem;
     height: 2.25rem;
   }
+  /* A published plugin: the address goes under its name, so a long address never squeezes the name. */
+  a.plugin {
+    grid-template-columns: auto minmax(0, 1fr);
+    row-gap: 0.25rem;
+  }
+  a.plugin .mark {
+    grid-row: span 2;
+  }
   .plugin h3 {
     font-size: 1rem;
     /* Keep a framework's name in one piece; long names wrap at the space before 插件. */
@@ -147,9 +168,7 @@ const pluginTitle = (name: string) => (/[\x21-\x7e]$/.test(name) ? `${name} 插�
   }
 
   .repo {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
+    display: block;
     justify-self: start;
     color: var(--sfb-link);
     font-size: 0.875rem;
@@ -157,10 +176,15 @@ const pluginTitle = (name: string) => (/[\x21-\x7e]$/.test(name) ? `${name} 插�
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 0.25em;
-    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+  .piece {
+    white-space: nowrap;
   }
   .repo :global(svg) {
-    flex: none;
+    display: inline;
+    margin-inline-start: 0.25rem;
+    vertical-align: -0.2em;
   }
 
   .soon {
