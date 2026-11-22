@@ -49,7 +49,7 @@ export function renderNextSession(root: HTMLElement, view: NextSessionView, now:
   const body = root.querySelector<HTMLElement>('[data-next-session-body]')
   if (!body) return
   if (view.kind === 'session') body.replaceChildren(...sessionNodes(view.session, now))
-  else if (view.kind === 'none') body.replaceChildren(el('p', 'quiet', '近期没有课。开学和假期的安排见公告。'))
+  else if (view.kind === 'none') body.replaceChildren(el('p', 'quiet', '近期没有课。有班级上课时，这里会显示下一节课的时间和课题。'))
   else body.replaceChildren(el('p', 'quiet', '暂时连不上学校，下一节课的安排读不到。'))
 }
 
