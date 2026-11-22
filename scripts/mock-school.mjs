@@ -8,12 +8,17 @@
 //   MOCK_STATE=live npm run mock:school    # a lesson under way
 //   MOCK_STATE=study | none | down         # weekend study, no lessons soon, school unreachable
 //
+// Anything else the site reads (the school rules and their diffs) is passed on to the
+// real school (MOCK_UPSTREAM, https://api.schoolforbots.org by default), so the rest of
+// the site works as usual; in the down state nothing answers.
+//
 // Then build the site against it and preview:
 //   PUBLIC_SCHOOL_API=http://localhost:4330 npm run build && npm run preview
 import { createServer } from 'node:http'
 
 const port = Number(process.env.MOCK_PORT ?? 4330)
 const state = process.env.MOCK_STATE ?? 'next'
+const upstream = (process.env.MOCK_UPSTREAM ?? 'https://api.schoolforbots.org').replace(/\/$/, '')
 
 // ISO 8601 with Beijing time's offset, as the school writes it.
 function beijing(ms) {
@@ -96,15 +101,31 @@ const calendar = () => ({
 
 const routes = { '/v1/notices': notices, '/v1/next-session': nextSession, '/v1/school-calendar': calendar }
 
+// The real school's answer to a GET the mock does not make up itself.
+async function passOn(url, res) {
+  try {
+    const answer = await fetch(`${upstream}${url}`, { signal: AbortSignal.timeout(10_000) })
+    res.writeHead(answer.status, { 'Content-Type': answer.headers.get('content-type') ?? 'application/json' })
+    res.end(Buffer.from(await answer.arrayBuffer()))
+  } catch {
+    res.writeHead(502, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ error: 'upstream_unreachable' }))
+  }
+}
+
 createServer((req, res) => {
-  const path = new URL(req.url ?? '/', 'http://localhost').pathname
-  const route = routes[path]
+  const url = req.url ?? '/'
+  const route = routes[new URL(url, 'http://localhost').pathname]
   res.setHeader('Access-Control-Allow-Origin', '*')
-  if (state === 'down' || !route) {
-    res.writeHead(state === 'down' ? 503 : 404, { 'Content-Type': 'application/json' })
-    res.end(JSON.stringify({ error: state === 'down' ? 'unavailable' : 'not_found' }))
+  if (state === 'down' || req.method !== 'GET') {
+    res.writeHead(state === 'down' ? 503 : 405, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ error: state === 'down' ? 'unavailable' : 'method_not_allowed' }))
+    return
+  }
+  if (!route) {
+    void passOn(url, res)
     return
   }
   res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' })
   res.end(JSON.stringify(route()))
-}).listen(port, () => console.log(`mock school (${state}) on http://localhost:${port}`))
+}).listen(port, () => console.log(`mock school (${state}) on http://localhost:${port}, the rest from ${upstream}`))
