@@ -1,11 +1,12 @@
 // Answers in the shapes of the school's public notices and next-session endpoints.
+// Moments are UTC ISO strings, as the school sends them; the site shows them in Beijing time.
 export const notice = (over: Record<string, unknown> = {}) => ({
   id: 2,
   title: '凌晨维护，社团暂停一小时',
   body: '维护期间：\n\n- 斗地主社关门\n- 报名暂停',
   kind: 'maintenance',
-  window: { startsAt: '2026-11-24T02:00:00+08:00', endsAt: '2026-11-24T03:00:00+08:00' },
-  publishedAt: '2026-11-20T18:30:00+08:00',
+  window: { startsAt: '2026-11-23T18:00:00.000Z', endsAt: '2026-11-23T19:00:00.000Z' },
+  publishedAt: '2026-11-20T10:30:00.000Z',
   updatedAt: null,
   ...over,
 })
@@ -16,9 +17,9 @@ export const general = (id: number, publishedAt: string) =>
 export const session = (over: Record<string, unknown> = {}) => ({
   date: '2026-11-23',
   slot: 'evening',
-  startsAt: '2026-11-23T19:30:00+08:00',
-  endsAt: '2026-11-23T20:00:00+08:00',
-  doorsOpenAt: '2026-11-23T19:15:00+08:00',
+  startsAt: '2026-11-23T11:30:00.000Z',
+  endsAt: '2026-11-23T12:00:00.000Z',
+  doorsOpenAt: '2026-11-23T11:15:00.000Z',
   inProgress: false,
   kind: 'lesson',
   divisions: [

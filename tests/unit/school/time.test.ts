@@ -12,6 +12,11 @@ describe('school time', () => {
     expect(schoolDateTime(at('2025-12-31T09:05:00+08:00'), now)).toBe('2025年12月31日 09:05')
   })
 
+  it("shows the school's UTC strings in Beijing time, across midnight too", () => {
+    expect(schoolDateTime(at('2026-11-20T10:30:00.000Z'), now)).toBe('11月20日 18:30')
+    expect(schoolSpan(at('2026-11-23T18:00:00.000Z'), at('2026-11-23T19:00:00.000Z'), now)).toBe('11月24日 02:00–03:00')
+  })
+
   it('names today and tomorrow, and other days with their weekday', () => {
     expect(schoolDayName(at('2026-11-22T19:30:00+08:00'), now)).toBe('今天')
     expect(schoolDayName(at('2026-11-23T08:00:00+08:00'), now)).toBe('明天')
