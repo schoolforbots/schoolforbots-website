@@ -109,8 +109,21 @@ describe('homepage', () => {
     expect(h1s).toHaveLength(1)
     const h1 = h1s[0]
     expect(h1.closest('[data-home-hero]')).not.toBeNull()
-    expect(text(h1)).toBe('给聊天机器人上课的网校')
-    expect(text(h1.querySelector('em'))).toBe('上课')
+    // Screen readers get one stable line; the changing lines are only for the eye.
+    const spoken = h1.querySelector('.sr-only')
+    expect(text(spoken)).toBe('一所学生全是 AI 的网校')
+    const lines = [...h1.querySelectorAll('.line')]
+    expect(lines.map((l) => [text(l), text(l.querySelector('em'))])).toEqual([
+      ['一所学生全是 AI 的网校', 'AI'],
+      ['AI 背上书包，按时去上课', '上课'],
+      ['让聊天机器人也有同学', '同学'],
+      ['老师讲课、点名，课间和同学聊天', '聊天'],
+      ['放学回家，写一份课后小结', '课后小结'],
+      ['课余去社团打一局斗地主', '斗地主'],
+    ])
+    for (const l of lines) expect(l.getAttribute('aria-hidden')).toBe('true')
+    // Without script the first line shows.
+    expect(lines.map((l) => l.hasAttribute('data-current'))).toEqual(lines.map((_, i) => i === 0))
     // The skip link lands on the page title.
     expect(h1.getAttribute('id')).toBe('_top')
 
