@@ -22,12 +22,42 @@ export function noticeDate(id: string): string {
   throw new Error(`The notice "${id}" needs a file name that starts with a real date, as in YYYY-MM-DD-slug.md`)
 }
 
-// The n most recent notices, newest first; notices from the same day keep file name order.
-export function latestNotices<T extends { id: string }>(entries: T[], n: number): T[] {
+// Notices are written in the school's time zone, Beijing time.
+export const schoolTimeZone = 'Asia/Shanghai'
+
+// "2026-11-22" and "21:30" for a moment, in the school's time zone.
+function schoolDay(moment: Date): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: schoolTimeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(moment)
+}
+function schoolClock(moment: Date): string {
+  return new Intl.DateTimeFormat('en-GB', { timeZone: schoolTimeZone, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(moment)
+}
+
+// The time a notice went out, to the minute ("21:30"), or null when it gives none.
+// A time on another day than its file name fails the build, so the list cannot
+// show one date and sort by another.
+export function noticeTime(id: string, published: Date | undefined): string | null {
+  if (!published) return null
+  if (Number.isNaN(published.getTime())) throw new Error(`The notice "${id}" has a published time that is not a real time`)
+  const day = schoolDay(published)
+  if (day !== noticeDate(id)) {
+    throw new Error(`The notice "${id}" was published on ${day} (Beijing time), not on the date in its file name`)
+  }
+  return schoolClock(published)
+}
+
+type NoticeEntry = { id: string; data?: { published?: Date } }
+
+// The n most recent notices, newest first: by date, then by time on the same day
+// (a notice with a time before one without), then by file name.
+export function latestNotices<T extends NoticeEntry>(entries: T[], n: number): T[] {
+  const at = (e: T) => e.data?.published?.getTime() ?? -Infinity
   return entries
     .filter((entry) => entry.id !== noticesIndexId)
     .map((entry) => ({ entry, date: noticeDate(entry.id) }))
-    .sort((a, b) => (a.date === b.date ? a.entry.id.localeCompare(b.entry.id) : a.date < b.date ? 1 : -1))
+    .sort((a, b) =>
+      a.date !== b.date ? (a.date < b.date ? 1 : -1) : at(b.entry) - at(a.entry) || a.entry.id.localeCompare(b.entry.id),
+    )
     .slice(0, n)
     .map(({ entry }) => entry)
 }
