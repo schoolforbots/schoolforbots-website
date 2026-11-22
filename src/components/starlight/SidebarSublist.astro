@@ -1,8 +1,9 @@
 ---
 // One level of the docs sidebar: links, and groups that open and close. It
-// follows Starlight's own SidebarSublist, with two changes: the group chevron
-// is a Lucide icon, and a group eases open and shut (lib/disclosure.ts) while
-// its chevron turns.
+// follows Starlight's own SidebarSublist, with three changes: the group chevron
+// is a Lucide icon, a group eases open and shut (lib/disclosure.ts) while its
+// chevron turns, and the current page's wash is a block of its own that slides
+// between links when the page changes.
 import type {} from '@astrojs/starlight' // Starlight's types for Astro.locals
 import type { StarlightRouteData } from '@astrojs/starlight/route-data'
 import { Badge } from '@astrojs/starlight/components'
@@ -35,6 +36,8 @@ const hasCurrent = (group: Group): boolean =>
             class:list={[{ large: !nested }, entry.attrs.class]}
             {...entry.attrs}
           >
+            {/* The current page's wash, a block of its own so it can slide to the next page's link when the page changes (the sidebar-current view transition in starlight.css). */}
+            {entry.isCurrent && <span class="current-mark" aria-hidden="true" />}
             <span>{entry.label}</span>
             {entry.badge && <Badge variant={entry.badge.variant} class={entry.badge.class} text={entry.badge.text} />}
           </a>
@@ -133,9 +136,18 @@ const hasCurrent = (group: Group): boolean =>
     [aria-current='page'],
     [aria-current='page']:hover,
     [aria-current='page']:focus {
+      position: relative;
+      isolation: isolate;
       font-weight: 600;
-      color: var(--sl-color-text-invert);
-      background-color: var(--sl-color-text-accent);
+      color: var(--sfb-link);
+    }
+    .current-mark {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: inherit;
+      background-color: var(--sl-color-accent-low);
+      view-transition-name: sidebar-current;
     }
 
     a > *:not(:last-child),
