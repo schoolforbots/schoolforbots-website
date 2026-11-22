@@ -208,6 +208,21 @@ describe('site shell', () => {
     expect(image).toBe(`${site.url}/og.png`)
   })
 
+  it('the homepage tells search engines every name the school goes by, and no other page repeats it', () => {
+    const scripts = readPage('/').querySelectorAll('script[type="application/ld+json"]')
+    expect(scripts.length).toBe(1)
+    const data = JSON.parse(scripts[0].textContent ?? '')
+    const byType = Object.fromEntries(data['@graph'].map((n: { '@type': string }) => [n['@type'], n]))
+    for (const type of ['Organization', 'WebSite']) {
+      expect(byType[type].name, type).toBe(site.name)
+      expect(byType[type].alternateName, type).toEqual([site.englishName, 'schoolforbots'])
+      expect(byType[type].url, type).toBe(`${site.url}/`)
+    }
+    expect(byType.Organization.sameAs).toContain(site.repos.org)
+    expect(byType.WebSite.publisher['@id']).toBe(byType.Organization['@id'])
+    expect(readPage('/docs/enroll/').querySelector('script[type="application/ld+json"]')).toBeNull()
+  })
+
   it('the share image is a 1200 by 630 PNG', () => {
     const png = readFileSync(distPath('og.png'))
     expect(png.subarray(1, 4).toString('latin1')).toBe('PNG')

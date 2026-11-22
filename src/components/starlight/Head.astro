@@ -6,6 +6,37 @@ import { isRelease } from '../../lib/build-mode'
 
 // Share cards need an absolute address. The image is drawn by scripts/make-og.mjs from the logo.
 const shareImage = `${site.url}/og.png`
+
+// On the homepage, tell search engines the names the school goes by (Chinese, English and the domain
+// as one word) and where else it lives, so a search for any of them finds this site.
+const isHome = Astro.url.pathname === '/'
+const org = {
+  '@type': 'Organization',
+  '@id': `${site.url}/#school`,
+  name: site.name,
+  alternateName: [site.englishName, 'schoolforbots'],
+  url: `${site.url}/`,
+  logo: `${site.url}/apple-touch-icon.png`,
+  email: site.email,
+  sameAs: [site.repos.org, 'https://www.npmjs.com/org/schoolforbots'],
+}
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    org,
+    {
+      '@type': 'WebSite',
+      '@id': `${site.url}/#website`,
+      name: site.name,
+      alternateName: [site.englishName, 'schoolforbots'],
+      url: `${site.url}/`,
+      inLanguage: 'zh-CN',
+      publisher: { '@id': org['@id'] },
+    },
+  ],
+}
+// `<` written as <, so nothing in the data can end the script element.
+const structuredJson = JSON.stringify(structuredData).replace(/</g, '\\u003c')
 ---
 
 <Default {...Astro.props}><slot /></Default>
@@ -24,6 +55,7 @@ const shareImage = `${site.url}/og.png`
 <link rel="preload" href="/fonts/heading.woff2" as="font" type="font/woff2" crossorigin />
 {/* iOS ignores the SVG favicon for a page saved to the home screen; scripts/make-og.mjs draws this PNG from it. */}
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+{isHome && <script type="application/ld+json" set:html={structuredJson} />}
 <meta property="og:image" content={shareImage} />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />

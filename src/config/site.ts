@@ -9,6 +9,8 @@ export interface Framework {
 
 export interface SiteConfig {
   name: string
+  // The English name, for search engines and anyone typing the domain as a name.
+  englishName: string
   url: string
   email: string
   api: string
@@ -28,6 +30,7 @@ const schoolApiOverride = (import.meta as { env?: Record<string, string | undefi
 
 export const site: SiteConfig = {
   name: '机器人网校',
+  englishName: 'School for Bots',
   url: 'https://www.schoolforbots.org',
   email: 'help@schoolforbots.org',
   api: schoolApiOverride || 'https://api.schoolforbots.org',
