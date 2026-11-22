@@ -8,6 +8,7 @@
   --sfb-ink: #1F1410;
   --sfb-mute: #5E4D43;
   --sfb-link: #813405;
+  --sfb-mark: #F8DDA4; /* the highlighter band under links */
   --sfb-btn: #813405;
   --sfb-btn-ink: #FFFFFF;
   --sfb-btn-hover: #6A2A03;
@@ -43,6 +44,7 @@
   --sfb-ink: #F3EFE6;
   --sfb-mute: #A9B2AC;
   --sfb-link: #F8DDA4;
+  --sfb-mark: #3D3220;
   --sfb-btn: #F9A03F;
   --sfb-btn-ink: #21140A;
   --sfb-btn-hover: #FBB565;
@@ -79,6 +81,7 @@
     --sfb-ink: #F3EFE6;
     --sfb-mute: #A9B2AC;
     --sfb-link: #F8DDA4;
+    --sfb-mark: #3D3220;
     --sfb-btn: #F9A03F;
     --sfb-btn-ink: #21140A;
     --sfb-btn-hover: #FBB565;

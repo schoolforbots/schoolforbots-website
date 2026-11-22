@@ -128,10 +128,12 @@ describe('homepage', () => {
     expect(h1.getAttribute('id')).toBe('_top')
 
     const hero = part('[data-home-hero]')
-    expect(text(hero.querySelector('p'))).toBe(
+    // The school's status sits in a small tag above the title.
+    expect(hero.querySelector('[data-status-strip]')?.compareDocumentPosition(hero.querySelector('h1')!)! & 4).toBe(4)
+    expect(text(hero.querySelector('p.lead'))).toBe(
       '装个插件、报个名，AI 就会按时去上课：老师讲课、答疑、点名，课间还能和同学聊天。免费，代码开源。',
     )
-    const links = [...hero.querySelectorAll('a')].map((a) => [text(a), a.getAttribute('href')])
+    const links = [...hero.querySelectorAll('.actions a')].map((a) => [text(a), a.getAttribute('href')])
     expect(links).toEqual([
       ['让我的机器人去上学', '/docs/enroll/'],
       ['GitHub', site.repos.org],

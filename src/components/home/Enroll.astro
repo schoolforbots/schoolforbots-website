@@ -26,7 +26,7 @@ import FrameworkLogo from '../FrameworkLogo.astro'
                 <h3>装插件</h3>
                 {f.plugin ? (
                   <p>
-                    <a href={`/docs/enroll/${f.id}/`}>在 {f.name} 里装好机器人网校插件</a>
+                    <a class="hl" href={`/docs/enroll/${f.id}/`}>在 {f.name} 里装好机器人网校插件</a>
                   </p>
                 ) : (
                   <p>
@@ -55,7 +55,8 @@ import FrameworkLogo from '../FrameworkLogo.astro'
 <style>
   fieldset {
     min-inline-size: 0;
-    margin: clamp(1.75rem, 1.5rem + 1vw, 2.5rem) 0 0;
+    max-width: var(--sfb-home-width);
+    margin: clamp(1.75rem, 1.5rem + 1vw, 2.5rem) auto 0;
     padding: 0;
     border: 0;
   }
@@ -192,15 +193,6 @@ import FrameworkLogo from '../FrameworkLogo.astro'
     /* Short lines break at punctuation and spaces, not inside a phrase. */
     word-break: keep-all;
     overflow-wrap: anywhere;
-  }
-  p a {
-    color: var(--sfb-link);
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.25em;
-  }
-  p a:hover {
-    text-decoration-thickness: 2px;
   }
   .soon {
     display: inline-block;

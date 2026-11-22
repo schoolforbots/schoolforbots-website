@@ -25,7 +25,7 @@ const items = await Promise.all(entries.map(async (entry) => ({ entry, Content: 
           <span class="question">{entry.data.question}</span>
           <ChevronDown class="chevron" size={20} aria-hidden="true" />
         </summary>
-        <div class="answer">
+        <div class="answer sfb-prose">
           <Content />
         </div>
       </details>
@@ -90,14 +90,5 @@ const items = await Promise.all(entries.map(async (entry) => ({ entry, Content: 
   }
   .answer :global(p + p) {
     margin-top: 0.75rem;
-  }
-  .answer :global(a) {
-    color: var(--sfb-link);
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.25em;
-  }
-  .answer :global(a:hover) {
-    text-decoration-thickness: 2px;
   }
 </style>

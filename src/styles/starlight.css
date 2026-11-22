@@ -6,6 +6,9 @@
 :root {
   --sl-font: var(--sfb-font-body);
 
+  /* Every block on the homepage, from the classroom window down, shares this width, so their edges line up. */
+  --sfb-home-width: 60rem;
+
   /* Text and surfaces, strongest to faintest. */
   --sl-color-white: var(--sfb-ink);
   --sl-color-gray-1: var(--sfb-ink);
@@ -105,12 +108,42 @@ summary {
   touch-action: manipulation;
 }
 
-.sl-markdown-content a:not(:where(.not-content *)) {
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.25em;
+/*
+ * Links are marked with a highlighter, not an underline: a low band of 麦秆 under
+ * the words (a deep amber at night) that fills the whole line on hover. It covers
+ * links in the docs, links in rendered copy (.sfb-prose), and words given .hl
+ * (the link text of a card, which fills when the card is hovered). .hl-hover links
+ * (quiet lists such as the footer) show the band only on hover.
+ */
+:where(.sl-markdown-content a:not(:where(.not-content *)), .sfb-prose a, .hl, .hl-hover) {
+  color: var(--sfb-link);
+  text-decoration: none;
+  background: linear-gradient(var(--sfb-mark), var(--sfb-mark)) 0 100% / 100% 0.42em no-repeat;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-size 0.25s cubic-bezier(0.33, 1, 0.68, 1);
 }
-.sl-markdown-content a:not(:where(.not-content *)):hover {
-  text-decoration-thickness: 2px;
+:where(.sl-markdown-content a:not(:where(.not-content *)), .sfb-prose a):hover,
+:where(a:hover .hl, a.hl:hover) {
+  background-size: 100% 100%;
+}
+:where(.hl-hover) {
+  color: inherit;
+  background-size: 100% 0;
+}
+:where(.hl-hover:hover) {
+  color: var(--sfb-link);
+  background-size: 100% 0.42em;
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.sl-markdown-content a, .sfb-prose a, .hl, .hl-hover) {
+    transition: none;
+  }
+}
+@media (forced-colors: active) {
+  :where(.sl-markdown-content a, .sfb-prose a, .hl, .hl-hover) {
+    text-decoration: underline;
+  }
 }
 
 /* Asides: a hairline frame on a faint wash, no thick coloured stripe. */
@@ -185,4 +218,75 @@ main > .content-panel:has([data-site-footer]) > .sl-container {
 }
 .sl-container > :has(+ [data-site-footer]) {
   flex-grow: 1;
+}
+
+/* Narrow screens: one column, and every homepage block narrows to the same width. */
+@media (width < 48rem) {
+  :root {
+    --sfb-home-width: 30rem;
+  }
+}
+
+/*
+ * Docs typography in the school's colours, so a page reads in layers rather than
+ * one block of black: body text a soft warm brown, the opening paragraph as a
+ * lead, a short 柿子橙 bar before each section title, 红砖棕 for subsection titles
+ * and the bold labels that start list items, 柿子橙 list markers, and inline code
+ * on a faint 麦秆 wash.
+ */
+.sl-markdown-content {
+  color: color-mix(in srgb, var(--sfb-ink) 82%, var(--sfb-mute));
+}
+.sl-markdown-content > p:first-child {
+  color: var(--sfb-mute);
+  font-size: 1.0625rem;
+  line-height: 1.85;
+}
+.sl-markdown-content :is(h2, h3, h4) {
+  color: var(--sfb-ink);
+}
+.sl-markdown-content h2:not(:where(.not-content *)) {
+  position: relative;
+  padding-inline-start: 0.875rem;
+}
+.sl-markdown-content h2:not(:where(.not-content *))::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0.2em;
+  bottom: 0.2em;
+  width: 0.25rem;
+  border-radius: 999px;
+  background: var(--sfb-highlight);
+}
+.sl-markdown-content h3:not(:where(.not-content *)) {
+  color: var(--sfb-link);
+}
+.sl-markdown-content strong {
+  color: var(--sfb-ink);
+}
+.sl-markdown-content li > strong:first-child,
+.sl-markdown-content li > p:first-child > strong:first-child {
+  color: var(--sfb-link);
+}
+.sl-markdown-content :is(ul, ol):not(:where(.not-content *)) > li::marker {
+  color: var(--sfb-highlight);
+}
+.sl-markdown-content ol:not(:where(.not-content *)) > li::marker {
+  font-weight: 700;
+}
+.sl-markdown-content :not(pre) > code {
+  padding: 0.1em 0.375em;
+  border-radius: 0.3em;
+  background: color-mix(in srgb, var(--sfb-num-bg) 45%, var(--sfb-bg));
+  color: var(--sfb-link);
+}
+.sl-markdown-content table:not(:where(.not-content *)) th {
+  background: var(--sfb-bg-soft);
+  color: var(--sfb-ink);
+}
+@media (forced-colors: active) {
+  .sl-markdown-content h2:not(:where(.not-content *))::before {
+    background: CanvasText;
+  }
 }
