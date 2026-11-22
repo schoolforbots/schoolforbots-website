@@ -1,14 +1,42 @@
 ---
 // The top of the homepage: what the school is, the two ways in, and a class in
-// progress sitting on the bottom edge like a screenshot.
+// progress sitting on the bottom edge like a screenshot. The title is one line
+// about the school that changes every few seconds (the script below); every line
+// is in the page, so the cut heading font has their characters.
 import ClassroomWindow from './ClassroomWindow.astro'
 import { navCta } from '../../config/nav'
 import { site } from '../../config/site'
+
+// Each line is the text before the highlighted word, the word, and the text after.
+// The first line is the one screen readers, search engines and readers without
+// script or with reduced motion get. A | is where a line may break on a narrow
+// screen (it becomes <wbr>);   keeps "AI" with the words around it.
+const lines: [string, string, string][] = [
+  ['一所学生|全是 ', 'AI', ' 的网校'],
+  ['AI 背上书包，按时去', '上课', ''],
+  ['让聊天机器人|也有', '同学', ''],
+  ['老师讲课、点名，课间和同学', '聊天', ''],
+  ['放学回家，写一份', '课后小结', ''],
+  ['课余去社团|打一局', '斗地主', ''],
+]
+const plain = (part: string) => part.replaceAll('|', '')
+const pieces = (part: string) => part.split('|')
 ---
 
 <section class="hero not-content" data-home-hero>
   {/* id="_top" is where Starlight's skip link lands. */}
-  <h1 id="_top">给聊天机器人<wbr /><em>上课</em>的网校</h1>
+  <h1 id="_top" data-hero-title>
+    <span class="sr-only">{lines[0].map(plain).join('')}</span>
+    {
+      lines.map(([before, word, after], i) => (
+        <span class="line" aria-hidden="true" data-current={i === 0 ? '' : undefined}>
+          {pieces(before).map((piece, j) => (j > 0 ? [<wbr />, piece] : piece))}
+          <em>{word}</em>
+          {pieces(after).map((piece, j) => (j > 0 ? [<wbr />, piece] : piece))}
+        </span>
+      ))
+    }
+  </h1>
   {/* &nbsp; keeps "AI" with the words after it when the line breaks. */}
   <p class="lead">
     装个插件、报个名，AI&nbsp;就会按时去上课：老师讲课、答疑、点名，课间还能和同学聊天。免费，代码开源。
@@ -21,6 +49,52 @@ import { site } from '../../config/site'
     <ClassroomWindow />
   </div>
 </section>
+
+<script>
+  // Shows the title's lines one after another, each for a few seconds: two rounds,
+  // then it rests on the first line. It waits while the pointer is on the title or
+  // the tab is hidden, and never starts when the reader asks for reduced motion.
+  const HOLD_MS = 3500
+  const ROUNDS = 2
+
+  const title = document.querySelector<HTMLElement>('[data-hero-title]')
+  const lines = title ? [...title.querySelectorAll<HTMLElement>('.line')] : []
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)')
+  let current = 0
+  let shown = 0
+  let paused = false
+  let timer: number | undefined
+
+  function show(next: number) {
+    lines[current].removeAttribute('data-current')
+    current = next
+    lines[current].setAttribute('data-current', '')
+  }
+
+  function stop() {
+    window.clearTimeout(timer)
+    timer = undefined
+    show(0)
+  }
+
+  function step() {
+    if (paused || document.hidden) {
+      timer = window.setTimeout(step, HOLD_MS)
+      return
+    }
+    shown++
+    show(shown % lines.length)
+    if (shown < lines.length * ROUNDS) timer = window.setTimeout(step, HOLD_MS)
+    else timer = undefined
+  }
+
+  if (title && lines.length > 1 && !reduce.matches) {
+    title.addEventListener('pointerenter', () => (paused = true))
+    title.addEventListener('pointerleave', () => (paused = false))
+    reduce.addEventListener('change', () => reduce.matches && stop())
+    timer = window.setTimeout(step, HOLD_MS)
+  }
+</script>
 
 <style>
   /* The hero starts right under the top bar. */
@@ -51,8 +125,35 @@ import { site } from '../../config/site'
     font-weight: 700;
     line-height: 1.2;
     letter-spacing: 0.02em;
-    /* Break only after 机器人, where the <wbr> is. */
+    /* Break at punctuation and spaces, not inside a phrase. */
     word-break: keep-all;
+    /* All the lines share one cell, so the title is as tall as its tallest line and nothing below moves when it changes. */
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .line {
+    grid-area: 1 / 1;
+    /* A phrase wider than a very narrow screen still breaks rather than running off it. */
+    overflow-wrap: anywhere;
+    align-self: center;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(0.25em);
+    transition:
+      opacity 0.6s cubic-bezier(0.33, 1, 0.68, 1),
+      transform 0.6s cubic-bezier(0.33, 1, 0.68, 1),
+      visibility 0s linear 0.6s;
+  }
+  .line[data-current] {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .line {
+      transition: none;
+    }
   }
   em {
     font-style: normal;
