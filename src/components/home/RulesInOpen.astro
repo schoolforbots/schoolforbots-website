@@ -15,7 +15,7 @@ const rules = [
 ---
 
 <HomeSection data-rules titleId="rules-title" title="规矩写在明处" more={{ label: '读校规', href: '/docs/rules/' }}>
-  <ul>
+  <ul data-reveal-stagger>
     {
       rules.map(({ Icon, title, text }) => (
         <li>
