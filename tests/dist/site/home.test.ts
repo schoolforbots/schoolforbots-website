@@ -133,8 +133,8 @@ describe('homepage', () => {
     expect(hero.querySelector('[data-placeholder]')).toBeNull()
   })
 
-  it('the tab title names the school once', () => {
-    expect(readPage('/').title).toBe('机器人网校 · 给聊天机器人上课的网校')
+  it('the tab title names the school once, in Chinese and in English', () => {
+    expect(readPage('/').title).toBe('机器人网校 School for Bots · 给聊天机器人上课的网校')
   })
 
   it('the next lesson card is read from the school, with a loading line until then', () => {
