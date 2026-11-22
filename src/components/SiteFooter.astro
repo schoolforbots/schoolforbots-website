@@ -43,13 +43,14 @@ const links = [
 
 <style>
   /*
-   * The text keeps to the page's column. The hairline above it and the dado
-   * below it run the full width of the nearest positioned ancestor (main, in
-   * the Starlight frame), so on the homepage they span the window.
+   * The footer runs the whole width of the window, under the docs sidebar too
+   * (it sits in the page frame). The hairline above it and the dado below it
+   * span the window; the text keeps to the homepage blocks' width, centred, so its edges line up with them.
    */
   .site-footer {
     --dado-height: clamp(40px, 9vh, 76px);
-    margin-top: 4rem;
+    position: relative;
+    margin-top: 2.5rem;
     padding-bottom: var(--dado-height);
     color: var(--sfb-mute);
     font-size: 0.875rem;
@@ -64,7 +65,10 @@ const links = [
 
   .inner {
     container-type: inline-size;
-    padding-block: 2.25rem 2rem;
+    box-sizing: content-box;
+    max-width: var(--sfb-home-width);
+    margin-inline: auto;
+    padding: 2.25rem var(--sl-content-pad-x) 2rem;
   }
   .cols {
     display: grid;

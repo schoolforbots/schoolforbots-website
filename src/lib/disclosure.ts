@@ -64,7 +64,7 @@ export function animateDisclosures() {
     if (!(details instanceof HTMLDetailsElement) || !details.hasAttribute('data-animate')) return
     if (summary !== details.querySelector(':scope > summary')) return
     // Links inside the summary keep working.
-    if (event.target.closest('a') && summary.contains(event.target.closest('a'))) return
+    if (event.target.closest('a') && summary!.contains(event.target.closest('a'))) return
     event.preventDefault()
     toggle(details)
   })
