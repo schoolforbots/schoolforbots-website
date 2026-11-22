@@ -315,4 +315,58 @@ main > .content-panel:has([data-site-footer]) > .sl-container {
   :where(.lift:hover) {
     transform: none;
   }
+
+/*
+ * Glossary terms in the docs (lib/glossary/hast-terms.mjs): a dashed line
+ * under the word, and its one-line explanation in a card above it on hover or
+ * keyboard focus. Specific enough that the general link styles do not reach it.
+ */
+.sl-markdown-content a.term,
+.sl-markdown-content a.term:hover,
+.sl-markdown-content a.term:focus-visible {
+  position: relative;
+  color: inherit;
+  background: none;
+  text-decoration: underline dashed var(--sfb-highlight) 1px;
+  text-underline-offset: 0.25em;
+}
+/* Hidden with visibility, so it stays out of the link's name until shown. */
+.sl-markdown-content a.term .term-tip {
+  position: absolute;
+  bottom: calc(100% + 0.375rem);
+  left: 50%;
+  z-index: 10;
+  width: max-content;
+  max-width: min(18rem, 80vw);
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--sfb-line);
+  border-radius: 0.5rem;
+  background: var(--sfb-surface);
+  box-shadow: 0 6px 16px -6px rgb(90 40 8 / 0.25);
+  color: var(--sfb-ink);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.6;
+  text-align: start;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-50%);
+  transition:
+    opacity 0.15s ease,
+    visibility 0.15s;
+}
+:root[data-theme='dark'] .sl-markdown-content a.term .term-tip {
+  box-shadow: 0 6px 16px -6px rgb(0 0 0 / 0.6);
+}
+.sl-markdown-content a.term:hover .term-tip,
+.sl-markdown-content a.term:focus-visible .term-tip {
+  opacity: 1;
+  visibility: visible;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sl-markdown-content a.term .term-tip {
+    transition: none;
+  }
 }

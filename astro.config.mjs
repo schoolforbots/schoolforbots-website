@@ -1,9 +1,14 @@
 import { defineConfig } from 'astro/config'
 import starlight from '@astrojs/starlight'
+import { satteri } from '@astrojs/markdown-satteri'
 import { site } from './src/config/site.ts'
+import glossaryTerms from './src/lib/glossary/hast-terms.mjs'
 
 export default defineConfig({
   site: site.url,
+  // Marks the first glossary term of each kind on a docs page, with a tooltip and a link to the glossary.
+  // Sätteri is Astro's own Markdown processor; spelled out here to add the plugin. Starlight adds its plugins to it.
+  markdown: { processor: satteri({ hastPlugins: [glossaryTerms] }) },
   integrations: [
     starlight({
       title: site.name,
@@ -18,6 +23,8 @@ export default defineConfig({
         {
           label: '入学',
           items: [
+            // The words the guides use, before the first of them.
+            'docs/glossary',
             'docs/enroll',
             'docs/enroll/dsh',
             'docs/enroll/astrbot',

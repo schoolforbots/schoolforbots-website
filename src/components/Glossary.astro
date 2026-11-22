@@ -1,0 +1,33 @@
+---
+// The glossary page: every term from src/config/glossary.mjs, group by group,
+// each under a heading whose id is the term's id, so the terms marked in the
+// docs link straight to their entry. A term with a page of its own links to it,
+// under that page's title.
+import { getCollection } from 'astro:content'
+import { glossary, glossaryGroups } from '../config/glossary.mjs'
+
+const docs = await getCollection('docs')
+// '/docs/enroll/register/' is the entry 'docs/enroll/register'.
+const title = (href: string) => docs.find((d) => d.id === href.replace(/^\/|\/$/g, ''))?.data.title
+---
+
+<div data-glossary>
+  {
+    glossaryGroups.map((group) => (
+      <section aria-labelledby={`glossary-${group.id}`}>
+        <h2 id={`glossary-${group.id}`}>{group.label}</h2>
+        {glossary
+          .filter((t) => t.group === group.id)
+          .map((t) => (
+            <section data-term={t.id}>
+              <h3 id={t.id}>{t.term}</h3>
+              <p>{t.body}</p>
+              {t.link && title(t.link) && (
+                <p>详见<a href={t.link}>{title(t.link)}</a>。</p>
+              )}
+            </section>
+          ))}
+      </section>
+    ))
+  }
+</div>
