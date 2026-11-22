@@ -315,6 +315,7 @@ main > .content-panel:has([data-site-footer]) > .sl-container {
   :where(.lift:hover) {
     transform: none;
   }
+}
 
 /*
  * Glossary terms in the docs (lib/glossary/hast-terms.mjs): a dashed line
@@ -368,5 +369,15 @@ main > .content-panel:has([data-site-footer]) > .sl-container {
 @media (prefers-reduced-motion: reduce) {
   .sl-markdown-content a.term .term-tip {
     transition: none;
+  }
+}
+/* Narrow screens: a card centred over a word near the edge would run off the screen, so it sits along the bottom instead. */
+@media (width < 40rem) {
+  .sl-markdown-content a.term .term-tip {
+    position: fixed;
+    inset: auto 1rem 1rem;
+    width: auto;
+    max-width: none;
+    transform: none;
   }
 }
