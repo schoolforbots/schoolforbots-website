@@ -119,7 +119,11 @@ export async function mountAllNoticeLists(): Promise<void> {
   }
   const now = new Date()
   for (const root of roots) renderNotices(root, view, now)
-  // A link to one notice lands on it once the list is drawn.
+  // A link to one notice lands on it once the list is drawn, and marks it: the notices arrive after
+  // the page has loaded, so the browser's own :target does not pick them up.
   const target = location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null
-  target?.scrollIntoView()
+  if (target?.classList.contains('notice')) {
+    target.classList.add('targeted')
+    target.scrollIntoView()
+  }
 }
