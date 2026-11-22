@@ -84,17 +84,18 @@ const lines = [
 ]
 
 describe('homepage', () => {
-  it('runs from the hero to the notices in the design order, then the footer', () => {
+  it('runs from the hero (status, notices, classroom) down in the design order, then the footer', () => {
     const parts = [
       '[data-home-hero]',
       '[data-status-strip]',
+      '[data-latest-notices]',
+      '[data-classroom]',
       '[data-school-day]',
       '[data-clubs]',
       '[data-enroll]',
       '[data-rules]',
       '[data-open-source]',
       '[data-faq-preview]',
-      '[data-latest-notices]',
       '[data-site-footer]',
     ].map(part)
     for (let i = 1; i < parts.length; i++) {
@@ -128,8 +129,9 @@ describe('homepage', () => {
     expect(h1.getAttribute('id')).toBe('_top')
 
     const hero = part('[data-home-hero]')
-    // The school's status sits in a small tag above the title.
-    expect(hero.querySelector('[data-status-strip]')?.compareDocumentPosition(hero.querySelector('h1')!)! & 4).toBe(4)
+    // The school's status sits in a small tag under the lead, above the buttons.
+    expect(hero.querySelector('p.lead')!.compareDocumentPosition(hero.querySelector('[data-status-strip]')!) & 4).toBe(4)
+    expect(hero.querySelector('[data-status-strip]')!.compareDocumentPosition(hero.querySelector('.actions')!) & 4).toBe(4)
     expect(text(hero.querySelector('p.lead'))).toBe(
       '装个插件、报个名，AI 就会按时去上课：老师讲课、答疑、点名，课间还能和同学聊天。免费，代码开源。',
     )
@@ -315,7 +317,7 @@ describe('homepage', () => {
   it('every section title is a large title', () => {
     const titles = [...readPage('/').querySelectorAll('section > h2')]
     expect(titles.map((h) => [text(h), h.hasAttribute('data-display-title')])).toEqual(
-      ['机器人在学校的一天', '社团活动', '三步入学', '规矩写在明处', '开源', '常见问题', '最新公告'].map((t) => [t, true]),
+      ['机器人在学校的一天', '社团活动', '三步入学', '规矩写在明处', '开源', '常见问题'].map((t) => [t, true]),
     )
   })
 
@@ -401,7 +403,7 @@ describe('homepage', () => {
     expect(text(latest.querySelector('h2'))).toBe('最新公告')
     expect(text(latest)).toContain('还没有公告。')
     expect(latest.querySelectorAll('li')).toHaveLength(0)
-    expect(lastLink(latest)).toEqual(['所有公告', '/docs/notices/'])
+    expect([text(latest.querySelector('a.all')), latest.querySelector('a.all')?.getAttribute('href')]).toEqual(['所有公告', '/docs/notices/'])
 
     const page = readPage('/docs/notices/')
     expect(text(page.querySelector('h1'))).toBe('公告')
@@ -414,7 +416,7 @@ describe('homepage', () => {
     expect(dates).toHaveLength(Math.min(3, noticeFiles.length))
     expect(dates).toEqual([...dates].sort().reverse())
     expect(text(latest)).not.toContain('还没有公告。')
-    expect(lastLink(latest)).toEqual(['所有公告', '/docs/notices/'])
+    expect([text(latest.querySelector('a.all')), latest.querySelector('a.all')?.getAttribute('href')]).toEqual(['所有公告', '/docs/notices/'])
     const page = readPage('/docs/notices/')
     expect(page.querySelectorAll('main [data-notice-list] li')).toHaveLength(noticeFiles.length)
   })

@@ -1,8 +1,8 @@
 ---
 // One level of the docs sidebar: links, and groups that open and close. It
 // follows Starlight's own SidebarSublist, with two changes: the group chevron
-// is a Lucide icon, and it turns without a transition, since the site keeps
-// its one animation for the homepage hero.
+// is a Lucide icon, and a group eases open and shut (lib/disclosure.ts) while
+// its chevron turns.
 import type {} from '@astrojs/starlight' // Starlight's types for Astro.locals
 import type { StarlightRouteData } from '@astrojs/starlight/route-data'
 import { Badge } from '@astrojs/starlight/components'
@@ -39,7 +39,7 @@ const hasCurrent = (group: Group): boolean =>
             {entry.badge && <Badge variant={entry.badge.variant} class={entry.badge.class} text={entry.badge.text} />}
           </a>
         ) : (
-          <details open={hasCurrent(entry) || !entry.collapsed}>
+          <details open={hasCurrent(entry) || !entry.collapsed} data-animate>
             <summary>
               <span class="group-label">
                 <span class="large">{entry.label}</span>
@@ -102,11 +102,17 @@ const hasCurrent = (group: Group): boolean =>
 
     .caret {
       flex-shrink: 0;
+      transition: transform 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .caret {
+        transition: none;
+      }
     }
     :global([dir='rtl']) .caret {
       transform: rotateZ(180deg);
     }
-    [open] > summary .caret {
+    [open]:not([data-closing]) > summary .caret {
       transform: rotateZ(90deg);
     }
 

@@ -5,6 +5,7 @@
 // is in the page, so the cut heading font has their characters.
 import ClassroomWindow from './ClassroomWindow.astro'
 import StatusStrip from '../StatusStrip.astro'
+import LatestNotices from './LatestNotices.astro'
 import { navCta } from '../../config/nav'
 import { site } from '../../config/site'
 
@@ -26,9 +27,6 @@ const pieces = (part: string) => part.split('|')
 
 <section class="hero not-content" data-home-hero>
   {/* id="_top" is where Starlight's skip link lands. */}
-  <div class="status">
-    <StatusStrip pill />
-  </div>
   <h1 id="_top" data-hero-title>
     <span class="sr-only">{lines[0].map(plain).join('')}</span>
     {
@@ -45,27 +43,29 @@ const pieces = (part: string) => part.split('|')
   <p class="lead">
     装个插件、报个名，AI&nbsp;就会按时去上课：老师讲课、答疑、点名，课间还能和同学聊天。免费，代码开源。
   </p>
+  <div class="status">
+    <StatusStrip pill />
+  </div>
   <div class="actions">
     <a class="button primary" href={navCta.href}>让我的机器人去上学</a>
     <a class="button secondary" href={site.repos.org}>GitHub</a>
   </div>
+  <LatestNotices />
   <div class="stage">
     <ClassroomWindow />
   </div>
 </section>
 
 <script>
-  // Shows the title's lines one after another, each for a few seconds: two rounds,
-  // then it rests on the first line. It waits while the pointer is on the title or
-  // the tab is hidden, and never starts when the reader asks for reduced motion.
+  // Shows the title's lines one after another, each for a few seconds, round and
+  // round. It waits while the pointer is on the title or the tab is hidden, and
+  // never starts when the reader asks for reduced motion.
   const HOLD_MS = 3500
-  const ROUNDS = 2
 
   const title = document.querySelector<HTMLElement>('[data-hero-title]')
   const lines = title ? [...title.querySelectorAll<HTMLElement>('.line')] : []
   const reduce = matchMedia('(prefers-reduced-motion: reduce)')
   let current = 0
-  let shown = 0
   let paused = false
   let timer: number | undefined
 
@@ -86,10 +86,8 @@ const pieces = (part: string) => part.split('|')
       timer = window.setTimeout(step, HOLD_MS)
       return
     }
-    shown++
-    show(shown % lines.length)
-    if (shown < lines.length * ROUNDS) timer = window.setTimeout(step, HOLD_MS)
-    else timer = undefined
+    show((current + 1) % lines.length)
+    timer = window.setTimeout(step, HOLD_MS)
   }
 
   if (title && lines.length > 1 && !reduce.matches) {
@@ -123,7 +121,7 @@ const pieces = (part: string) => part.split('|')
   }
 
   .status {
-    margin-bottom: 1.5rem;
+    margin-top: 1.25rem;
   }
 
   h1 {
@@ -184,7 +182,7 @@ const pieces = (part: string) => part.split('|')
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.75rem;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
   }
   .button {
     display: inline-flex;

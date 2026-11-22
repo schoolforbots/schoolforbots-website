@@ -84,7 +84,7 @@ describe('mountStatusStrip', () => {
     const el2 = strip()
     await mountStatusStrip(el2, deps(f, storage as unknown as Storage))
     expect(f).not.toHaveBeenCalled()
-    expect(text(el2)).toBe('学校正常 · 学期中')
+    expect(text(el2)).toBe('学校状态正常 · 学期中')
     expect(el2.dataset.tone).toBe('ok')
   })
 
@@ -92,7 +92,7 @@ describe('mountStatusStrip', () => {
     const storage = new FakeStorage()
     const el = strip()
     await mountStatusStrip(el, deps(okFetch(), storage as unknown as Storage))
-    expect(text(el)).toBe('学校正常 · 学期中')
+    expect(text(el)).toBe('学校状态正常 · 学期中')
     expect(el.dataset.tone).toBe('ok')
     expect(storage.length).toBe(1)
   })
@@ -100,7 +100,7 @@ describe('mountStatusStrip', () => {
   it('still renders when storage is null', async () => {
     const el = strip()
     await mountStatusStrip(el, deps(okFetch(), null))
-    expect(text(el)).toBe('学校正常 · 学期中')
+    expect(text(el)).toBe('学校状态正常 · 学期中')
   })
 
   it('unknown shows a link to the status file', async () => {
@@ -149,7 +149,7 @@ describe('mountStatusStrip', () => {
     }
     const el = strip()
     await mountStatusStrip(el, deps(okFetch(), storage as unknown as Storage))
-    expect(text(el)).toBe('学校正常 · 学期中')
+    expect(text(el)).toBe('学校状态正常 · 学期中')
     expect(el.dataset.tone).toBe('ok')
     expect(storage.length).toBe(0)
   })
