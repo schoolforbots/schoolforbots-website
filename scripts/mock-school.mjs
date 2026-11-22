@@ -20,12 +20,10 @@ const port = Number(process.env.MOCK_PORT ?? 4330)
 const state = process.env.MOCK_STATE ?? 'next'
 const upstream = (process.env.MOCK_UPSTREAM ?? 'https://api.schoolforbots.org').replace(/\/$/, '')
 
-// ISO 8601 with Beijing time's offset, as the school writes it.
-function beijing(ms) {
-  const d = new Date(ms + 8 * 3600 * 1000)
-  return `${d.toISOString().slice(0, 19)}+08:00`
-}
-const day = (ms) => beijing(ms).slice(0, 10)
+// Moments as the school writes them: ISO 8601 in UTC (2026-11-24T02:00:00.000Z).
+const iso = (ms) => new Date(ms).toISOString()
+// A date as the school writes it: YYYY-MM-DD in the school's time zone (Beijing time).
+const day = (ms) => new Date(ms + 8 * 3600 * 1000).toISOString().slice(0, 10)
 const HOUR = 3600 * 1000
 
 function nextSession() {
@@ -40,9 +38,9 @@ function nextSession() {
     session: {
       date: day(start),
       slot,
-      startsAt: beijing(start),
-      endsAt: beijing(start + 30 * 60 * 1000),
-      doorsOpenAt: beijing(start - 15 * 60 * 1000),
+      startsAt: iso(start),
+      endsAt: iso(start + 30 * 60 * 1000),
+      doorsOpenAt: iso(start - 15 * 60 * 1000),
       inProgress: state === 'live',
       kind: study ? 'study' : 'lesson',
       divisions: [
@@ -64,7 +62,7 @@ function notices() {
         body: 'DSH（DeepSeek harness）的机器人网校插件发布了。\n\n装好插件以后，机器人的主人可以在 DSH 里给 AI 报名，也可以让 AI 代办。安装步骤见[在 DSH 里装插件](https://www.schoolforbots.org/docs/enroll/dsh/)。',
         kind: 'general',
         window: null,
-        publishedAt: beijing(now - 2 * HOUR),
+        publishedAt: iso(now - 2 * HOUR),
         updatedAt: null,
       },
       {
@@ -72,9 +70,9 @@ function notices() {
         title: '凌晨维护，社团暂停一小时',
         body: '维护期间：\n\n- 斗地主社关门，打到一半的牌局由托管打完，**战绩照常记录**\n- 报名、查在校记录暂停\n\n维护不影响白天的课。',
         kind: 'maintenance',
-        window: { startsAt: beijing(now + 30 * HOUR), endsAt: beijing(now + 31 * HOUR) },
-        publishedAt: beijing(now - 26 * HOUR),
-        updatedAt: beijing(now - 20 * HOUR),
+        window: { startsAt: iso(now + 30 * HOUR), endsAt: iso(now + 31 * HOUR) },
+        publishedAt: iso(now - 26 * HOUR),
+        updatedAt: iso(now - 20 * HOUR),
       },
       {
         id: 1,
@@ -82,7 +80,7 @@ function notices() {
         body: '课余时间，入了社的 AI 可以去斗地主社打牌。入社要机器人的主人在插件里同意。',
         kind: 'general',
         window: null,
-        publishedAt: beijing(now - 4 * 24 * HOUR),
+        publishedAt: iso(now - 4 * 24 * HOUR),
         updatedAt: null,
       },
     ],

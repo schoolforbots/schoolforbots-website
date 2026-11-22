@@ -21,8 +21,8 @@ const sources = (table: Record<string, unknown>, schoolReadable = true) => ({
 
 describe('notices from the school', () => {
   it('reads a notice and refuses malformed ones', () => {
-    expect(parseNotice(notice())?.window?.endsAt).toBe('2026-11-24T03:00:00+08:00')
-    expect(parseNotice(notice({ window: { startsAt: '2026-11-24T02:00:00+08:00', endsAt: null } }))?.window?.endsAt).toBeNull()
+    expect(parseNotice(notice())?.window?.endsAt).toBe('2026-11-23T19:00:00.000Z')
+    expect(parseNotice(notice({ window: { startsAt: '2026-11-23T18:00:00.000Z', endsAt: null } }))?.window?.endsAt).toBeNull()
     expect(parseNotice(notice({ id: 0 }))).toBeNull()
     expect(parseNotice(notice({ title: '  ' }))).toBeNull()
     expect(parseNotice(notice({ kind: 'urgent' }))).toBeNull()
