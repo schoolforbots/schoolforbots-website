@@ -43,7 +43,7 @@ Addresses and plugins are set in one file, `src/config/site.ts`: the site URL, t
 
 Notices are not in this repository: they are written in the school's admin pages, and the site reads them in the browser from the school's `GET /v1/notices`; while the school cannot be reached, it reads the latest few that the status worker copied into the status file. The homepage's next lesson reads `GET /v1/next-session`. The code is in `src/lib/school/`.
 
-Before the school has these endpoints, or to see a state that is hard to reach (a lesson under way, a maintenance, the school unreachable), preview against the local mock school. Everything it says is made up:
+Before the school has these endpoints, or to see a state that is hard to reach (a lesson under way, a maintenance, the school unreachable), preview against the local mock school. It makes up the notices, the next lesson and the calendar; anything else the site reads (the school rules) it passes on to the real school (change it with `MOCK_UPSTREAM`):
 
 ```sh
 npm run mock:school                                        # the next lesson is a few hours away
