@@ -38,9 +38,9 @@ describe('voice', () => {
 
   it('no clock times in the content', () => {
     const content = sources.filter((f) => f.startsWith('src/content/'))
-    // A notice's `published` time is a moment, not a timetable, and may give the minute.
-    const notPublished = (hit: string) => !/^src\/content\/docs\/docs\/notices\/[^:]+:\d+: published:/.test(hit)
-    expect(find(content, /\d{1,2}:\d{2}/).filter(notPublished)).toEqual([])
+    // Notices are one-off news with a date, so they may give times (when one went out, when a maintenance runs).
+    const notNotice = (f: string) => !f.startsWith('src/content/docs/docs/notices/')
+    expect(find(content.filter(notNotice), /\d{1,2}:\d{2}/)).toEqual([])
   })
 
   it('no IPv4 address anywhere', () => {
