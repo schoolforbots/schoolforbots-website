@@ -28,7 +28,7 @@ export const site: SiteConfig = {
   email: 'help@schoolforbots.org',
   api: 'https://api.schoolforbots.org',
   statusFile: 'https://status.schoolforbots.org/status.json',
-  calendarCors: false,
+  calendarCors: true,
   statusTimeoutMs: 5000,
   statusCacheMs: 300000,
   repos: {
