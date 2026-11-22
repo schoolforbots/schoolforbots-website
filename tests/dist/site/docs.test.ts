@@ -1,9 +1,17 @@
 import { describe, expect, it } from 'vitest'
 import { site, type FrameworkId } from '../../../src/config/site'
+import { glossary, glossaryGroups } from '../../../src/config/glossary.mjs'
+import type { Element } from 'happy-dom'
 import { distExists, listDist, readDist, readPage } from '../helpers'
 
 const text = (el: { textContent: string | null } | null | undefined) =>
   el?.textContent?.replace(/\s+/g, ' ').trim() ?? ''
+// The text as a reader sees it, without the glossary tooltips that only show on hover.
+const prose = (el: Element | null | undefined) => {
+  const copy = el?.cloneNode(true) as Element | undefined
+  for (const tip of copy?.querySelectorAll('.term-tip') ?? []) tip.remove()
+  return text(copy)
+}
 
 const framework = (id: FrameworkId) => {
   const f = site.frameworks.find((x) => x.id === id)
@@ -19,6 +27,7 @@ const groups: { label: string | null; pages: [string, string][] }[] = [
   {
     label: '入学',
     pages: [
+      ['/docs/glossary/', '先认识几个词'],
       ['/docs/enroll/', '入学指南'],
       ['/docs/enroll/dsh/', installTitle('dsh')],
       ['/docs/enroll/astrbot/', installTitle('astrbot')],
@@ -176,7 +185,7 @@ describe('docs', () => {
         continue
       }
       expect(tags.map(text), f.id).toEqual(['待补', '待补'])
-      expect(text(content), f.id).toContain('这个框架的插件还没发布。发布以后，这里会写安装步骤。')
+      expect(prose(content), f.id).toContain('这个框架的插件还没发布。发布以后，这里会写安装步骤。')
       // The download section is there, and marked as missing too.
       const heading = [...(content?.querySelectorAll('h2') ?? [])].find((h) => text(h) === '下载安装包')
       expect(heading, f.id).toBeDefined()
@@ -233,6 +242,70 @@ describe('docs', () => {
       // Not wrapped in Starlight's "hide on wide screens" class.
       expect(page.querySelector('mobile-starlight-toc')?.closest('.lg\\:sl-hidden'), route).toBeNull()
     }
+  })
+
+  it('the glossary page has an entry for every term, under its id', () => {
+    const page = readPage('/docs/glossary/')
+    const content = page.querySelector('.sl-markdown-content')
+    for (const t of glossary) {
+      const heading = content?.querySelector(`h3#${t.id}`)
+      expect(text(heading), t.id).toBe(t.term)
+      expect(text(heading?.closest('[data-term]')), t.id).toContain(t.body)
+    }
+    expect(content?.querySelectorAll('[data-term]')).toHaveLength(glossary.length)
+    expect([...(content?.querySelectorAll('h2') ?? [])].map(text)).toEqual(glossaryGroups.map((g) => g.label))
+    // The glossary page explains the words; it does not mark them.
+    expect(content?.querySelector('a.term')).toBeNull()
+  })
+
+  it('docs pages mark the first 学号 and 钥匙 with a tooltip and a link to the glossary', () => {
+    const content = readPage('/docs/enroll/register/').querySelector('.sl-markdown-content')
+    for (const id of ['student-id', 'key']) {
+      const term = glossary.find((t) => t.id === id)
+      if (!term) throw new Error(`no term ${id} in the glossary`)
+      const marked = [...(content?.querySelectorAll(`a.term[href="/docs/glossary/#${id}"]`) ?? [])]
+      expect(marked, id).toHaveLength(1)
+      const a = marked[0]
+      expect(a.firstChild?.textContent, id).toBe(term.term)
+      expect(a.getAttribute('aria-describedby'), id).toBe(`term-tip-${id}`)
+      const tip = a.querySelector('.term-tip')
+      expect(tip?.getAttribute('role'), id).toBe('tooltip')
+      expect(tip?.id, id).toBe(`term-tip-${id}`)
+      expect(text(tip), id).toBe(term.short)
+    }
+  })
+
+  it('each term is marked at most once a page, never in a heading or a link, and ids do not repeat', () => {
+    const files = listDist('.html').filter((f) => f.startsWith('docs/'))
+    let marked = 0
+    for (const file of files) {
+      const content = readPage(`/${file}`).querySelector('.sl-markdown-content')
+      const terms = [...(content?.querySelectorAll('a.term') ?? [])]
+      marked += terms.length
+      const hrefs = terms.map((a) => a.getAttribute('href'))
+      expect(new Set(hrefs).size, file).toBe(hrefs.length)
+      for (const a of terms) {
+        expect(a.parentElement?.closest('a, h1, h2, h3, h4, h5, h6, code, .not-content'), file).toBeNull()
+      }
+      const ids = [...(content?.querySelectorAll('[id]') ?? [])].map((el) => el.id)
+      expect(new Set(ids).size, file).toBe(ids.length)
+    }
+    expect(marked).toBeGreaterThan(0)
+    // Headings and links that contain a term keep it as plain text.
+    const suspended = readPage('/docs/help/suspended/').querySelector('.sl-markdown-content')
+    const headings = [...(suspended?.querySelectorAll('h2') ?? [])].filter((h) => text(h).includes('停课'))
+    expect(headings.length).toBeGreaterThan(0)
+    for (const h of headings) expect(h.querySelector('.term')).toBeNull()
+    expect(suspended?.querySelectorAll('a.term[href$="#suspension"]')).toHaveLength(1)
+    const register = readPage('/docs/enroll/register/').querySelector('.sl-markdown-content')
+    const links = [...(register?.querySelectorAll('a[href="/docs/school-life/new-key/"]') ?? [])]
+    expect(links.length).toBeGreaterThan(0)
+    for (const a of links) {
+      expect(text(a)).toContain('钥匙')
+      expect(a.querySelector('.term')).toBeNull()
+    }
+    // 机器人的主人 is too common to mark.
+    expect(readPage('/docs/school-life/summaries/').querySelector('a.term[href$="#owner"]')).toBeNull()
   })
 
   it('search speaks Chinese', () => {
