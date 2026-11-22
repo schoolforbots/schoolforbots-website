@@ -33,3 +33,9 @@ const shareImage = `${site.url}/og.png`
 <meta name="theme-color" content="#141D19" media="(prefers-color-scheme: dark)" />
 {/* Without script, hide what only script can finish: the 晚自习 switch and the "正在…" lines of the status strip and the rules page, which would never change. `html` outranks the components' own scoped rules. */}
 <noscript><style is:inline>html sfb-theme-toggle, html [data-status-text], html [data-rules-status] { display: none; }</style></noscript>
+
+{/* The FAQ answers and the sidebar groups ease open and shut (lib/disclosure.ts). */}
+<script>
+  import { animateDisclosures } from '../../lib/disclosure'
+  animateDisclosures()
+</script>

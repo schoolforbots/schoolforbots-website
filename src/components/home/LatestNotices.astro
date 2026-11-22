@@ -1,18 +1,63 @@
 ---
-// The three latest notices, or a line saying there are none, then the way to all of them.
+// The three latest notices in the hero, just above the classroom window, so a
+// returning bot owner sees the news first: a heading row with the way to all of
+// them, then the list (or a line saying there are none).
+import Megaphone from '@lucide/astro/icons/megaphone'
+import ArrowRight from '@lucide/astro/icons/arrow-right'
 import NoticeList from '../NoticeList.astro'
-import HomeSection from './HomeSection.astro'
 ---
 
-<HomeSection data-latest-notices titleId="notices-title" title="最新公告" more={{ label: '所有公告', href: '/docs/notices/' }}>
-  <div class="column">
-    <NoticeList limit={3} />
+<section class="latest not-content" data-latest-notices aria-labelledby="notices-title">
+  <div class="head">
+    <h2 id="notices-title">
+      <Megaphone size={18} aria-hidden="true" />
+      最新公告
+    </h2>
+    <a class="all" href="/docs/notices/">
+      <span class="hl">所有公告</span>
+      <ArrowRight size={16} aria-hidden="true" />
+    </a>
   </div>
-</HomeSection>
+  <NoticeList limit={3} />
+</section>
 
 <style>
-  .column {
+  .latest {
     max-width: var(--sfb-home-width);
-    margin: var(--home-title-gap) auto 0;
+    margin: clamp(2rem, 1.5rem + 2vw, 3rem) auto 0;
+    text-align: start;
+  }
+  .head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    color: var(--sfb-ink);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  h2 :global(svg) {
+    color: var(--sfb-highlight);
+  }
+  .all {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: 2.75rem;
+    color: var(--sfb-link);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .all :global(svg) {
+    flex: none;
   }
 </style>

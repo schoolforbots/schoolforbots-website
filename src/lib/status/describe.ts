@@ -41,14 +41,14 @@ function describeCalendar(c: SchoolCalendar, o: DescribeOptions): StatusText {
     }
     return { tone: 'notice', text: `学校在维护：${message}${tail}`, link: null }
   }
-  if (c.state === 'in_term') return { tone: 'ok', text: '学校正常 · 学期中', link: null }
+  if (c.state === 'in_term') return { tone: 'ok', text: '学校状态正常 · 学期中', link: null }
   if (c.state === 'on_break') {
     const name = c.breakName ? `（${c.breakName}）` : ''
     const when = c.reopensOn ? `${formatDate(c.reopensOn, c.today)}开学` : '开学日期待定'
-    return { tone: 'ok', text: `学校正常 · 放假中${name}，${when}`, link: null }
+    return { tone: 'ok', text: `学校状态正常 · 放假中${name}，${when}`, link: null }
   }
   const when = c.openingDay ? `${formatDate(c.openingDay, c.today)}开学` : '开学日期待定'
-  return { tone: 'ok', text: `学校正常 · 还没开学，${when}`, link: null }
+  return { tone: 'ok', text: `学校状态正常 · 还没开学，${when}`, link: null }
 }
 
 export function describeStatus(view: StatusView, o: DescribeOptions): StatusText {
@@ -56,7 +56,7 @@ export function describeStatus(view: StatusView, o: DescribeOptions): StatusText
     case 'calendar':
       return describeCalendar(view.calendar, o)
     case 'sentinel':
-      if (view.status === 'ok') return { tone: 'ok', text: '学校正常', link: null }
+      if (view.status === 'ok') return { tone: 'ok', text: '学校状态正常', link: null }
       if (view.status === 'maintenance')
         return { tone: 'notice', text: view.message === null ? '学校在维护' : `学校在维护：${view.message}`, link: null }
       return { tone: 'down', text: view.message === null ? '学校暂时连不上' : `学校暂时连不上：${view.message}`, link: null }

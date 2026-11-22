@@ -22,32 +22,32 @@ const d = (v: StatusView) => describeStatus(v, opts)
 describe('describeStatus', () => {
   it('in term says 学期中 and never 今天', () => {
     const r = d(cal({}))
-    expect(r).toEqual({ tone: 'ok', text: '学校正常 · 学期中', link: null })
+    expect(r).toEqual({ tone: 'ok', text: '学校状态正常 · 学期中', link: null })
     expect(r.text).not.toContain('今天')
   })
 
   it('on break with a name and a date', () => {
     const r = d(cal({ today: '2027-01-20', state: 'on_break', breakName: '寒假', reopensOn: '2027-02-16' }))
-    expect(r).toEqual({ tone: 'ok', text: '学校正常 · 放假中（寒假），2月16日开学', link: null })
+    expect(r).toEqual({ tone: 'ok', text: '学校状态正常 · 放假中（寒假），2月16日开学', link: null })
   })
 
   it('on break without a name drops the brackets', () => {
-    expect(d(cal({ state: 'on_break', reopensOn: '2026-12-01' })).text).toBe('学校正常 · 放假中，12月1日开学')
+    expect(d(cal({ state: 'on_break', reopensOn: '2026-12-01' })).text).toBe('学校状态正常 · 放假中，12月1日开学')
   })
 
   it('a date in another year shows the year', () => {
     const r = d(cal({ today: '2026-12-30', state: 'on_break', breakName: '元旦', reopensOn: '2027-01-04' }))
     expect(r.text.endsWith('2027年1月4日开学')).toBe(true)
-    expect(d(cal({ state: 'not_started', openingDay: '2027-03-01' })).text).toBe('学校正常 · 还没开学，2027年3月1日开学')
+    expect(d(cal({ state: 'not_started', openingDay: '2027-03-01' })).text).toBe('学校状态正常 · 还没开学，2027年3月1日开学')
   })
 
   it('no date yet says 开学日期待定', () => {
-    expect(d(cal({ state: 'on_break', breakName: '寒假' })).text).toBe('学校正常 · 放假中（寒假），开学日期待定')
-    expect(d(cal({ state: 'not_started' })).text).toBe('学校正常 · 还没开学，开学日期待定')
+    expect(d(cal({ state: 'on_break', breakName: '寒假' })).text).toBe('学校状态正常 · 放假中（寒假），开学日期待定')
+    expect(d(cal({ state: 'not_started' })).text).toBe('学校状态正常 · 还没开学，开学日期待定')
   })
 
   it('not_started with a date', () => {
-    expect(d(cal({ state: 'not_started', openingDay: '2026-12-01' })).text).toBe('学校正常 · 还没开学，12月1日开学')
+    expect(d(cal({ state: 'not_started', openingDay: '2026-12-01' })).text).toBe('学校状态正常 · 还没开学，12月1日开学')
   })
 
   it('maintenance without expectedBackAt', () => {
@@ -73,7 +73,7 @@ describe('describeStatus', () => {
   })
 
   it('sentinel texts', () => {
-    expect(d({ kind: 'sentinel', status: 'ok', message: null })).toEqual({ tone: 'ok', text: '学校正常', link: null })
+    expect(d({ kind: 'sentinel', status: 'ok', message: null })).toEqual({ tone: 'ok', text: '学校状态正常', link: null })
     expect(d({ kind: 'sentinel', status: 'maintenance', message: '换机器' }).text).toBe('学校在维护：换机器')
     expect(d({ kind: 'sentinel', status: 'maintenance', message: null })).toEqual({ tone: 'notice', text: '学校在维护', link: null })
     expect(d({ kind: 'sentinel', status: 'down', message: '故障' })).toEqual({ tone: 'down', text: '学校暂时连不上：故障', link: null })
