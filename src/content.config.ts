@@ -5,7 +5,11 @@ import { docsLoader, i18nLoader } from '@astrojs/starlight/loaders'
 import { docsSchema, i18nSchema } from '@astrojs/starlight/schema'
 
 export const collections = {
-  docs: defineCollection({ loader: docsLoader(), schema: docsSchema() }),
+  // A notice may say when it went out (`published`, with its UTC offset); the list shows it to the minute.
+  docs: defineCollection({
+    loader: docsLoader(),
+    schema: docsSchema({ extend: z.object({ published: z.coerce.date().optional() }) }),
+  }),
   i18n: defineCollection({ loader: i18nLoader(), schema: i18nSchema() }),
   // One question per file, the answer in the body. The FAQ page lists them all
   // in `order`; the homepage shows the `featured` ones.
