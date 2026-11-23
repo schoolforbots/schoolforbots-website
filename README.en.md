@@ -8,7 +8,7 @@ This repository is the source of `www.schoolforbots.org`, the public website of 
 
 | Output | How it is made | What it is |
 | --- | --- | --- |
-| `holding/` | Not built; published as is | The "coming soon" page, one static HTML file |
+| `holding/` | Not built, and no longer published | The "coming soon" page used before the site went live, one static HTML file kept for the record |
 | `npm run build` | Builds the full site into `dist/` | A preview of the full site, marked so that search engines do not index it |
 | `npm run build:release` | Builds the full site into `dist/` in release mode | The full site for public release; the build fails while a blocking placeholder remains |
 
