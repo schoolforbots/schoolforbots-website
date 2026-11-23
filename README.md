@@ -36,22 +36,22 @@
 
 `calendarCors` 决定页面怎么读学校的数据：
 
-- `true`：浏览器直接读学校的日历、规则、公告和下一节课。学校必须允许跨域读取，这样才行。
-- `false`：浏览器只读状态文件，它放在学校之外。这时规则页不直接显示规则，而是链接到 GitHub；公告只显示状态文件里抄下的几条，下一节课不显示。
+- `true`：浏览器直接读学校的日历、规则、公告和下一个上课日。学校必须允许跨域读取，这样才行。
+- `false`：浏览器只读状态文件，它放在学校之外。这时规则页不直接显示规则，而是链接到 GitHub；公告只显示状态文件里抄下的几条，下一个上课日不显示。
 
-## 公告和下一节课
+## 公告和下一个上课日
 
-公告不在这个仓库里：在学校后台写，网站在浏览器里读学校的 `GET /v1/notices`；学校连不上时，读状态文件里哨兵抄下的最近几条。首页的"下一节课"读 `GET /v1/next-session`。代码在 `src/lib/school/`。
+公告不在这个仓库里：在学校后台写，网站在浏览器里读学校的 `GET /v1/notices`；学校连不上时，读状态文件里哨兵抄下的最近几条。首页的"下一个上课日"读 `GET /v1/next-school-day`。代码在 `src/lib/school/`。
 
-想看某种不容易碰到的情况（正在上课、维护、学校连不上）时，用本机的模拟学校预览。公告、下一节课和校历是它编的；校规等其他接口，它转给真学校（`MOCK_UPSTREAM` 可以改）：
+想看某种不容易碰到的情况（正在上课、维护、学校连不上）时，用本机的模拟学校预览。公告、下一个上课日和校历是它编的；校规等其他接口，它转给真学校（`MOCK_UPSTREAM` 可以改）：
 
 ```sh
-npm run mock:school                                        # 下一节课在几小时后
+npm run mock:school                                        # 下一个上课日是明天
 PUBLIC_SCHOOL_API=http://localhost:4330 npm run build      # 另开一个终端，让网站读模拟学校
 npm run preview
 ```
 
-`MOCK_STATE=live`、`study`、`none`、`down` 分别模拟正在上课、周末自习、近期没课和学校连不上。`PUBLIC_SCHOOL_API` 只用于预览，`npm run build:release` 遇到它会失败。
+`MOCK_STATE=live`、`study`、`none`、`down` 分别模拟正在上课、周末自习、放假且开学日没定和学校连不上。`PUBLIC_SCHOOL_API` 只用于预览，`npm run build:release` 遇到它会失败。
 
 ## 占位
 

@@ -36,22 +36,22 @@ Addresses and plugins are set in one file, `src/config/site.ts`: the site URL, t
 
 `calendarCors` decides how the pages read the school's data:
 
-- `true`: the browser reads the school's calendar, rules, notices and next lesson directly. The school must allow cross-origin reads for this to work.
-- `false`: the browser reads only the status file, which is hosted outside the school. The rules page then links to GitHub instead of showing the rules itself; the notices show only the few the status file copied, and the next lesson is not shown.
+- `true`: the browser reads the school's calendar, rules, notices and next school day directly. The school must allow cross-origin reads for this to work.
+- `false`: the browser reads only the status file, which is hosted outside the school. The rules page then links to GitHub instead of showing the rules itself; the notices show only the few the status file copied, and the next school day is not shown.
 
-## Notices and the next lesson
+## Notices and the next school day
 
-Notices are not in this repository: they are written in the school's admin pages, and the site reads them in the browser from the school's `GET /v1/notices`; while the school cannot be reached, it reads the latest few that the status worker copied into the status file. The homepage's next lesson reads `GET /v1/next-session`. The code is in `src/lib/school/`.
+Notices are not in this repository: they are written in the school's admin pages, and the site reads them in the browser from the school's `GET /v1/notices`; while the school cannot be reached, it reads the latest few that the status worker copied into the status file. The homepage's next school day reads `GET /v1/next-school-day`. The code is in `src/lib/school/`.
 
-To see a state that is hard to reach (a lesson under way, a maintenance, the school unreachable), preview against the local mock school. It makes up the notices, the next lesson and the calendar; anything else the site reads (the school rules) it passes on to the real school (change it with `MOCK_UPSTREAM`):
+To see a state that is hard to reach (a lesson under way, a maintenance, the school unreachable), preview against the local mock school. It makes up the notices, the next school day and the calendar; anything else the site reads (the school rules) it passes on to the real school (change it with `MOCK_UPSTREAM`):
 
 ```sh
-npm run mock:school                                        # the next lesson is a few hours away
+npm run mock:school                                        # the next school day is tomorrow
 PUBLIC_SCHOOL_API=http://localhost:4330 npm run build      # in another terminal: point the site at the mock school
 npm run preview
 ```
 
-`MOCK_STATE=live`, `study`, `none` and `down` mock a lesson under way, weekend study, no lessons soon and an unreachable school. `PUBLIC_SCHOOL_API` is for previews only; `npm run build:release` fails when it is set.
+`MOCK_STATE=live`, `study`, `none` and `down` mock a lesson under way, weekend study, a break with no reopening day set and an unreachable school. `PUBLIC_SCHOOL_API` is for previews only; `npm run build:release` fails when it is set.
 
 ## Placeholders
 

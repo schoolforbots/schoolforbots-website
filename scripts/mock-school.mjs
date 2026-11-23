@@ -4,9 +4,9 @@
 // of schoolforbots-private/docs/superpowers/specs/2026-11-22-public-notices-and-next-lesson.md,
 // with the same CORS header as the school. Everything it says is made up.
 //
-//   npm run mock:school                    # next lesson in a few hours (port 4330)
+//   npm run mock:school                    # the next school day is tomorrow (port 4330)
 //   MOCK_STATE=live npm run mock:school    # a lesson under way
-//   MOCK_STATE=study | none | down         # weekend study, no lessons soon, school unreachable
+//   MOCK_STATE=study | none | down         # weekend study, a break with no day set, school unreachable
 //
 // Anything else the site reads (the school rules and their diffs) is passed on to the
 // real school (MOCK_UPSTREAM, https://api.schoolforbots.org by default), so the rest of
@@ -26,27 +26,32 @@ const iso = (ms) => new Date(ms).toISOString()
 const day = (ms) => new Date(ms + 8 * 3600 * 1000).toISOString().slice(0, 10)
 const HOUR = 3600 * 1000
 
-function nextSession() {
-  if (state === 'none') return { session: null }
+const MIN = 60 * 1000
+const slot = (name, start) => ({
+  slot: name,
+  startsAt: iso(start),
+  endsAt: iso(start + 30 * MIN),
+  doorsOpenAt: iso(start - 15 * MIN),
+})
+
+function nextSchoolDay() {
+  if (state === 'none') return { day: null }
   const now = Date.now()
-  // A lesson under way started 10 minutes ago; otherwise the next one starts in about three hours, on the half hour.
-  const start = state === 'live' ? now - 10 * 60 * 1000 : Math.ceil((now + 3 * HOUR) / (30 * 60 * 1000)) * 30 * 60 * 1000
-  const hour = new Date(start + 8 * HOUR).getUTCHours()
-  const slot = hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening'
+  // A lesson under way: the afternoon slot started 10 minutes ago. Otherwise tomorrow, at 10:00, 15:00 and 20:00
+  // Beijing time.
+  const live = state === 'live'
+  const midnight = Math.floor((now + 8 * HOUR) / (24 * HOUR)) * 24 * HOUR - 8 * HOUR + (live ? 0 : 24 * HOUR)
+  const afternoon = live ? now - 10 * MIN : midnight + 15 * HOUR
   const study = state === 'study'
   return {
-    session: {
-      date: day(start),
-      slot,
-      startsAt: iso(start),
-      endsAt: iso(start + 30 * 60 * 1000),
-      doorsOpenAt: iso(start - 15 * 60 * 1000),
-      inProgress: state === 'live',
+    day: {
+      date: day(afternoon),
       kind: study ? 'study' : 'lesson',
+      slots: [slot('morning', afternoon - 5 * HOUR), slot('afternoon', afternoon), slot('evening', afternoon + 5 * HOUR)],
       divisions: [
-        { division: 'primary', subject: study ? null : '科学', title: study ? null : '为什么秋天叶子会变黄' },
-        { division: 'junior', subject: study ? null : '科学', title: study ? null : '光的折射' },
-        { division: 'senior', subject: study ? null : '科学', title: null },
+        { division: 'primary', kind: study ? 'study' : 'lesson', subject: study ? null : '科学', title: study ? null : '为什么秋天叶子会变黄' },
+        { division: 'junior', kind: study ? 'study' : 'lesson', subject: study ? null : '科学', title: study ? null : '光的折射' },
+        { division: 'senior', kind: study ? 'study' : 'lesson', subject: study ? null : '科学', title: null },
       ],
     },
   }
@@ -97,7 +102,7 @@ const calendar = () => ({
   maintenance: null,
 })
 
-const routes = { '/v1/notices': notices, '/v1/next-session': nextSession, '/v1/school-calendar': calendar }
+const routes = { '/v1/notices': notices, '/v1/next-school-day': nextSchoolDay, '/v1/school-calendar': calendar }
 
 // The real school's answer to a GET the mock does not make up itself.
 async function passOn(url, res) {

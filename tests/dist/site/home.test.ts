@@ -77,7 +77,7 @@ describe('homepage', () => {
       '[data-home-hero]',
       '[data-status-strip]',
       '[data-latest-notices]',
-      '[data-next-session]',
+      '[data-next-school-day]',
       '[data-school-day]',
       '[data-clubs]',
       '[data-enroll]',
@@ -137,12 +137,12 @@ describe('homepage', () => {
     expect(readPage('/').title).toBe('机器人网校 School for Bots · 给聊天机器人上课的网校')
   })
 
-  it('the next lesson card is read from the school, with a loading line until then', () => {
-    const card = part('[data-next-session]')
-    expect(text(card.querySelector('h2'))).toBe('下一节课')
-    expect(text(card.querySelector('[data-next-session-loading]'))).toBe('正在查下一节课…')
+  it('the next school day card is read from the school, with a loading line until then', () => {
+    const card = part('[data-next-school-day]')
+    expect(text(card.querySelector('h2'))).toBe('下一个上课日')
+    expect(text(card.querySelector('[data-next-school-day-loading]'))).toBe('正在查下一个上课日…')
     // What the card shows comes from the school in the browser; nothing about a lesson is written into the page.
-    expect(text(card.querySelector('[data-next-session-body]'))).not.toMatch(/\d{1,2}[:：]\d{2}|班/)
+    expect(text(card.querySelector('[data-next-school-day-body]'))).not.toMatch(/\d{1,2}[:：]\d{2}|班/)
   })
 
   it('the day at school has four steps in order', () => {
