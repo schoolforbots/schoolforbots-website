@@ -77,15 +77,18 @@ describe('site shell', () => {
     }
   })
 
-  it('the theme toggle is a labelled button', () => {
+  it('the theme toggle names the theme that is on and what pressing it does', () => {
     for (const route of pages) {
-      const buttons = [...header(route).querySelectorAll('sfb-theme-toggle button[aria-label]')]
+      const buttons = [...header(route).querySelectorAll('sfb-theme-toggle button')]
       expect(buttons.length, route).toBeGreaterThan(0)
       for (const button of buttons) {
         expect(button.getAttribute('type')).toBe('button')
-        expect(button.getAttribute('aria-label')).toBe('晚自习（深色模式）')
-        expect(button.hasAttribute('aria-pressed')).toBe(true)
-        expect(text(button)).toBe('晚自习')
+        // The name comes from the visible word, so it must not be overridden.
+        expect(button.hasAttribute('aria-label')).toBe(false)
+        expect(text(button.querySelector('.day')!)).toBe('白天，点按换成晚自习（深色模式）')
+        expect(text(button.querySelector('.night')!)).toBe('晚自习，点按换成白天')
+        expect(button.querySelector('.day .sr-only')).not.toBeNull()
+        expect(button.querySelector('.night .sr-only')).not.toBeNull()
       }
     }
   })

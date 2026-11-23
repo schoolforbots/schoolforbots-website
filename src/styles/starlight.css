@@ -420,6 +420,36 @@ summary {
   animation: none;
   height: 100%;
 }
+/*
+ * Changing between day and 晚自习 (ThemeSelect.astro): the whole page, top bar
+ * and sidebar included, cross-fades from one theme to the other. Only the
+ * pressed switch keeps a name, so it is drawn live on top and its knob slides.
+ */
+:root.sfb-theme-changing .header,
+:root.sfb-theme-changing .sidebar-pane,
+:root.sfb-theme-changing .current-mark {
+  view-transition-name: none;
+}
+:root.sfb-theme-changing::view-transition-old(root) {
+  animation: 0.4s ease both sfb-page-out;
+}
+:root.sfb-theme-changing::view-transition-new(root) {
+  animation: 0.4s ease both sfb-theme-in;
+}
+:root.sfb-theme-changing::view-transition-old(sfb-theme-toggle) {
+  display: none;
+}
+:root.sfb-theme-changing::view-transition-new(sfb-theme-toggle) {
+  animation: none;
+}
+:root.sfb-theme-changing::view-transition-group(sfb-theme-toggle) {
+  animation-duration: 0s;
+}
+@keyframes sfb-theme-in {
+  from {
+    opacity: 0;
+  }
+}
 @keyframes sfb-page-out {
   to {
     opacity: 0;

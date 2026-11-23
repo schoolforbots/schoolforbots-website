@@ -1,27 +1,23 @@
 ---
 // 晚自习: the dark-mode switch, in place of Starlight's theme menu. The choice is
 // kept where Starlight keeps it, so Starlight's ThemeProvider applies it before
-// the first paint on every page.
+// the first paint on every page, and the switch draws itself from that
+// `data-theme`, so it is right on first paint with no script of its own.
+//
+// The words say which theme is on: 白天 or 晚自习. The one not shown is
+// `visibility: hidden`, out of the accessibility tree, so the button's name is
+// the visible word plus what pressing it does.
 ---
 
 <sfb-theme-toggle>
-  <button
-    type="button"
-    class="toggle"
-    aria-pressed="false"
-    aria-label="晚自习（深色模式）"
-    title="深色模式"
-  >
-    <span class="track" aria-hidden="true"><span class="knob"></span></span><span class="label">晚自习</span>
+  <button type="button" class="toggle" title="切换白天和晚自习（深色模式）">
+    <span class="track" aria-hidden="true"><span class="knob"></span></span>
+    <span class="label">
+      <span class="day">白天<span class="sr-only">，点按换成晚自习（深色模式）</span></span>
+      <span class="night">晚自习<span class="sr-only">，点按换成白天</span></span>
+    </span>
   </button>
 </sfb-theme-toggle>
-
-{/* Inline so the switch is drawn in the right position on first paint; ThemeProvider has already set data-theme. */}
-<script is:inline>
-  document.querySelectorAll('sfb-theme-toggle button').forEach(function (button) {
-    button.setAttribute('aria-pressed', String(document.documentElement.dataset.theme === 'dark'))
-  })
-</script>
 
 <script>
   type Theme = 'light' | 'dark'
@@ -31,6 +27,7 @@
   // The browser bar takes the colour of the top of the page.
   const barColour: Record<Theme, string> = { light: '#FDF4E3', dark: '#141D19' }
   const system = matchMedia('(prefers-color-scheme: dark)')
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)')
 
   function chosen(): Theme | null {
     try {
@@ -52,9 +49,6 @@
   // A choice paints both browser-bar colours; with none, each keeps the colour for its own system setting.
   function show(theme: Theme, isChoice: boolean): void {
     document.documentElement.dataset.theme = theme
-    document.querySelectorAll('sfb-theme-toggle button').forEach((button) => {
-      button.setAttribute('aria-pressed', String(theme === 'dark'))
-    })
     document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => {
       const own: Theme = meta.getAttribute('media')?.includes('dark') ? 'dark' : 'light'
       meta.setAttribute('content', barColour[isChoice ? theme : own])
@@ -66,12 +60,34 @@
     show(choice ?? (system.matches ? 'dark' : 'light'), choice !== null)
   }
 
+  // Day turns to night (and back) as one cross-fade of the whole page, while the
+  // pressed switch stays live above it so its knob is seen sliding across
+  // (`sfb-theme-changing` in starlight.css). Without view transitions, or with
+  // reduced motion, the theme changes at once and only the knob slides.
+  function change(next: Theme, button: HTMLElement): void {
+    const apply = () => {
+      choose(next)
+      show(next, true)
+    }
+    if (reduce.matches || typeof document.startViewTransition !== 'function') {
+      apply()
+      return
+    }
+    const root = document.documentElement
+    root.classList.add('sfb-theme-changing')
+    button.style.viewTransitionName = 'sfb-theme-toggle'
+    const done = () => {
+      root.classList.remove('sfb-theme-changing')
+      button.style.viewTransitionName = ''
+    }
+    document.startViewTransition(apply).finished.then(done, done)
+  }
+
   class ThemeToggle extends HTMLElement {
     connectedCallback() {
-      this.querySelector('button')?.addEventListener('click', () => {
-        const next: Theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'
-        choose(next)
-        show(next, true)
+      const button = this.querySelector('button')
+      button?.addEventListener('click', () => {
+        change(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark', button)
       })
     }
   }
@@ -126,6 +142,7 @@
     height: 18px;
     border-radius: 9px;
     background: var(--sfb-line);
+    transition: background-color 0.28s ease;
   }
   .knob {
     position: absolute;
@@ -135,12 +152,52 @@
     height: 12px;
     border-radius: 50%;
     background: var(--sfb-mute);
+    transition:
+      transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1),
+      background-color 0.28s ease;
   }
-  .toggle[aria-pressed='true'] .track {
+  /* Pressed, the knob stretches toward where it is going, as a finger drags it. */
+  .toggle:active .knob {
+    width: 15px;
+  }
+  :global([data-theme='dark']) .track {
     background: var(--sfb-btn);
   }
-  .toggle[aria-pressed='true'] .knob {
+  :global([data-theme='dark']) .knob {
     transform: translateX(12px);
     background: var(--sfb-btn-ink);
+  }
+  :global([data-theme='dark']) .toggle:active .knob {
+    transform: translateX(9px);
+  }
+
+  /* Both words in one cell, so the button keeps the width of the longer one and does not jump. */
+  .label {
+    display: inline-grid;
+  }
+  .day,
+  .night {
+    grid-area: 1 / 1;
+    transition:
+      opacity 0.2s ease,
+      visibility 0.2s;
+  }
+  .night,
+  :global([data-theme='dark']) .day {
+    visibility: hidden;
+    opacity: 0;
+  }
+  :global([data-theme='dark']) .night {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .track,
+    .knob,
+    .day,
+    .night {
+      transition: none;
+    }
   }
 </style>
