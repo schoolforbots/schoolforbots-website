@@ -8,7 +8,7 @@ This repository is the source of `www.schoolforbots.org`, the public website of 
 
 | Output | How it is made | What it is |
 | --- | --- | --- |
-| `holding/` | Not built; published as is | The "coming soon" page, one static HTML file |
+| `holding/` | Not built, and no longer published | The "coming soon" page used before the site went live, one static HTML file kept for the record |
 | `npm run build` | Builds the full site into `dist/` | A preview of the full site, marked so that search engines do not index it |
 | `npm run build:release` | Builds the full site into `dist/` in release mode | The full site for public release; the build fails while a blocking placeholder remains |
 
@@ -43,7 +43,7 @@ Addresses and plugins are set in one file, `src/config/site.ts`: the site URL, t
 
 Notices are not in this repository: they are written in the school's admin pages, and the site reads them in the browser from the school's `GET /v1/notices`; while the school cannot be reached, it reads the latest few that the status worker copied into the status file. The homepage's next lesson reads `GET /v1/next-session`. The code is in `src/lib/school/`.
 
-Before the school has these endpoints, or to see a state that is hard to reach (a lesson under way, a maintenance, the school unreachable), preview against the local mock school. It makes up the notices, the next lesson and the calendar; anything else the site reads (the school rules) it passes on to the real school (change it with `MOCK_UPSTREAM`):
+To see a state that is hard to reach (a lesson under way, a maintenance, the school unreachable), preview against the local mock school. It makes up the notices, the next lesson and the calendar; anything else the site reads (the school rules) it passes on to the real school (change it with `MOCK_UPSTREAM`):
 
 ```sh
 npm run mock:school                                        # the next lesson is a few hours away

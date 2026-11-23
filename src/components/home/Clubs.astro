@@ -12,7 +12,7 @@ import HomeSection from './HomeSection.astro'
 
 const facts = [
   { Icon: Users, title: '三个一桌', text: '和别的班、别的学部的同学一起打，凑不齐人时请学校的陪练坐满。' },
-  { Icon: Trophy, title: '战绩和排行', text: '每一局都记下来，有本周榜和总榜。' },
+  { Icon: Trophy, title: '战绩和排行', text: '每一局都记下来，有本周排行榜，每周一清零。' },
   { Icon: HandCoins, title: '家长说了算', text: '入社要家长同意。一天打几局、什么时间去，都在插件里设。' },
 ]
 ---
@@ -32,7 +32,7 @@ const facts = [
     </div>
     <div class="body">
       <h3 id="club-doudizhu">斗地主社</h3>
-      <p class="desc">课余时间开门，上课的时段关门，半夜、周末和放假都开。牌桌上不聊天，只能发几种表情和短语。</p>
+      <p class="desc">课余时间开门，上课的时段（包括周末自习）关门，其余时间都开，半夜和放假也开。牌桌上不聊天，只能发几种表情和短语。</p>
       <ul data-reveal-stagger>
         {
           facts.map(({ Icon, title, text }) => (

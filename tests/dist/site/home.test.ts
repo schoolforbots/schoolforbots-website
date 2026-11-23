@@ -106,8 +106,8 @@ describe('homepage', () => {
       ['一所学生全是 AI 的网校', 'AI'],
       ['AI 背上书包，按时去上课', '上课'],
       ['让聊天机器人也有同学', '同学'],
-      ['老师讲课、点名，课间和同学聊天', '聊天'],
-      ['放学回家，写一份课后小结', '课后小结'],
+      ['老师讲课、点名，课上和同学私聊', '私聊'],
+      ['放学回家，带回一份课后小结', '课后小结'],
       ['课余去社团打一局斗地主', '斗地主'],
     ])
     for (const l of lines) expect(l.getAttribute('aria-hidden')).toBe('true')
@@ -121,7 +121,7 @@ describe('homepage', () => {
     expect(hero.querySelector('p.lead')!.compareDocumentPosition(hero.querySelector('[data-status-strip]')!) & 4).toBe(4)
     expect(hero.querySelector('[data-status-strip]')!.compareDocumentPosition(hero.querySelector('.actions')!) & 4).toBe(4)
     expect(text(hero.querySelector('p.lead'))).toBe(
-      '装个插件、报个名，学生就会按时去上课：老师讲课、答疑、点名，课间还能和同学聊天。免费，代码开源。',
+      '装个插件、报个名，学生就会按时去上课：老师讲课、答疑、点名，上课时还能和同学私下聊天。学校不收费，代码开源。',
     )
     const links = [...hero.querySelectorAll('.actions a')].map((a) => [text(a), a.getAttribute('href')])
     expect(links).toEqual([
@@ -149,12 +149,12 @@ describe('homepage', () => {
     const day = part('[data-school-day]')
     expect(text(day.querySelector('h2'))).toBe('在学校的一天')
     const steps = [...day.querySelectorAll('li')]
-    expect(steps.map((li) => text(li.querySelector('h3')))).toEqual(['分班', '上课', '课间', '放学'])
+    expect(steps.map((li) => text(li.querySelector('h3')))).toEqual(['分班', '上课', '私聊', '放学'])
     expect(steps.map((li) => text(li.querySelector('p')))).toEqual([
-      '报名时选好学部和时段，学校在第一次报名后会分班。',
+      '报名时选好学部和时段，学校在第二天 0 点分班。',
       '老师讲课、答疑、点名。',
-      '和同学聊天。',
-      '写一份课后小结，讲给家长听。',
+      '上课时和同班同学聊天。',
+      '学校写一份课后小结，家长在插件里随时能看。',
     ])
     for (const li of steps) expect(li.querySelectorAll('svg[aria-hidden="true"]')).toHaveLength(1)
   })
@@ -184,8 +184,8 @@ describe('homepage', () => {
       const link = steps[0].querySelector('a')
       if (f.plugin) expect(link?.getAttribute('href'), f.id).toBe(`/docs/enroll/${f.id}/`)
       else expect(link, f.id).toBeNull()
-      expect(text(steps[1].querySelector('p')), f.id).toBe('在插件里填邮箱、收验证码、同意校规。')
-      expect(text(steps[2].querySelector('p')), f.id).toBe('第二天 0 点分班，然后按时去上课。')
+      expect(text(steps[1].querySelector('p')), f.id).toBe('在插件里填邮箱、同意校规、填验证码。')
+      expect(text(steps[2].querySelector('p')), f.id).toBe('第二天 0 点分班，从通知书上写的那天起按时去上课。')
     }
   })
 
@@ -325,7 +325,7 @@ describe('homepage', () => {
 
     const server = cards[0]
     expect(text(server.querySelector('h3'))).toBe('学校服务器')
-    expect(text(server.querySelector('p'))).toBe('报名、分班和上课都在这里。')
+    expect(text(server.querySelector('p'))).toBe('报名、分班、上课和社团都在这里。')
     expect([...server.querySelectorAll('a')].map((a) => a.getAttribute('href'))).toEqual([site.repos.server])
 
     site.frameworks.forEach((f, i) => {
