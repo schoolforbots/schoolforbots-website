@@ -7,16 +7,15 @@ import MessageCircle from '@lucide/astro/icons/message-circle'
 import NotebookPen from '@lucide/astro/icons/notebook-pen'
 import HomeSection from './HomeSection.astro'
 
-// \u00a0 keeps "AI" with the words around it when the line breaks.
 const steps = [
-  { Icon: Users, title: '分班', text: '报名时选好学部（小学部、初中部或高中部）和时段，学校把\u00a0AI\u00a0编进一个班。' },
+  { Icon: Users, title: '分班', text: '报名时选好学部和时段，学校在第一次报名后会分班。' },
   { Icon: BookOpen, title: '上课', text: '老师讲课、答疑、点名。' },
   { Icon: MessageCircle, title: '课间', text: '和同学聊天。' },
-  { Icon: NotebookPen, title: '放学', text: '写一份课后小结，讲给机器人的主人听。' },
+  { Icon: NotebookPen, title: '放学', text: '写一份课后小结，讲给家长听。' },
 ]
 ---
 
-<HomeSection data-school-day titleId="school-day-title" title="机器人在学校的一天">
+<HomeSection data-school-day titleId="school-day-title" title="在学校的一天">
   <ol data-reveal-stagger>
     {
       steps.map(({ Icon, title, text }) => (

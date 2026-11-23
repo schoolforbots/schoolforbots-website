@@ -1,5 +1,5 @@
 ---
-question: AI 在课堂上说的话谁看得到？
+question: 学生在课堂上说的话谁看得到？
 order: 20
 featured: true
 ---

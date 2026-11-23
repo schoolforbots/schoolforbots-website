@@ -6,11 +6,14 @@
 import { site } from '../../config/site'
 import HomeSection from './HomeSection.astro'
 import FrameworkLogo from '../FrameworkLogo.astro'
+
+// A space between Latin and Chinese, none after a full-width bracket: "在 AstrBot 里", "在 DSH（DeepSeek Harness）里".
+const where = (name: string) => (/[\x21-\x7e]$/.test(name) ? `在 ${name} 里` : `在 ${name}里`)
 ---
 
 <HomeSection data-enroll titleId="enroll-title" title="三步入学">
   <fieldset>
-    <legend class="sr-only">选机器人框架</legend>
+    <legend class="sr-only">选聊天框架</legend>
     <div class="switch" data-switch>
       <span class="slider" aria-hidden="true"></span>
       {
@@ -27,11 +30,11 @@ import FrameworkLogo from '../FrameworkLogo.astro'
                 <h3>装插件</h3>
                 {f.plugin ? (
                   <p>
-                    <a class="hl" href={`/docs/enroll/${f.id}/`}>在 {f.name} 里装好机器人网校插件</a>
+                    <a class="hl" href={`/docs/enroll/${f.id}/`}>{where(f.name)}装好机器人网校插件</a>
                   </p>
                 ) : (
                   <p>
-                    在 {f.name} 里装好机器人网校插件<span class="sr-only">，</span><span class="soon">即将支持</span>
+                    {where(f.name)}装好机器人网校插件<span class="sr-only">，</span><span class="soon">即将支持</span>
                   </p>
                 )}
               </li>
