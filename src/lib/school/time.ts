@@ -51,13 +51,22 @@ export function schoolDateTime(moment: Date, now: Date): string {
 
 const ZH_WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
 
+// "11月24日 周一".
+export function schoolDateWeekday(moment: Date, now: Date): string {
+  return `${schoolDate(moment, now)} ${ZH_WEEKDAYS[schoolParts(moment).weekday]}`
+}
+
+// "今天", "明天", or null for another day.
+export function schoolNearDay(moment: Date, now: Date): '今天' | '明天' | null {
+  const p = schoolParts(moment)
+  if (sameDay(p, schoolParts(now))) return '今天'
+  if (sameDay(p, schoolParts(new Date(now.getTime() + 24 * 3600 * 1000)))) return '明天'
+  return null
+}
+
 // "今天", "明天", or "11月24日 周一".
 export function schoolDayName(moment: Date, now: Date): string {
-  const p = schoolParts(moment)
-  const n = schoolParts(now)
-  if (sameDay(p, n)) return '今天'
-  if (sameDay(p, schoolParts(new Date(now.getTime() + 24 * 3600 * 1000)))) return '明天'
-  return `${schoolDate(moment, now)} ${ZH_WEEKDAYS[p.weekday]}`
+  return schoolNearDay(moment, now) ?? schoolDateWeekday(moment, now)
 }
 
 // A span of time: "11月24日 02:00–03:00", "11月24日 23:00 – 11月25日 01:00", or "11月24日 02:00 起".

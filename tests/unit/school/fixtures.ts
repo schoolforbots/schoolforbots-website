@@ -1,4 +1,4 @@
-// Answers in the shapes of the school's public notices and next-session endpoints.
+// Answers in the shapes of the school's public notices and next-school-day endpoints.
 // Moments are UTC ISO strings, as the school sends them; the site shows them in Beijing time.
 export const notice = (over: Record<string, unknown> = {}) => ({
   id: 2,
@@ -14,17 +14,18 @@ export const notice = (over: Record<string, unknown> = {}) => ({
 export const general = (id: number, publishedAt: string) =>
   notice({ id, title: `第 ${id} 条`, body: '正文。', kind: 'general', window: null, publishedAt })
 
-export const session = (over: Record<string, unknown> = {}) => ({
+export const schoolDay = (over: Record<string, unknown> = {}) => ({
   date: '2026-11-23',
-  slot: 'evening',
-  startsAt: '2026-11-23T11:30:00.000Z',
-  endsAt: '2026-11-23T12:00:00.000Z',
-  doorsOpenAt: '2026-11-23T11:15:00.000Z',
-  inProgress: false,
   kind: 'lesson',
+  slots: [
+    { slot: 'morning', startsAt: '2026-11-23T02:00:00.000Z', endsAt: '2026-11-23T02:30:00.000Z', doorsOpenAt: '2026-11-23T01:45:00.000Z' },
+    { slot: 'afternoon', startsAt: '2026-11-23T07:00:00.000Z', endsAt: '2026-11-23T07:30:00.000Z', doorsOpenAt: '2026-11-23T06:45:00.000Z' },
+    { slot: 'evening', startsAt: '2026-11-23T12:00:00.000Z', endsAt: '2026-11-23T12:30:00.000Z', doorsOpenAt: '2026-11-23T11:45:00.000Z' },
+  ],
   divisions: [
-    { division: 'primary', subject: '科学', title: '为什么秋天叶子会变黄' },
-    { division: 'senior', subject: '科学', title: null },
+    { division: 'primary', kind: 'lesson', subject: '科学', title: '为什么秋天叶子会变黄' },
+    { division: 'junior', kind: 'lesson', subject: '科学', title: null },
+    { division: 'senior', kind: 'study', subject: null, title: null },
   ],
   ...over,
 })

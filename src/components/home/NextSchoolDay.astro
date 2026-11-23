@@ -1,27 +1,27 @@
 ---
-// The hero's card: the lesson under way or coming next, read from the school in
-// the browser (lib/school/next-session-mount.ts): when, which time slot, and for
-// each division with classes its subject and lesson title. Only what the school
-// writes itself; nothing students say.
+// The hero's card: the next school day, read from the school in the browser
+// (lib/school/next-school-day-mount.ts): which day, the times of its three slots,
+// and for each of the three divisions its subject and lesson title, whether or
+// not it has students yet. Only what the school writes itself; nothing students say.
 import CalendarClock from '@lucide/astro/icons/calendar-clock'
 ---
 
-<section class="next-session" data-next-session aria-labelledby="next-session-title" aria-live="polite">
-  <h2 id="next-session-title" class="sr-only">下一节课</h2>
+<section class="next-day" data-next-school-day aria-labelledby="next-day-title" aria-live="polite">
+  <h2 id="next-day-title" class="sr-only">下一个上课日</h2>
   <span class="mark" aria-hidden="true"><CalendarClock size={22} /></span>
-  <div class="content" data-next-session-body>
-    <p class="quiet" data-next-session-loading>正在查下一节课…</p>
-    <noscript><p class="quiet">下一节课的安排要在浏览器里打开脚本才能看到。</p></noscript>
+  <div class="content" data-next-school-day-body>
+    <p class="quiet" data-next-school-day-loading>正在查下一个上课日…</p>
+    <noscript><p class="quiet">下一个上课日的安排要在浏览器里打开脚本才能看到。</p></noscript>
   </div>
 </section>
 
 <script>
-  import { mountNextSession } from '../../lib/school/next-session-mount'
-  mountNextSession()
+  import { mountNextSchoolDay } from '../../lib/school/next-school-day-mount'
+  mountNextSchoolDay()
 </script>
 
 <style>
-  .next-session {
+  .next-day {
     position: relative;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
@@ -36,7 +36,7 @@ import CalendarClock from '@lucide/astro/icons/calendar-clock'
     box-shadow: 0 0.75rem 2.5rem -0.75rem rgb(90 40 8 / 0.2);
     text-align: start;
   }
-  :global(:root[data-theme='dark']) .next-session {
+  :global(:root[data-theme='dark']) .next-day {
     box-shadow: 0 0.75rem 2.5rem -0.75rem rgb(0 0 0 / 0.7);
   }
   .mark {
@@ -107,23 +107,59 @@ import CalendarClock from '@lucide/astro/icons/calendar-clock'
     font-variant-numeric: tabular-nums;
     line-height: 1.4;
   }
-  .content :global(.slot) {
+  .content :global(.near) {
+    color: var(--sfb-highlight);
+    font-size: 1.375rem;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  .content :global(.study) {
+    color: var(--sfb-mute);
+    font-size: 0.9375rem;
+  }
+
+  /* The day's three slots, the same for every division. */
+  .content :global(.slots) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin: 0.875rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .content :global(.slots li) {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+  .content :global(.slots .slot) {
     color: var(--sfb-ink);
-    font-size: 1.0625rem;
+    font-size: 0.9375rem;
     font-weight: 600;
   }
-  .content :global(.doors) {
-    margin: 0;
-    color: var(--sfb-mute);
-    font-size: 0.875rem;
+  .content :global(.slots .time) {
+    color: var(--sfb-ink);
+    font-size: 0.9375rem;
     font-variant-numeric: tabular-nums;
+  }
+  .content :global(.slots .note) {
+    color: var(--sfb-mute);
+    font-size: 0.8125rem;
+  }
+  .content :global(.slots .over .slot),
+  .content :global(.slots .over .time) {
+    color: var(--sfb-mute);
+  }
+  .content :global(.slots .live .note) {
+    color: var(--sfb-live-ink);
+    font-weight: 600;
   }
 
   .content :global(.divisions) {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
     gap: 0.75rem;
-    margin: 1.25rem 0 0;
+    margin: 1rem 0 0;
     padding: 0;
     list-style: none;
   }
@@ -165,7 +201,7 @@ import CalendarClock from '@lucide/astro/icons/calendar-clock'
   }
 
   @media (width < 40rem) {
-    .next-session {
+    .next-day {
       grid-template-columns: minmax(0, 1fr);
       row-gap: 0.875rem;
       padding: 1.25rem;
