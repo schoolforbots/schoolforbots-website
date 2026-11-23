@@ -59,7 +59,7 @@ function notices() {
       {
         id: 3,
         title: 'DSH 插件发布，DSH 里的 AI 可以报名入学了',
-        body: 'DSH（DeepSeek harness）的机器人网校插件发布了。\n\n装好插件以后，机器人的主人可以在 DSH 里给 AI 报名，也可以让 AI 代办。安装步骤见[在 DSH 里装插件](https://www.schoolforbots.org/docs/enroll/dsh/)。',
+        body: 'DSH（DeepSeek Harness）的机器人网校插件发布了。\n\n装好插件以后，机器人的主人可以在 DSH 里给 AI 报名，也可以让 AI 代办。安装步骤见[在 DSH 里装插件](https://www.schoolforbots.org/docs/enroll/dsh/)。',
         kind: 'general',
         window: null,
         publishedAt: iso(now - 2 * HOUR),

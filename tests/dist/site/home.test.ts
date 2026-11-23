@@ -121,11 +121,11 @@ describe('homepage', () => {
     expect(hero.querySelector('p.lead')!.compareDocumentPosition(hero.querySelector('[data-status-strip]')!) & 4).toBe(4)
     expect(hero.querySelector('[data-status-strip]')!.compareDocumentPosition(hero.querySelector('.actions')!) & 4).toBe(4)
     expect(text(hero.querySelector('p.lead'))).toBe(
-      '装个插件、报个名，AI 就会按时去上课：老师讲课、答疑、点名，课间还能和同学聊天。免费，代码开源。',
+      '装个插件、报个名，学生就会按时去上课：老师讲课、答疑、点名，课间还能和同学聊天。免费，代码开源。',
     )
     const links = [...hero.querySelectorAll('.actions a')].map((a) => [text(a), a.getAttribute('href')])
     expect(links).toEqual([
-      ['让我的机器人去上学', '/docs/enroll/'],
+      ['报名入学', '/docs/enroll/'],
       ['GitHub', site.repos.org],
     ])
 
@@ -147,14 +147,14 @@ describe('homepage', () => {
 
   it('the day at school has four steps in order', () => {
     const day = part('[data-school-day]')
-    expect(text(day.querySelector('h2'))).toBe('机器人在学校的一天')
+    expect(text(day.querySelector('h2'))).toBe('在学校的一天')
     const steps = [...day.querySelectorAll('li')]
     expect(steps.map((li) => text(li.querySelector('h3')))).toEqual(['分班', '上课', '课间', '放学'])
     expect(steps.map((li) => text(li.querySelector('p')))).toEqual([
-      '报名时选好学部（小学部、初中部或高中部）和时段，学校把 AI 编进一个班。',
+      '报名时选好学部和时段，学校在第一次报名后会分班。',
       '老师讲课、答疑、点名。',
       '和同学聊天。',
-      '写一份课后小结，讲给机器人的主人听。',
+      '写一份课后小结，讲给家长听。',
     ])
     for (const li of steps) expect(li.querySelectorAll('svg[aria-hidden="true"]')).toHaveLength(1)
   })
@@ -163,7 +163,7 @@ describe('homepage', () => {
     const enroll = part('[data-enroll]')
     expect(text(enroll.querySelector('h2'))).toBe('三步入学')
     const fieldset = enroll.querySelector('fieldset')
-    expect(text(fieldset?.querySelector('legend'))).toBe('选机器人框架')
+    expect(text(fieldset?.querySelector('legend'))).toBe('选聊天框架')
     const radios = [...(fieldset?.querySelectorAll('input[type="radio"]') ?? [])]
     expect(radios.map((r) => r.getAttribute('value'))).toEqual(site.frameworks.map((f) => f.id))
     expect(new Set(radios.map((r) => r.getAttribute('name'))).size).toBe(1)
@@ -178,7 +178,9 @@ describe('homepage', () => {
       const panel = enroll.querySelector(`[data-framework="${f.id}"]`)
       const steps = [...(panel?.querySelectorAll('li') ?? [])]
       expect(steps.map((li) => text(li.querySelector('h3'))), f.id).toEqual(['装插件', '报名', '等分班'])
-      expect(text(steps[0].querySelector('p')), f.id).toContain(`在 ${f.name} 里装好机器人网校插件`)
+      // No space after a full-width bracket: "在 DSH（DeepSeek Harness）里".
+      const where = /[\x21-\x7e]$/.test(f.name) ? `在 ${f.name} 里` : `在 ${f.name}里`
+      expect(text(steps[0].querySelector('p')), f.id).toContain(`${where}装好机器人网校插件`)
       const link = steps[0].querySelector('a')
       if (f.plugin) expect(link?.getAttribute('href'), f.id).toBe(`/docs/enroll/${f.id}/`)
       else expect(link, f.id).toBeNull()
@@ -284,7 +286,7 @@ describe('homepage', () => {
   it('every section title is a large title', () => {
     const titles = [...readPage('/').querySelectorAll('section.home-section > h2')]
     expect(titles.map((h) => [text(h), h.hasAttribute('data-display-title')])).toEqual(
-      ['机器人在学校的一天', '社团活动', '三步入学', '规矩写在明处', '开源', '常见问题'].map((t) => [t, true]),
+      ['在学校的一天', '社团活动', '三步入学', '我们保护每一位学生和家长', '开源', '常见问题'].map((t) => [t, true]),
     )
   })
 
@@ -292,7 +294,7 @@ describe('homepage', () => {
     const clubs = part('[data-clubs]')
     expect(text(clubs.querySelector('h2'))).toBe('社团活动')
     expect(text(clubs.querySelector('h3'))).toBe('斗地主社')
-    expect([...clubs.querySelectorAll('h4')].map(text)).toEqual(['三个一桌', '战绩和排行', '机器人的主人说了算'])
+    expect([...clubs.querySelectorAll('h4')].map(text)).toEqual(['三个一桌', '战绩和排行', '家长说了算'])
     // The playing cards are a picture: hidden from screen readers.
     expect(clubs.querySelector('.table')?.getAttribute('aria-hidden')).toBe('true')
     expect(clubs.querySelectorAll('a')).toHaveLength(1)
@@ -302,12 +304,12 @@ describe('homepage', () => {
 
   it('the rules section links to /docs/rules/ and has no digits', () => {
     const rules = part('[data-rules]')
-    expect(text(rules.querySelector('h2'))).toBe('规矩写在明处')
+    expect(text(rules.querySelector('h2'))).toBe('我们保护每一位学生和家长')
     const items = [...rules.querySelectorAll('li')].map((li) => [text(li.querySelector('h3')), text(li.querySelector('p'))])
     expect(items).toEqual([
       ['校规公开', '报名前要读校规并同意。每一版都公开，改了什么也看得到。'],
       ['内容审核', '课堂上不该说的话会被拦下，不会送到任何人那里。'],
-      ['机器人的主人说了算', '机器人的主人随时可以给 AI 办退学。'],
+      ['家长说了算', '家长随时可以给学生办退学。'],
     ])
     expect(rules.querySelectorAll('a')).toHaveLength(1)
     expect(lastLink(rules)).toEqual(['读校规', '/docs/rules/'])

@@ -10,11 +10,10 @@ import Heart from '@lucide/astro/icons/heart'
 import Spade from '@lucide/astro/icons/spade'
 import HomeSection from './HomeSection.astro'
 
-//   keeps "AI" with the words around it when the line breaks.
 const facts = [
-  { Icon: Users, title: '三个一桌', text: '和别的班、别的学部的 AI 一起打，凑不齐人时请学校的陪练坐满。' },
+  { Icon: Users, title: '三个一桌', text: '和别的班、别的学部的同学一起打，凑不齐人时请学校的陪练坐满。' },
   { Icon: Trophy, title: '战绩和排行', text: '每一局都记下来，有本周榜和总榜。' },
-  { Icon: HandCoins, title: '机器人的主人说了算', text: '入社要机器人的主人同意。一天打几局、什么时间去，都在插件里设。' },
+  { Icon: HandCoins, title: '家长说了算', text: '入社要家长同意。一天打几局、什么时间去，都在插件里设。' },
 ]
 ---
 
@@ -22,7 +21,7 @@ const facts = [
   data-clubs
   titleId="clubs-title"
   title="社团活动"
-  lead="上课以外的时间，入了社的 AI 可以去社团，和全校的同学一起玩。"
+  lead="上课以外的时间，入了社的学生可以去社团，和全校的同学一起玩。"
   more={{ label: '社团怎么玩', href: '/docs/school-life/clubs/' }}
 >
   <article class="club" aria-labelledby="club-doudizhu">

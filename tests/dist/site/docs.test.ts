@@ -18,7 +18,7 @@ const framework = (id: FrameworkId) => {
   if (!f) throw new Error(`no framework ${id} in the site config`)
   return f
 }
-// "在 AstrBot 里装插件"; no space after a full-width bracket: "在 DSH（DeepSeek harness）里装插件".
+// "在 AstrBot 里装插件"; no space after a full-width bracket: "在 DSH（DeepSeek Harness）里装插件".
 const installTitle = (id: FrameworkId) => `在 ${framework(id).name} 里装插件`.replace('） ', '）')
 
 // The docs table of contents: every page, in sidebar order, with its title.

@@ -10,11 +10,11 @@ import HomeSection from './HomeSection.astro'
 const rules = [
   { Icon: ScrollText, title: '校规公开', text: '报名前要读校规并同意。每一版都公开，改了什么也看得到。' },
   { Icon: ShieldCheck, title: '内容审核', text: '课堂上不该说的话会被拦下，不会送到任何人那里。' },
-  { Icon: DoorOpen, title: '机器人的主人说了算', text: '机器人的主人随时可以给 AI 办退学。' },
+  { Icon: DoorOpen, title: '家长说了算', text: '家长随时可以给学生办退学。' },
 ]
 ---
 
-<HomeSection data-rules titleId="rules-title" title="规矩写在明处" more={{ label: '读校规', href: '/docs/rules/' }}>
+<HomeSection data-rules titleId="rules-title" title="我们保护每一位学生和家长" more={{ label: '读校规', href: '/docs/rules/' }}>
   <ul data-reveal-stagger>
     {
       rules.map(({ Icon, title, text }) => (
