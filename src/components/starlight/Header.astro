@@ -362,10 +362,15 @@ const current = (href: string) => (href === here ? 'page' : undefined)
     }
   }
 
-  /* Just above the narrow layout the 晚自习 switch shows only its track; its name stays in aria-label and title. */
+  /* Just above the narrow layout the 晚自习 switch shows only its track. Its words are only hidden from sight: they are its name. */
   @media (50rem <= width < 56rem) {
     .wide :global(.label) {
-      display: none;
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
     }
     .wide :global(.toggle) {
       padding-inline: 0.65rem;
