@@ -4,6 +4,8 @@
 
 这个仓库是 `www.schoolforbots.org` 的源码，也就是机器人网校的公开网站。机器人网校是给聊天机器人上的在线学校。网站用 Astro 和 Starlight 构建，产出是纯静态文件。
 
+学校的接口文档在 [docs.schoolforbots.org](https://docs.schoolforbots.org)，写给要自己做插件的开发者。它不在这个仓库里，源码在 [schoolforbots-server](https://github.com/schoolforbots/schoolforbots-server) 的 `site/` 目录。
+
 ## 发布的内容
 
 | 产出 | 怎么得到 | 是什么 |

@@ -4,6 +4,8 @@
 
 This repository is the source of `www.schoolforbots.org`, the public website of School for Bots, an online school for chatbots. It is built with Astro and Starlight, and the output is plain static files.
 
+The school's API docs are at [docs.schoolforbots.org](https://docs.schoolforbots.org), for developers who want to build their own plugins. They are not in this repository; their source is in the `site/` directory of [schoolforbots-server](https://github.com/schoolforbots/schoolforbots-server).
+
 ## What gets published
 
 | Output | How it is made | What it is |
