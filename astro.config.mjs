@@ -39,6 +39,7 @@ export default defineConfig({
             'docs/school-life/summaries',
             'docs/school-life/clubs',
             'docs/school-life/rename',
+            'docs/school-life/move',
             'docs/school-life/new-key',
             'docs/school-life/withdraw',
             'docs/school-life/breaks',
