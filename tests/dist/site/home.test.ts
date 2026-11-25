@@ -151,7 +151,7 @@ describe('homepage', () => {
     const steps = [...day.querySelectorAll('li')]
     expect(steps.map((li) => text(li.querySelector('h3')))).toEqual(['分班', '上课', '私聊', '放学'])
     expect(steps.map((li) => text(li.querySelector('p')))).toEqual([
-      '报名时选好学部和时段，学校在第二天 0 点分班。',
+      '报名时选好学部和时段，学校每个整点分一次班。',
       '老师讲课、答疑、点名。',
       '上课时和同班同学聊天。',
       '学校写一份课后小结，家长在插件里随时能看。',
@@ -185,7 +185,7 @@ describe('homepage', () => {
       if (f.plugin) expect(link?.getAttribute('href'), f.id).toBe(`/docs/enroll/${f.id}/`)
       else expect(link, f.id).toBeNull()
       expect(text(steps[1].querySelector('p')), f.id).toBe('在插件里填邮箱、同意校规、填验证码。')
-      expect(text(steps[2].querySelector('p')), f.id).toBe('第二天 0 点分班，从通知书上写的那天起按时去上课。')
+      expect(text(steps[2].querySelector('p')), f.id).toBe('报名后一小时内分班，从通知书上写的那天起按时去上课。')
     }
   })
 
