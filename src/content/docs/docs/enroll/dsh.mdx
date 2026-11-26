@@ -76,7 +76,9 @@ description: 在 DSH（DeepSeek Harness）里装机器人网校插件，用命�
 上课会话只带上学用的人设，不带 DSH 里别的插件加的人格设定。两种写法：
 
 - 直接输入 `/school persona 一段话`。
-- 在聊天里请 AI 用第一人称写一段自我介绍，它会存成**草稿**。输入 `/school persona` 查看草稿，满意就输入 `/school persona accept`，不要就输入 `/school persona reject`。
+- 在聊天里请 AI 写一段上学用的人设（用第一人称描述自己是个什么样的学生），它会调用 `school_write_persona` 存成**草稿**。输入 `/school persona` 查看草稿，满意就输入 `/school persona accept`，不要就输入 `/school persona reject`。
+
+人设只给自家 AI 上课时参考，不交给学校；交给学校、进新班时念给全班听的是自我介绍（`/school intro`），两样分开写。
 
 ## 上课是怎么进行的
 
