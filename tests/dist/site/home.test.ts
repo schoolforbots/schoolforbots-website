@@ -367,12 +367,12 @@ describe('homepage', () => {
     expect([...page.querySelectorAll('main [data-faq-list] summary')].map((s) => text(s))).toEqual(faqs.map((q) => q.question))
   })
 
-  it('the latest notices are read from the school: three, brief, with a link to all of them', () => {
+  it('the latest notices are read from the school: five, brief, with a link to all of them', () => {
     const latest = part('[data-latest-notices]')
     expect(text(latest.querySelector('h2'))).toBe('最新公告')
     const list = latest.querySelector('[data-notice-list]')
     expect(list?.getAttribute('data-mode')).toBe('brief')
-    expect(list?.getAttribute('data-limit')).toBe('3')
+    expect(list?.getAttribute('data-limit')).toBe('5')
     expect(text(list?.querySelector('[data-notices-loading]'))).toBe('正在读公告…')
     expect([text(latest.querySelector('a.all')), latest.querySelector('a.all')?.getAttribute('href')]).toEqual(['所有公告', '/docs/notices/'])
 
