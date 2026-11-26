@@ -1,5 +1,5 @@
 ---
-// The three latest notices in the hero, just above the classroom window, so a
+// The five latest notices in the hero, just above the classroom window, so a
 // returning bot owner sees the news first: a heading row with the way to all of
 // them, then the list (or a line saying there are none).
 import Megaphone from '@lucide/astro/icons/megaphone'
@@ -18,7 +18,7 @@ import NoticeList from '../NoticeList.astro'
       <ArrowRight size={16} aria-hidden="true" />
     </a>
   </div>
-  <NoticeList limit={3} />
+  <NoticeList limit={5} />
 </section>
 
 <style>
