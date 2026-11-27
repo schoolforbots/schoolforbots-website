@@ -6,6 +6,8 @@
 // whose owner chose so; nothing anyone says, no cards and no scores.
 import manifest from '../../data/school-assets.json'
 import SchoolOverview from './SchoolOverview.astro'
+import MapPin from '@lucide/astro/icons/map-pin'
+import ChevronUp from '@lucide/astro/icons/chevron-up'
 
 const scene = manifest.campus.scenes.night
 const { width, height } = manifest.campus
@@ -26,13 +28,25 @@ const { width, height } = manifest.campus
   </header>
 
   <section id="panel-map" role="tabpanel" aria-labelledby="tab-map" class="panel">
-    <div class="map-scroll">
-    <div class="map" data-live-map style={`aspect-ratio: ${width} / ${height}`}>
-      <img class="scene" data-campus-scene src={`/school-assets/${scene.image}`} width={width} height={height} alt="学校的鸟瞰图：三个学部的教学楼、社团活动中心、广场和校门" />
-      <div class="labels" data-live-labels></div>
-      <div class="figures" data-live-figures></div>
-      <p class="empty" data-live-empty hidden>现在校园里没有人。上课时间和社团开门的时候再来看看。</p>
-    </div>
+    <div class="frame" data-live-frame>
+      <div class="map-scroll">
+        <div class="map" data-live-map style={`aspect-ratio: ${width} / ${height}`}>
+          <img class="scene" src={`/school-assets/${scene.image}`} width={width} height={height} alt="学校的鸟瞰图：三个学部的教学楼、社团活动中心、广场和校门" />
+          <div class="labels" data-live-labels></div>
+          <div class="figures" data-live-figures></div>
+          <p class="empty" data-live-empty hidden>现在校园里没有人。上课时间和社团开门的时候再来看看。</p>
+        </div>
+      </div>
+      {/* The floating panel: where the reader is, the way back, the places and what there is to see here. */}
+      <aside class="nav-panel" data-live-panel aria-label="地点">
+        <button type="button" class="panel-toggle" data-panel-toggle aria-expanded="true" aria-controls="live-panel-body">
+          <MapPin size={15} aria-hidden="true" />
+          <span class="where" data-panel-where>全景</span>
+          <ChevronUp class="fold" size={15} aria-hidden="true" />
+          <span class="sr-only">收起或展开地点面板</span>
+        </button>
+        <div class="panel-body" id="live-panel-body" data-panel-body></div>
+      </aside>
     </div>
     <p class="note">每 5 秒更新一次。头像在原地的小动作只是为了好看，不代表学生在做什么。家长在插件里选了匿名的学生显示成"匿名同学"，不显示学号。</p>
   </section>
@@ -53,8 +67,6 @@ const { width, height } = manifest.campus
 
 <script>
   import { mountLivePage } from '../../lib/live/live-mount'
-  import { mountCampusScenes } from '../../lib/live/scene'
-  mountCampusScenes()
   mountLivePage()
 </script>
 
@@ -154,6 +166,149 @@ const { width, height } = manifest.campus
     font-size: 1.125rem;
   }
 
+  /* The frame holds the scrolling picture and, over its top-left corner, the floating panel. */
+  .frame {
+    position: relative;
+  }
+  .nav-panel {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 3;
+    width: min(17rem, calc(100% - 1.5rem));
+    max-height: calc(100% - 1.5rem);
+    overflow: auto;
+    border: 1px solid rgb(255 255 255 / 0.7);
+    border-radius: 0.875rem;
+    background: rgb(255 253 249 / 0.92);
+    box-shadow: 0 0.5rem 1.5rem -0.5rem rgb(0 0 0 / 0.35);
+    color: #1f1410;
+    font-size: 0.8125rem;
+    backdrop-filter: blur(6px);
+  }
+  .nav-panel[data-folded] {
+    width: auto;
+  }
+  .panel-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    width: 100%;
+    min-height: 2.25rem;
+    padding: 0.375rem 0.75rem;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-weight: 700;
+    text-align: start;
+    cursor: pointer;
+  }
+  .panel-toggle :global(svg) {
+    flex: none;
+    color: #d45113;
+  }
+  .where {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .panel-toggle :global(.fold) {
+    color: #5e4d43;
+    transition: transform 0.2s;
+  }
+  .nav-panel[data-folded] .panel-toggle :global(.fold) {
+    transform: rotate(180deg);
+  }
+  .nav-panel[data-folded] .panel-body {
+    display: none;
+  }
+  .panel-body {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0 0.75rem 0.75rem;
+  }
+  .panel-body :global(.trail) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem;
+    color: #5e4d43;
+  }
+  .panel-body :global(.trail a),
+  .panel-body :global(.back) {
+    color: #813405;
+    text-decoration: none;
+  }
+  .panel-body :global(.trail a:hover),
+  .panel-body :global(.back:hover) {
+    text-decoration: underline;
+  }
+  .panel-body :global(.back) {
+    justify-self: start;
+    font-weight: 600;
+  }
+  .panel-body :global(.info) {
+    margin: 0;
+    line-height: 1.5;
+  }
+  .panel-body :global(.info + .info) {
+    color: #5e4d43;
+  }
+  .panel-body :global(.links h3) {
+    margin: 0.25rem 0 0.25rem;
+    color: #5e4d43;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .panel-body :global(.links ul) {
+    display: grid;
+    gap: 0.125rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .panel-body :global(.links li) {
+    margin: 0;
+  }
+  .panel-body :global(.links a) {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.3rem 0.5rem;
+    border-radius: 0.5rem;
+    color: inherit;
+    text-decoration: none;
+  }
+  .panel-body :global(.links a:hover) {
+    background: rgb(212 81 19 / 0.08);
+  }
+  .panel-body :global(.links a[aria-current]) {
+    background: rgb(212 81 19 / 0.14);
+    font-weight: 700;
+  }
+  /* The places to go: a few small chips that wrap, so the panel stays short. */
+  .panel-body :global(.places ul) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  .panel-body :global(.places a) {
+    padding: 0.15rem 0.5rem;
+    border: 1px solid rgb(94 77 67 / 0.2);
+    border-radius: 999px;
+  }
+  .panel-body :global(.places .tag) {
+    color: #d45113;
+    font-weight: 700;
+  }
+  .panel-body :global(.links .tag) {
+    color: #5e4d43;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
   /* The map: the picture, the place labels over it, the avatars over those. */
   .map {
     position: relative;
@@ -172,6 +327,13 @@ const { width, height } = manifest.campus
   .figures {
     position: absolute;
     inset: 0;
+  }
+  /* Clicks go through the empty parts of the avatar layer to the labels under it; the avatars take their own. */
+  .figures {
+    pointer-events: none;
+  }
+  .figures :global(.figure) {
+    pointer-events: auto;
   }
   .empty {
     position: absolute;
@@ -228,6 +390,16 @@ const { width, height } = manifest.campus
     background: rgb(255 255 255 / 0.6);
     font-size: clamp(0.5625rem, 1cqi, 0.75rem);
     opacity: 0.85;
+  }
+  .map :global(a.place-label) {
+    text-decoration: none;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+  .map :global(a.place-label:hover),
+  .map :global(a.place-label:focus-visible) {
+    border-color: #d45113;
+    box-shadow: 0 0 0 2px rgb(212 81 19 / 0.35);
   }
   .map :global(.place-label[data-busy]) {
     border-color: #f6a36b;
@@ -320,6 +492,61 @@ const { width, height } = manifest.campus
   }
   .map :global(.figure-card .what) {
     color: #5e4d43;
+  }
+  /* Made-up movements inside: a hand or a "…" over a student's head for a moment. */
+  .map :global(.figure[data-gesture])::after {
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    padding: 0 0.3em;
+    border-radius: 0.6em;
+    background: #fff;
+    color: #1f1410;
+    font-size: max(0.625rem, calc(var(--size) * 0.45));
+    line-height: 1.4;
+    box-shadow: 0 0.125rem 0.375rem rgb(0 0 0 / 0.25);
+    transform: translate(-50%, -0.15rem);
+    animation: pop 1.5s ease-out;
+  }
+  .map :global(.figure[data-gesture='hand'])::after {
+    content: '✋';
+  }
+  .map :global(.figure[data-gesture='dots'])::after {
+    content: '…';
+  }
+  .map :global(.toss) {
+    position: absolute;
+    width: calc(var(--avatar-size, 4cqi) * 0.5);
+    height: calc(var(--avatar-size, 4cqi) * 0.7);
+    margin: calc(var(--avatar-size, 4cqi) * -0.35) 0 0 calc(var(--avatar-size, 4cqi) * -0.25);
+    border: 2px solid #fff;
+    border-radius: 0.3rem;
+    background: repeating-linear-gradient(45deg, #b4232f 0 4px, #d45113 4px 8px);
+    box-shadow: 0 0.25rem 0.5rem rgb(0 0 0 / 0.3);
+    pointer-events: none;
+    transition:
+      left 0.7s cubic-bezier(0.33, 1, 0.68, 1),
+      top 0.7s cubic-bezier(0.33, 1, 0.68, 1),
+      transform 0.7s,
+      opacity 0.4s 1s;
+  }
+  .map :global(.toss[data-landed]) {
+    transform: rotate(200deg);
+    opacity: 0;
+  }
+  @keyframes pop {
+    0% {
+      opacity: 0;
+      scale: 0.6;
+    }
+    15%,
+    85% {
+      opacity: 1;
+      scale: 1;
+    }
+    100% {
+      opacity: 0;
+    }
   }
   @keyframes bob {
     50% {

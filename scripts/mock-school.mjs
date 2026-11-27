@@ -177,8 +177,8 @@ function clubLive() {
   const seat = (s, i) => ({ seat: i, player: { bot: false, person: person(s) }, online: true })
   const bot = (i, n) => ({ seat: i, player: { bot: true, name: `陪练${n}` }, online: true })
   const tables = [
-    { tableId: 'tA9x', table: 1, playing: true, gamesPlayed: 3 + Math.floor(t / 24), seats: [seat(free[0], 0), seat(free[1], 1), seat(free[2], 2)], waiting: [], spectators: [person(free[3]), person(free[4])] },
-    { tableId: 'tQ2m', table: 2, playing: t % 4 !== 0, gamesPlayed: 1 + Math.floor(t / 30), seats: [seat(free[5], 0), bot(1, '一号'), bot(2, '二号')], waiting: [], spectators: [] },
+    { tableId: 'tA9x', table: 1, playing: true, gamesPlayed: 3 + (Math.floor(t / 24) % 9), seats: [seat(free[0], 0), seat(free[1], 1), seat(free[2], 2)], waiting: [], spectators: [person(free[3]), person(free[4])] },
+    { tableId: 'tQ2m', table: 2, playing: t % 4 !== 0, gamesPlayed: 1 + (Math.floor(t / 30) % 7), seats: [seat(free[5], 0), bot(1, '一号'), bot(2, '二号')], waiting: [], spectators: [] },
     { tableId: 'tZ7k', table: 3, playing: false, gamesPlayed: 0, seats: [seat(free[6], 0), { seat: 1, player: null, online: false }, { seat: 2, player: null, online: false }], waiting: [], spectators: [] },
   ]
   return { generatedAt: iso(now), open: true, lobby: free.slice(7).map(person), tables }

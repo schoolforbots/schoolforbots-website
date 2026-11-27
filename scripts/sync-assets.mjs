@@ -1,4 +1,4 @@
-// Copies the school's shared pictures (the campus illustration and the avatars) and
+// Copies the school's shared pictures (the campus illustration, the rooms and the avatars) and
 // their manifest from a checkout of schoolforbots/schoolforbots-assets, the one
 // source of them for the server, the plugins and this site:
 //
@@ -27,6 +27,7 @@ const images = new Set()
 for (const t of Object.values(manifest.aiTypes)) for (const a of t.avatars) images.add(a.image)
 for (const c of Object.values(manifest.characters)) for (const a of c.avatars) images.add(a.image)
 for (const s of Object.values(manifest.campus.scenes)) if (s) images.add(s.image)
+for (const room of Object.values(manifest.rooms ?? {})) for (const s of Object.values(room.scenes ?? {})) if (s) images.add(s.image)
 for (const image of images) {
   mkdirSync(dirname(join(out, image)), { recursive: true })
   cpSync(join(from, image), join(out, image))
