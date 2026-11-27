@@ -147,8 +147,18 @@ export function mountLivePage(): void {
   const mapRoot = root.querySelector<HTMLElement>('[data-live-map]')
   const map = mapRoot ? new LiveMap(mapRoot) : null
   // The view is named in the address (#junior, #club/<table>), so the back button leaves a building.
-  map?.setView(parseHash(location.hash))
-  window.addEventListener('hashchange', () => map?.setView(parseHash(location.hash)))
+  void map?.go(parseHash(location.hash))
+  // The places, tables and classes are links to #… addresses. Followed by the browser, "#" would jump to the top of the
+  // page; instead the page changes the address itself and moves the map, and the back button moves it back.
+  root.querySelector<HTMLElement>('[data-live-frame]')?.addEventListener('click', (e: MouseEvent) => {
+    const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="#"]')
+    if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+    e.preventDefault()
+    const href = a.getAttribute('href') ?? '#'
+    if (href !== (location.hash || '#')) history.pushState(null, '', href === '#' ? location.pathname + location.search : href)
+    void map?.go(parseHash(href))
+  })
+  window.addEventListener('popstate', () => void map?.go(parseHash(location.hash)))
 
   // The tabs: 全景, 社团, 各班.
   const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')]

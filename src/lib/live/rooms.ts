@@ -388,3 +388,31 @@ export function panelFor(scene: Scene, layout: Layout): Panel {
         : ['开着门，还没有人开桌。']
   return { trail: [campusStep, hallStep], back: { name: '全景', href: campusStep.href }, places, here, info }
 }
+
+// ---------------------------------------------------------------------------
+// Going in and out: how deep a view is, and where in the outer picture the inner one is.
+
+/** The campus is 0; a classroom and the club hall 1; a table up close 2. */
+export function depth(view: View): number {
+  return view.kind === 'campus' ? 0 : view.kind === 'table' ? 2 : 1
+}
+
+const centre = (b: Box): Point => [b[0] + b[2] / 2, b[1] + b[3] / 2]
+
+/**
+ * Where `inner` is on the picture of `outer`, to zoom towards when going in and away from when coming out: a division's
+ * building or the club centre on the campus, a table in the hall (the hall's middle for a table it has no room to draw).
+ */
+export function focusPoint(outer: View, inner: View, scene: Scene): Point {
+  if (outer.kind === 'campus') {
+    const key = inner.kind === 'building' ? inner.division : 'club'
+    const area = campus.locations[key]?.area
+    return area ? centre(area) : [0.5, 0.5]
+  }
+  if (outer.kind === 'hall' && inner.kind === 'table') {
+    const i = tablesInOrder(scene).findIndex((t) => t.tableId === inner.tableId)
+    const spot = rooms.clubHall.tables[i]
+    return spot ? spot.center : [0.5, 0.5]
+  }
+  return [0.5, 0.5]
+}
