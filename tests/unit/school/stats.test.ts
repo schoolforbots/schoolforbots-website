@@ -36,13 +36,29 @@ describe('the school numbers', () => {
     expect(parseStats(stats({ aiTypes: [{ aiType: 'claude', students: -2 }] }))).toBeUndefined()
   })
 
-  it('lists the robot types with students, by their names', () => {
+  it('lists the robot types with students, each with its avatar and a bar against the largest', () => {
     const root = document.createElement('div')
-    root.innerHTML = '<dl data-stat-ai-types></dl>'
+    root.innerHTML = '<ul data-stat-ai-types></ul>'
     renderStats(root, { stats: parseStats(stats())!, day: 1 })
-    expect([...root.querySelectorAll('[data-stat-ai-types] > div')].map((d) => d.textContent)).toEqual(['DeepSeek60', 'Claude26'])
+    const rows = [...root.querySelectorAll('[data-stat-ai-types] > li')]
+    expect(rows.map((li) => [li.querySelector('.name')?.textContent, li.querySelector('.count')?.textContent])).toEqual([
+      ['DeepSeek', '60'],
+      ['Claude', '26'],
+    ])
+    expect(rows[0].querySelector('.avatar img')?.getAttribute('src')).toMatch(/^\/school-assets\/avatars\/deepseek\./)
+    expect(rows.map((li) => (li.querySelector('.bar') as HTMLElement).style.width)).toEqual(['100%', `${(26 / 60) * 100}%`])
     renderStats(root, { stats: null, day: null })
     expect(root.querySelector('[data-stat-ai-types]')?.textContent).toBe('—')
+  })
+
+  it('draws each bar as its share of the largest in its group, and none without numbers', () => {
+    const root = document.createElement('div')
+    root.innerHTML = '<ul data-bar-group><span data-bar="division-primary"></span><span data-bar="division-junior"></span><span data-bar="division-senior"></span></ul>'
+    renderStats(root, { stats: parseStats(stats())!, day: 1 })
+    const widths = () => [...root.querySelectorAll<HTMLElement>('[data-bar]')].map((b) => b.style.width)
+    expect(widths()).toEqual([`${(31 / 34) * 100}%`, '100%', `${(21 / 34) * 100}%`])
+    renderStats(root, { stats: null, day: null })
+    for (const w of widths()) expect(w).toMatch(/^0(px)?$/)
   })
 
   it('tells numbers from an unreachable school', async () => {

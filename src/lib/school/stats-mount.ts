@@ -22,51 +22,89 @@ export interface StatsReading {
 
 const number = (n: number) => n.toLocaleString('zh-CN')
 
+/** The number behind each [data-stat] and [data-bar] key, or null where the school could not be read. */
+export function statValues(r: StatsReading): Record<string, number | null> {
+  const s = r.stats
+  const out: Record<string, number | null> = {
+    students: s ? s.students.total : null,
+    owners: s ? s.owners : null,
+    classes: s ? s.classes.total : null,
+    day: r.day,
+    doudizhu: s ? s.clubs.doudizhu.gamesToday : null,
+  }
+  for (const d of DIVISIONS) out[`division-${d}`] = s ? s.students.byDivision[d] : null
+  for (const t of SLOTS) out[`slot-${t}`] = s ? s.students.bySlot[t] : null
+  return out
+}
+
 /** The text of each [data-stat] key, or null where the school could not be read. */
 export function statTexts(r: StatsReading): Record<string, string | null> {
-  const s = r.stats
-  const out: Record<string, string | null> = {
-    students: s ? number(s.students.total) : null,
-    owners: s ? number(s.owners) : null,
-    classes: s ? number(s.classes.total) : null,
-    day: r.day === null ? null : number(r.day),
-    doudizhu: s ? number(s.clubs.doudizhu.gamesToday) : null,
-  }
-  for (const d of DIVISIONS) out[`division-${d}`] = s ? number(s.students.byDivision[d]) : null
-  for (const t of SLOTS) out[`slot-${t}`] = s ? number(s.students.bySlot[t]) : null
-  return out
+  return Object.fromEntries(Object.entries(statValues(r)).map(([k, v]) => [k, v === null ? null : number(v)]))
+}
+
+// A bar's length: its share of the largest in its group, so the longest bar fills its track.
+function setBars(bars: { el: HTMLElement; value: number | null }[]): void {
+  const max = Math.max(0, ...bars.map((b) => b.value ?? 0))
+  for (const { el, value } of bars) el.style.width = max > 0 && value ? `${(value / max) * 100}%` : '0'
+}
+
+type TypeLook = { label: string; avatars: { image: string }[]; default: { background: string; border: string } }
+
+// One row for a robot type: its avatar in the type's colours, its name, a bar and the count.
+function typeRow(aiType: string, students: number): HTMLElement {
+  const types = manifest.aiTypes as Record<string, TypeLook>
+  const palette = manifest.palette as Record<string, string>
+  const t = types[aiType] ?? types[manifest.fallbackAiType]
+  const li = document.createElement('li')
+  const name = document.createElement('span')
+  name.className = 'name'
+  const avatar = document.createElement('span')
+  avatar.className = 'avatar'
+  avatar.style.setProperty('--avatar-bg', palette[t.default.background])
+  avatar.style.setProperty('--avatar-border', palette[t.default.border])
+  const img = document.createElement('img')
+  img.src = `/school-assets/${t.avatars[0].image}`
+  img.alt = ''
+  img.loading = 'lazy'
+  avatar.append(img)
+  name.append(avatar, document.createTextNode(types[aiType]?.label ?? t.label ?? aiType))
+  const track = document.createElement('span')
+  track.className = 'track'
+  track.setAttribute('aria-hidden', 'true')
+  const bar = document.createElement('span')
+  bar.className = 'bar'
+  bar.dataset.value = String(students)
+  track.append(bar)
+  const count = document.createElement('span')
+  count.className = 'count'
+  count.textContent = number(students)
+  li.append(name, track, count)
+  return li
 }
 
 export function renderStats(root: HTMLElement, r: StatsReading): void {
   const texts = statTexts(r)
+  const values = statValues(r)
   root.dataset.state = r.stats ? 'ready' : 'unreachable'
   for (const el of root.querySelectorAll<HTMLElement>('[data-stat]')) {
     const text = texts[el.dataset.stat ?? '']
     el.textContent = text ?? '—'
   }
-  // Students by robot type: one row for each type with anyone, named as in the assets manifest.
-  const labels = manifest.aiTypes as Record<string, { label: string }>
+  for (const group of root.querySelectorAll<HTMLElement>('[data-bar-group]')) {
+    setBars([...group.querySelectorAll<HTMLElement>('[data-bar]')].map((el) => ({ el, value: values[el.dataset.bar ?? ''] ?? null })))
+  }
+  // Students by robot type: one row for each type with anyone, in the school's order, named as in the assets manifest.
   for (const list of root.querySelectorAll<HTMLElement>('[data-stat-ai-types]')) {
     const rows = (r.stats?.aiTypes ?? []).filter((t) => t.students > 0)
     if (!rows.length) {
-      const empty = document.createElement('div')
-      const dt = document.createElement('dt')
-      dt.textContent = '—'
-      empty.append(dt)
+      const empty = document.createElement('li')
+      empty.className = 'quiet'
+      empty.textContent = '—'
       list.replaceChildren(empty)
       continue
     }
-    list.replaceChildren(
-      ...rows.map((t) => {
-        const row = document.createElement('div')
-        const dt = document.createElement('dt')
-        dt.textContent = labels[t.aiType]?.label ?? labels[manifest.fallbackAiType]?.label ?? t.aiType
-        const dd = document.createElement('dd')
-        dd.textContent = number(t.students)
-        row.append(dt, dd)
-        return row
-      }),
-    )
+    list.replaceChildren(...rows.map((t) => typeRow(t.aiType, t.students)))
+    setBars([...list.querySelectorAll<HTMLElement>('.bar')].map((el) => ({ el, value: Number(el.dataset.value) })))
   }
   // The day of school has its own wording before the opening day.
   for (const el of root.querySelectorAll<HTMLElement>('[data-stat-day-label]')) {

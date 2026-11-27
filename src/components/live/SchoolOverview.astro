@@ -1,0 +1,386 @@
+---
+// The top of the live campus page: the school's numbers (lib/school/stats-mount.ts).
+// Four headline numbers with an icon each; then the students by division and by
+// slot as bars of one colour, longer for more students, each with its count; the
+// students by robot type, each type with its avatar; and the doudizhu club's games
+// today. Totals only. Until they arrive, or if the school cannot be read, each
+// number shows a dash and each bar is empty.
+import Users from '@lucide/astro/icons/users'
+import HeartHandshake from '@lucide/astro/icons/heart-handshake'
+import School from '@lucide/astro/icons/school'
+import CalendarDays from '@lucide/astro/icons/calendar-days'
+import GraduationCap from '@lucide/astro/icons/graduation-cap'
+import Sunrise from '@lucide/astro/icons/sunrise'
+import Sun from '@lucide/astro/icons/sun'
+import Moon from '@lucide/astro/icons/moon'
+import Bot from '@lucide/astro/icons/bot'
+import Spade from '@lucide/astro/icons/spade'
+import Heart from '@lucide/astro/icons/heart'
+import Club from '@lucide/astro/icons/club'
+import Clock from '@lucide/astro/icons/clock'
+
+const tiles = [
+  { key: 'students', label: '在校学生', Icon: Users },
+  { key: 'owners', label: '家长', Icon: HeartHandshake },
+  { key: 'classes', label: '班级', Icon: School },
+  { key: 'day', label: '开学天数', Icon: CalendarDays, dayLabel: true },
+]
+const divisions = [
+  ['division-primary', '小学部'],
+  ['division-junior', '初中部'],
+  ['division-senior', '高中部'],
+]
+const slots = [
+  ['slot-morning', '上午班', Sunrise],
+  ['slot-afternoon', '下午班', Sun],
+  ['slot-evening', '晚班', Moon],
+] as const
+---
+
+<section class="overview" data-school-stats data-state="loading" aria-labelledby="overview-title">
+  <div class="head">
+    <h2 id="overview-title">学校概况</h2>
+    <p class="sub"><Clock size={14} aria-hidden="true" />每 5 分钟更新</p>
+  </div>
+
+  <ul class="tiles">
+    {
+      tiles.map(({ key, label, Icon, dayLabel }) => (
+        <li>
+          <span class="icon" aria-hidden="true">
+            <Icon size={20} />
+          </span>
+          <span class="value" data-stat={key}>
+            —
+          </span>
+          <span class="label" data-stat-day-label={dayLabel ? '' : undefined}>
+            {label}
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="cards">
+    <section class="card">
+      <h3><GraduationCap size={16} aria-hidden="true" />按学部</h3>
+      <ul class="bars" data-bar-group>
+        {
+          divisions.map(([key, label]) => (
+            <li>
+              <span class="name">{label}</span>
+              <span class="track" aria-hidden="true">
+                <span class="bar" data-bar={key} />
+              </span>
+              <span class="count" data-stat={key}>
+                —
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="card">
+      <h3><Clock size={16} aria-hidden="true" />按时段</h3>
+      <ul class="bars" data-bar-group>
+        {
+          slots.map(([key, label, Icon]) => (
+            <li>
+              <span class="name">
+                <Icon size={14} aria-hidden="true" />
+                {label}
+              </span>
+              <span class="track" aria-hidden="true">
+                <span class="bar" data-bar={key} />
+              </span>
+              <span class="count" data-stat={key}>
+                —
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="card types">
+      <h3><Bot size={16} aria-hidden="true" />按机器人类型</h3>
+      <ul class="bars" data-stat-ai-types>
+        <li class="quiet">—</li>
+      </ul>
+    </section>
+
+    <section class="card club">
+      <h3><Spade size={16} aria-hidden="true" />斗地主社</h3>
+      <div class="club-body">
+        <div class="fan" aria-hidden="true">
+          <span class="playing-card left"><Club size={16} /></span>
+          <span class="playing-card middle"><Heart size={16} /></span>
+          <span class="playing-card right"><Spade size={16} /></span>
+        </div>
+        <p class="games"><span class="value" data-stat="doudizhu">—</span><span class="unit">局</span></p>
+        <p class="caption">今天打完的牌局</p>
+      </div>
+    </section>
+  </div>
+  <p class="unreachable">暂时取不到学校的数字，过一会儿再来看看。</p>
+</section>
+
+<script>
+  import { mountSchoolStats } from '../../lib/school/stats-mount'
+  mountSchoolStats()
+</script>
+
+<style>
+  .overview {
+    margin: 0 0 2rem;
+  }
+  .head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  h2 {
+    margin: 0;
+    color: var(--sfb-ink);
+    font-size: 1.375rem;
+    font-weight: 700;
+  }
+  .sub {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0;
+    color: var(--sfb-mute);
+    font-size: 0.8125rem;
+  }
+
+  /* Four headline numbers, each with its icon in a warm disc. */
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tiles li {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: 0.875rem;
+    align-items: center;
+    margin: 0;
+    padding: 1rem 1.125rem;
+    overflow: hidden;
+    border: 1px solid var(--sfb-line);
+    border-radius: 1rem;
+    background:
+      radial-gradient(120% 140% at 100% 0%, color-mix(in srgb, var(--sfb-num-bg) 55%, transparent), transparent 60%),
+      var(--sfb-surface);
+  }
+  .icon {
+    grid-row: 1 / 3;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: var(--sfb-num-bg);
+    color: var(--sfb-num-ink);
+  }
+  .tiles .value {
+    color: var(--sfb-ink);
+    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.125rem);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.15;
+  }
+  .tiles .label {
+    color: var(--sfb-mute);
+    font-size: 0.875rem;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 0.75rem;
+    align-items: start;
+    margin-top: 0.75rem;
+  }
+  .card {
+    padding: 1rem 1.125rem 1.125rem;
+    border: 1px solid var(--sfb-line);
+    border-radius: 1rem;
+    background: var(--sfb-surface);
+  }
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin: 0 0 0.75rem;
+    color: var(--sfb-ink);
+    font-size: 0.9375rem;
+    font-weight: 700;
+  }
+  h3 :global(svg) {
+    color: var(--sfb-highlight);
+  }
+
+  /* Bars of one colour: the share of the largest in the card. Text stays in the text inks. */
+  .bars {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .bars :global(li) {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr) 2.5rem;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.875rem;
+  }
+  .bars :global(.name) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--sfb-mute);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .bars :global(.track) {
+    height: 0.5rem;
+    border-radius: 999px;
+    background: var(--sfb-bg-soft);
+  }
+  .bars :global(.bar) {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: 999px;
+    background: var(--sfb-highlight);
+    transition: width 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  .bars :global(.count) {
+    color: var(--sfb-ink);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+  }
+  .bars :global(.quiet) {
+    display: block;
+    color: var(--sfb-mute);
+  }
+  /* A robot type's row starts with its avatar, in the type's colours. */
+  .types :global(li) {
+    grid-template-columns: 6rem minmax(0, 1fr) 2.5rem;
+  }
+  .types :global(.avatar) {
+    flex: none;
+    width: 1.375rem;
+    height: 1.375rem;
+    overflow: hidden;
+    border: 2px solid var(--avatar-border);
+    border-radius: 50%;
+    background: var(--avatar-bg);
+  }
+  .types :global(.avatar img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* The club: a small fan of cards over the number of games. */
+  .club-body {
+    display: grid;
+    justify-items: center;
+    padding-top: 0.25rem;
+  }
+  .fan {
+    position: relative;
+    width: 7rem;
+    height: 3.75rem;
+  }
+  .playing-card {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 3.125rem;
+    margin-left: -1.125rem;
+    border: 1px solid color-mix(in srgb, var(--sfb-mute) 35%, var(--sfb-line));
+    border-radius: 0.375rem;
+    background: var(--sfb-surface);
+    box-shadow: 0 0.25rem 0.75rem -0.375rem rgb(90 40 8 / 0.3);
+    color: var(--sfb-ink);
+    transform-origin: 50% 130%;
+  }
+  .playing-card.left {
+    transform: translateX(-1.375rem) rotate(-14deg);
+  }
+  .playing-card.middle {
+    z-index: 1;
+    color: var(--sfb-highlight);
+    transform: translateY(-0.25rem);
+  }
+  .playing-card.right {
+    transform: translateX(1.375rem) rotate(14deg);
+  }
+  .games {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    margin: 0.5rem 0 0;
+  }
+  .games .value {
+    color: var(--sfb-ink);
+    font-size: 2rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+  .unit,
+  .caption {
+    color: var(--sfb-mute);
+    font-size: 0.875rem;
+  }
+  .caption {
+    margin: 0.125rem 0 0;
+  }
+
+  .unreachable {
+    display: none;
+    margin: 0.75rem 0 0;
+    color: var(--sfb-mute);
+    font-size: 0.875rem;
+    text-align: center;
+  }
+  .overview[data-state='unreachable'] .unreachable {
+    display: block;
+  }
+
+  :global(:root[data-theme='dark']) .playing-card {
+    box-shadow: 0 0.25rem 0.75rem -0.375rem rgb(0 0 0 / 0.7);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bars :global(.bar) {
+      transition: none;
+    }
+  }
+  @media (max-width: 50rem) {
+    .tiles {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>
