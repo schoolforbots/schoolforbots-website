@@ -12,10 +12,10 @@ describe('the live campus page', () => {
     expect(text(doc().querySelector('h1'))).toBe('校园实况')
   })
 
-  it('has the three views as tabs, the map first', () => {
+  it('has the map and the club as tabs, the map first', () => {
     const tabs = [...doc().querySelectorAll('[data-live-page] [role="tab"]')]
-    expect(tabs.map(text)).toEqual(['全景', '社团', '各班'])
-    expect(tabs.map((t) => t.getAttribute('aria-selected'))).toEqual(['true', 'false', 'false'])
+    expect(tabs.map(text)).toEqual(['全景', '社团'])
+    expect(tabs.map((t) => t.getAttribute('aria-selected'))).toEqual(['true', 'false'])
     for (const t of tabs) {
       const panel = doc().getElementById(t.getAttribute('aria-controls') ?? '')
       expect(panel?.getAttribute('role')).toBe('tabpanel')

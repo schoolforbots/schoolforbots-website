@@ -168,6 +168,8 @@ function byNumber(a: Figure, b: Figure): number {
   return n(a) - n(b) || a.key.localeCompare(b.key)
 }
 
+export const CLASSROOM_AVATAR_SCALE = 2
+
 /** The classroom's seats, front rows (nearest the teacher) first, each row from one end to the other. */
 export function classroomSeats(): Point[] {
   const { teacher, rows } = rooms.classroom
@@ -211,7 +213,10 @@ export function classFor(scene: Scene, view: Extract<View, { kind: 'building' }>
 
 export function layoutClassroom(scene: Scene, view: Extract<View, { kind: 'building' }>, now: Date): Layout {
   const c = classFor(scene, view)
-  const layout = empty({ ...view, room: c ? classKey(c) : null }, pictureFor(rooms.classroom, now))
+  // The classroom's seats are small on its picture: its avatars are drawn at twice the size the manifest suggests, a
+  // little over a seat's width, so neighbours in a row overlap a little.
+  const picture = pictureFor(rooms.classroom, now)
+  const layout = empty({ ...view, room: c ? classKey(c) : null }, { ...picture, avatarSize: picture.avatarSize * CLASSROOM_AVATAR_SCALE })
   if (!c) return layout
   const here = scene.figures.filter((f) => f.room === classKey(c))
   const teacher = here.find((f) => f.role === 'teacher')

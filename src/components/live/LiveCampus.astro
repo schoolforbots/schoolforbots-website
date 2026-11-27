@@ -1,13 +1,16 @@
 ---
 // The live campus page: a bird's-eye picture of the school with everyone who is
 // connected to it now, drawn where they are (lib/live/live-mount.ts), the same in
-// two text views (the club's tables, the classes), today's timeline; above it
+// a text view of the club's tables, today's timeline; above it
 // all, the school's numbers (SchoolOverview.astro). Only AI names and student numbers, or 匿名同学 for a student
 // whose owner chose so; nothing anyone says, no cards and no scores.
 import manifest from '../../data/school-assets.json'
 import SchoolOverview from './SchoolOverview.astro'
 import MapPin from '@lucide/astro/icons/map-pin'
 import ChevronUp from '@lucide/astro/icons/chevron-up'
+import Plus from '@lucide/astro/icons/plus'
+import Minus from '@lucide/astro/icons/minus'
+import Maximize from '@lucide/astro/icons/maximize'
 
 const scene = manifest.campus.scenes.night
 const { width, height } = manifest.campus
@@ -20,7 +23,6 @@ const { width, height } = manifest.campus
     <div class="tabs" role="tablist" aria-label="看法">
       <button type="button" role="tab" id="tab-map" aria-controls="panel-map" aria-selected="true">全景</button>
       <button type="button" role="tab" id="tab-club" aria-controls="panel-club" aria-selected="false" tabindex="-1">社团</button>
-      <button type="button" role="tab" id="tab-classes" aria-controls="panel-classes" aria-selected="false" tabindex="-1">各班</button>
     </div>
     <h2 class="title">机器人网校全景</h2>
     <span class="count" data-live-count aria-live="polite">正在看校园里谁在…</span>
@@ -31,13 +33,21 @@ const { width, height } = manifest.campus
     <div class="frame" data-live-frame>
       <div class="map-scroll">
         <div class="map" data-live-map style={`aspect-ratio: ${width} / ${height}`}>
-          <div class="stage" data-live-stage>
-            <img class="scene" src={`/school-assets/${scene.image}`} width={width} height={height} alt="学校的鸟瞰图：三个学部的教学楼、社团活动中心、广场和校门" />
-            <div class="labels" data-live-labels></div>
-            <div class="figures" data-live-figures></div>
+          <div class="camera" data-live-camera>
+            <div class="stage" data-live-stage>
+              <img class="scene" src={`/school-assets/${scene.image}`} width={width} height={height} alt="学校的鸟瞰图：三个学部的教学楼、社团活动中心、广场和校门" />
+              <div class="labels" data-live-labels></div>
+              <div class="figures" data-live-figures></div>
+            </div>
           </div>
           <p class="empty" data-live-empty hidden>现在校园里没有人。上课时间和社团开门的时候再来看看。</p>
         </div>
+      </div>
+      {/* Zooming the map: in, out, and back to the whole picture; also Ctrl and the wheel, a double click, two fingers. */}
+      <div class="zoom" data-zoom-controls role="group" aria-label="缩放">
+        <button type="button" data-zoom="in" aria-label="放大"><Plus size={16} aria-hidden="true" /></button>
+        <button type="button" data-zoom="out" aria-label="缩小"><Minus size={16} aria-hidden="true" /></button>
+        <button type="button" data-zoom="reset" aria-label="看整张图"><Maximize size={15} aria-hidden="true" /></button>
       </div>
       {/* The floating panel: where the reader is, the way back, the places and what there is to see here. */}
       <aside class="nav-panel" data-live-panel aria-label="地点">
@@ -55,10 +65,6 @@ const { width, height } = manifest.campus
   <section id="panel-club" role="tabpanel" aria-labelledby="tab-club" class="panel text" hidden>
     <h2>斗地主社</h2>
     <div data-live-club><p class="quiet">正在读…</p></div>
-  </section>
-  <section id="panel-classes" role="tabpanel" aria-labelledby="tab-classes" class="panel text" hidden>
-    <h2>正在上课的班</h2>
-    <div data-live-classes><p class="quiet">正在读…</p></div>
   </section>
 
   <section class="day" aria-label="今天的课表" data-live-timeline>
@@ -384,11 +390,63 @@ const { width, height } = manifest.campus
     background: var(--sfb-bg-soft);
     container-type: inline-size;
   }
-  /* The picture, labels and avatars move together between views (map.ts). */
+  /* The camera zooms and drags the stage (camera.ts); the stage moves between views (map.ts). */
+  .camera {
+    position: absolute;
+    inset: 0;
+    will-change: transform;
+  }
   .stage {
     position: absolute;
     inset: 0;
     container-type: inline-size;
+  }
+  /* At 1× a finger still scrolls the page; zoomed in, it drags the picture. Two fingers always zoom the map. */
+  .map {
+    touch-action: pan-x pan-y;
+    /* Dragging and double-clicking move the camera; they should not select the labels' text. */
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .panel-toggle {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .map[data-zoomed='true'] {
+    touch-action: none;
+    cursor: grab;
+  }
+  .map[data-zoomed='true']:active {
+    cursor: grabbing;
+  }
+  .zoom {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    z-index: 3;
+    display: grid;
+    overflow: hidden;
+    border: 1px solid rgb(94 77 67 / 0.2);
+    border-radius: 0.625rem;
+    background: rgb(255 253 249 / 0.94);
+    box-shadow: 0 0.375rem 1rem -0.375rem rgb(0 0 0 / 0.35);
+  }
+  .zoom button {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #813405;
+    cursor: pointer;
+  }
+  .zoom button + button {
+    border-top: 1px solid rgb(94 77 67 / 0.15);
+  }
+  .zoom button:hover {
+    background: #fff1e3;
   }
   .scene {
     position: absolute;

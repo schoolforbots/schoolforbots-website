@@ -5,7 +5,7 @@
 import { site } from '../../config/site'
 import { resolveSchoolDay, slotNames as daySlotNames, type SchoolDay } from '../school/next-school-day'
 import { schoolDateWeekday, schoolNearDay, schoolParts } from '../school/time'
-import { className, readLive, stepText, type Scene, type Seat } from './live'
+import { readLive, type Scene, type Seat } from './live'
 import { LiveMap } from './map'
 import { parseHash } from './rooms'
 
@@ -88,29 +88,6 @@ function renderClub(root: HTMLElement, scene: Scene): void {
   box.replaceChildren(head, list)
 }
 
-function renderClasses(root: HTMLElement, scene: Scene): void {
-  const box = root.querySelector<HTMLElement>('[data-live-classes]')
-  if (!box) return
-  if (!scene.classReached) return void box.replaceChildren(el('p', 'quiet', '暂时看不到上课的情况。'))
-  if (!scene.classrooms.length) return void box.replaceChildren(el('p', 'quiet', '现在没有班在上课。'))
-  const table = el('table')
-  const head = el('tr')
-  for (const h of ['班级', '课题', '上到哪', '在线']) head.append(el('th', undefined, h))
-  table.append(el('thead'), el('tbody'))
-  table.tHead!.append(head)
-  for (const c of scene.classrooms) {
-    const tr = el('tr')
-    tr.append(
-      el('td', undefined, className(c)),
-      el('td', c.title ? undefined : 'quiet', c.kind === 'study' ? '自习' : c.title ?? '备课中'),
-      el('td', undefined, stepText(c.step, c.kind)),
-      el('td', 'num', String(c.students.length)),
-    )
-    table.tBodies[0].append(tr)
-  }
-  box.replaceChildren(table)
-}
-
 // ---------------------------------------------------------------------------
 // The timeline under the map: today's three slots, the one on now marked.
 
@@ -160,7 +137,7 @@ export function mountLivePage(): void {
   })
   window.addEventListener('popstate', () => void map?.go(parseHash(location.hash)))
 
-  // The tabs: 全景, 社团, 各班.
+  // The tabs: 全景, 社团.
   const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')]
   const select = (tab: HTMLButtonElement) => {
     for (const t of tabs) {
@@ -190,7 +167,6 @@ export function mountLivePage(): void {
     root.querySelector('[data-live-count]')!.textContent = headCount(scene)
     renderStatus(root, scene, now)
     renderClub(root, scene)
-    renderClasses(root, scene)
     if (empty) empty.hidden = map?.currentView.kind !== 'campus' || scene.students > 0 || !(scene.classReached || scene.clubReached)
   })
 
