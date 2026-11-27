@@ -6,7 +6,8 @@ import { site } from '../../config/site'
 import { resolveSchoolDay, slotNames as daySlotNames, type SchoolDay } from '../school/next-school-day'
 import { schoolDateWeekday, schoolNearDay, schoolParts } from '../school/time'
 import { className, readLive, stepText, type Scene, type Seat } from './live'
-import { CampusMap } from './map'
+import { LiveMap } from './map'
+import { parseHash } from './rooms'
 
 const PAGE_EVERY_MS = 5000
 const PREVIEW_EVERY_MS = 30_000
@@ -144,7 +145,10 @@ export function mountLivePage(): void {
   const root = document.querySelector<HTMLElement>('[data-live-page]')
   if (!root) return
   const mapRoot = root.querySelector<HTMLElement>('[data-live-map]')
-  const map = mapRoot ? new CampusMap(mapRoot) : null
+  const map = mapRoot ? new LiveMap(mapRoot) : null
+  // The view is named in the address (#junior, #club/<table>), so the back button leaves a building.
+  map?.setView(parseHash(location.hash))
+  window.addEventListener('hashchange', () => map?.setView(parseHash(location.hash)))
 
   // The tabs: 全景, 社团, 各班.
   const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')]
@@ -177,7 +181,7 @@ export function mountLivePage(): void {
     renderStatus(root, scene, now)
     renderClub(root, scene)
     renderClasses(root, scene)
-    if (empty) empty.hidden = scene.students > 0 || !(scene.classReached || scene.clubReached)
+    if (empty) empty.hidden = map?.currentView.kind !== 'campus' || scene.students > 0 || !(scene.classReached || scene.clubReached)
   })
 
   // The timeline changes slowly: read it once a minute.

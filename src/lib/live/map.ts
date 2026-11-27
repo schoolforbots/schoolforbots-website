@@ -1,38 +1,24 @@
-// Draws a live scene (live.ts) on the campus illustration: a label over each place
-// (its name and what is going on there) and a round avatar for everyone in it,
-// laid out in the open ground the assets manifest marks for the place. From one
-// snapshot to the next the avatars that stay are kept: one who moves slides to
-// the new place, newcomers fade in, those who left fade out. Between snapshots
-// (five seconds) the avatars make small made-up movements so the campus does not
-// look frozen; these say nothing about what the students do.
+// Draws the live campus (live.ts) on its pictures, in one of four views
+// (rooms.ts): the campus, a classroom, the club hall, one table up close. Over the
+// picture: labels for the places or tables one can go into, a round avatar for
+// everyone, and a small floating panel that says where the reader is, leads back,
+// and lists the places and what there is to see in this one; it folds away.
+//
+// From one snapshot to the next the avatars that stay are kept: one who moves
+// slides to the new spot, newcomers fade in, those who left fade out. Changing the
+// view starts the picture afresh. Between snapshots (five seconds) the avatars make
+// small made-up movements, and at a table up close cards fly to the middle; these
+// say nothing about what the students do.
 import manifest from '../../data/school-assets.json'
 import { placeNames, placeSummary, placeTag, PLACES, type Figure, type PlaceKey, type Scene } from './live'
+import { layoutFor, panelFor, type Layout, type Panel, type Point, type View } from './rooms'
 
-type Box = [number, number, number, number]
-interface Location {
-  label: string
-  /** The centre of the place's name label. */
-  labelAt: [number, number]
-  area: Box | null
-  /** A place drawn on the picture that no one goes to yet: only its name shows. */
-  reserved?: boolean
-}
+export { capacity, slots } from './rooms'
 
-const locations = manifest.campus.locations as unknown as Record<string, Location>
 const palette = manifest.palette as Record<string, string>
 const ASSETS = '/school-assets/'
-
-/** An avatar's diameter as a share of the picture's width (the assets manifest suggests one). */
-export const AVATAR_SIZE: number = (manifest.campus as { avatarSize?: number }).avatarSize ?? 0.025
-
-/**
- * How many avatars fit in `area` side by side without overlapping, at `size` (a share of the width) on a picture of
- * `aspect` (width over height). More than this and the last spot becomes a "+N".
- */
-export function capacity(area: Box, size: number, aspect: number): number {
-  const [, , w, h] = area
-  return Math.max(1, Math.floor(w / size) * Math.floor((h * aspect) / size))
-}
+const locations = manifest.campus.locations as unknown as Record<string, { label: string; labelAt: Point; reserved?: boolean }>
+const PANEL_KEY = 'sfb-live-panel'
 
 interface Look {
   image: string
@@ -63,36 +49,11 @@ export function look(f: Pick<Figure, 'kind' | 'aiType' | 'avatar'>): Look {
   }
 }
 
-/** The order inside a place: teachers first, then each table's people together, then everyone else as they came. */
-function arrange(figures: Figure[]): Figure[] {
-  const rank = (f: Figure) => (f.kind === 'teacher' ? 0 : 1)
-  return figures
-    .map((f, i) => ({ f, i }))
-    .sort((a, b) => rank(a.f) - rank(b.f) || (a.f.tableId ?? '').localeCompare(b.f.tableId ?? '') || a.i - b.i)
-    .map((x) => x.f)
-}
-
-/**
- * Where each of `n` avatars goes in `area` (fractions of the picture), in rows, with the picture's aspect `aspect`
- * (width over height), as the centre of each avatar.
- */
-export function slots(area: Box, n: number, aspect: number): [number, number][] {
-  if (n === 0) return []
-  const [x, y, w, h] = area
-  // Columns so the cells are about square on screen.
-  const cols = Math.max(1, Math.min(n, Math.round(Math.sqrt((n * w * aspect) / h))))
-  const rows = Math.ceil(n / cols)
-  const out: [number, number][] = []
-  for (let i = 0; i < n; i++) {
-    const r = Math.floor(i / cols)
-    const inRow = r === rows - 1 ? n - r * cols : cols
-    const c = i % cols
-    // A small stagger on odd rows, and the last row centred.
-    const cx = x + (w * (c + 0.5 + (cols - inRow) / 2)) / cols + (r % 2 ? w / cols / 4 : 0)
-    const cy = y + (h * (r + 0.5)) / rows
-    out.push([Math.min(x + w, cx), cy])
-  }
-  return out
+function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string): HTMLElementTagNameMap[K] {
+  const node = document.createElement(tag)
+  if (className) node.className = className
+  if (text !== undefined) node.textContent = text
+  return node
 }
 
 interface Mounted {
@@ -100,49 +61,96 @@ interface Mounted {
   figure: Figure
 }
 
-export class CampusMap {
+export class LiveMap {
+  private readonly picture: HTMLImageElement
+  private readonly labelLayer: HTMLElement
   private readonly layer: HTMLElement
-  private readonly labels = new Map<PlaceKey, HTMLElement>()
+  private readonly panelEl: HTMLElement | null
   private readonly mounted = new Map<string, Mounted>()
   private readonly reduce = matchMedia('(prefers-reduced-motion: reduce)')
-  private readonly aspect = manifest.campus.width / manifest.campus.height
-  private popover: HTMLElement
+  private readonly popover: HTMLElement
+  private view: View = { kind: 'campus' }
+  private shownKind: string | null = null
+  private scene: Scene | null = null
+  private layout: Layout | null = null
   private fidget: number | undefined
+  private tossAt = 0
 
-  constructor(root: HTMLElement) {
+  constructor(private readonly root: HTMLElement) {
+    this.picture = root.querySelector<HTMLImageElement>('img.scene')!
+    this.labelLayer = root.querySelector<HTMLElement>('[data-live-labels]') ?? root
     this.layer = root.querySelector<HTMLElement>('[data-live-figures]') ?? root
-    root.style.setProperty('--avatar-size', `${AVATAR_SIZE * 100}cqi`)
-    // Every place on the picture gets its name; the places people go to also say what is going on there.
-    for (const [key, loc] of Object.entries(locations)) {
-      const live = (PLACES as readonly string[]).includes(key) && !loc.reserved
-      const label = document.createElement('div')
-      label.className = 'place-label'
-      label.dataset.place = key
-      if (!live) label.dataset.quiet = ''
-      label.style.left = `${loc.labelAt[0] * 100}%`
-      label.style.top = `${loc.labelAt[1] * 100}%`
-      const name = document.createElement('strong')
-      name.textContent = loc.label || placeNames[key as PlaceKey] || key
-      label.append(name)
-      if (live) {
-        label.append(document.createElement('span'))
-        this.labels.set(key as PlaceKey, label)
-      }
-      root.querySelector('[data-live-labels]')?.append(label)
-    }
-    this.popover = document.createElement('div')
-    this.popover.className = 'figure-card'
+    this.panelEl = root.closest('[data-live-frame]')?.querySelector<HTMLElement>('[data-live-panel]') ?? null
+    this.popover = el('div', 'figure-card')
     this.popover.hidden = true
     this.popover.setAttribute('role', 'status')
     root.append(this.popover)
     root.addEventListener('click', (e) => {
       if (!(e.target as HTMLElement).closest('.figure')) this.hideCard()
     })
+    this.setUpPanel()
   }
 
-  /** Shows `scene`, keeping the avatars that stay. */
+  get currentView(): View {
+    return this.layout?.view ?? this.view
+  }
+
+  /** Goes to `view`; the next render draws it. */
+  setView(view: View): void {
+    this.view = view
+    if (this.scene) this.render(this.scene)
+  }
+
+  /** Shows `scene` in the current view, keeping the avatars that stay. */
   render(scene: Scene): void {
-    for (const [key, label] of this.labels) {
+    this.scene = scene
+    const layout = layoutFor(scene, this.view, new Date())
+    this.layout = layout
+    const kind = layout.view.kind === 'table' ? `table:${layout.view.tableId}` : layout.view.kind === 'building' ? `building:${layout.view.room}` : layout.view.kind
+    if (kind !== this.shownKind) this.changePicture(layout, kind)
+    if (layout.view.kind === 'campus') this.campusLabels(scene)
+    else this.marks(layout)
+    this.place(layout)
+    this.renderPanel(panelFor(scene, layout))
+    this.root.dataset.view = layout.view.kind
+    this.startFidgeting()
+  }
+
+  // A new view: the picture, its proportions and avatar size, and no one carried over from the last one.
+  private changePicture(layout: Layout, kind: string): void {
+    this.shownKind = kind
+    const p = layout.picture
+    if (this.picture.getAttribute('src') !== p.image) this.picture.src = p.image
+    this.picture.alt = { campus: '学校的鸟瞰图：三个学部的教学楼、社团活动中心、广场和校门', building: '教室：讲台和一排排座位', hall: '社团活动中心的大厅：几张斗地主牌桌', table: '一张斗地主牌桌的近景' }[layout.view.kind]
+    this.root.style.aspectRatio = `${p.width} / ${p.height}`
+    this.root.style.setProperty('--avatar-size', `${p.avatarSize * 100}cqi`)
+    for (const m of this.mounted.values()) m.el.remove()
+    this.mounted.clear()
+    this.layer.replaceChildren()
+    this.labelLayer.replaceChildren()
+    this.hideCard()
+  }
+
+  // The campus: every place gets its name; the ones people go to say how many are there, and the buildings lead in.
+  private campusLabels(scene: Scene): void {
+    if (!this.labelLayer.childElementCount) {
+      for (const [key, loc] of Object.entries(locations)) {
+        const live = (PLACES as readonly string[]).includes(key) && !loc.reserved
+        const enter = live && key !== 'plaza'
+        const label = enter ? el('a', 'place-label') : el('div', 'place-label')
+        if (enter) (label as HTMLAnchorElement).href = key === 'club' ? '#club' : `#${key}`
+        label.dataset.place = key
+        if (!live) label.dataset.quiet = ''
+        label.style.left = `${loc.labelAt[0] * 100}%`
+        label.style.top = `${loc.labelAt[1] * 100}%`
+        label.append(el('strong', undefined, loc.label || placeNames[key as PlaceKey] || key))
+        if (live) label.append(el('span'))
+        this.labelLayer.append(label)
+      }
+    }
+    for (const key of PLACES) {
+      const label = this.labelLayer.querySelector<HTMLElement>(`[data-place="${key}"]`)
+      if (!label) continue
       // One short line on the map (the name and a count), so the label covers as little as it can; the whole line
       // on pointing at it.
       const tag = placeTag(scene, key)
@@ -150,23 +158,28 @@ export class CampusMap {
       span.textContent = tag
       span.hidden = tag === ''
       label.title = `${label.querySelector('strong')!.textContent} · ${placeSummary(scene, key)}`
-      const busy = scene.figures.some((f) => f.place === key && f.kind !== 'teacher')
-      label.toggleAttribute('data-busy', busy)
+      label.toggleAttribute('data-busy', scene.figures.some((f) => f.place === key && f.kind !== 'teacher'))
     }
+  }
 
-    const placed = new Map<string, { figure: Figure; at: [number, number] }>()
-    const extra = new Map<PlaceKey, { count: number; at: [number, number] }>()
-    for (const key of PLACES) {
-      const area = locations[key]?.area
-      if (!area) continue
-      const here = arrange(scene.figures.filter((f) => f.place === key))
-      const max = capacity(area as Box, AVATAR_SIZE, this.aspect)
-      const shown = here.length > max ? here.slice(0, max - 1) : here
-      const at = slots(area as Box, shown.length + (shown.length < here.length ? 1 : 0), this.aspect)
-      shown.forEach((figure, i) => placed.set(figure.key, { figure, at: at[i] }))
-      if (shown.length < here.length) extra.set(key, { count: here.length - shown.length, at: at[shown.length] })
-    }
+  // Inside: a label over each table of the hall, leading to it up close.
+  private marks(layout: Layout): void {
+    this.labelLayer.replaceChildren(
+      ...layout.marks.map((m) => {
+        const a = el('a', 'place-label')
+        a.href = m.href
+        a.title = m.title
+        a.style.left = `${m.at[0] * 100}%`
+        a.style.top = `${m.at[1] * 100}%`
+        a.toggleAttribute('data-busy', m.busy)
+        a.append(el('strong', undefined, m.name), el('span', undefined, m.tag))
+        return a
+      }),
+    )
+  }
 
+  private place(layout: Layout): void {
+    const placed = new Map(layout.placed.map((p) => [p.figure.key, p]))
     // Leave: fade out, then go.
     for (const [key, m] of this.mounted) {
       if (placed.has(key)) continue
@@ -182,85 +195,149 @@ export class CampusMap {
         m.el.dataset.entering = ''
         this.layer.append(m.el)
         this.mounted.set(key, m)
-        const el = m.el
-        requestAnimationFrame(() => requestAnimationFrame(() => el.removeAttribute('data-entering')))
+        const node = m.el
+        requestAnimationFrame(() => requestAnimationFrame(() => node.removeAttribute('data-entering')))
       }
       m.figure = figure
       this.dress(m.el, figure)
       m.el.dataset.place = figure.place
-      m.el.setAttribute('aria-label', this.describe(figure))
+      m.el.dataset.role = figure.role
+      m.el.setAttribute('aria-label', [figure.name, figure.number, figure.status].filter(Boolean).join(' · '))
       m.el.style.left = `${at[0] * 100}%`
       m.el.style.top = `${at[1] * 100}%`
     }
-
     this.layer.querySelectorAll('.more').forEach((n) => n.remove())
-    for (const [, { count, at }] of extra) {
-      const more = document.createElement('span')
-      more.className = 'more'
-      more.textContent = `+${count}`
+    for (const { count, at } of layout.extra) {
+      const more = el('span', 'more', `+${count}`)
       more.style.left = `${at[0] * 100}%`
       more.style.top = `${at[1] * 100}%`
       this.layer.append(more)
     }
-    this.startFidgeting()
   }
 
-  private describe(f: Figure): string {
-    return [f.name, f.number, f.status].filter(Boolean).join(' · ')
+  // ---------------------------------------------------------------------------
+  // The floating panel.
+
+  private setUpPanel(): void {
+    const panel = this.panelEl
+    if (!panel) return
+    const toggle = panel.querySelector<HTMLButtonElement>('[data-panel-toggle]')
+    // Folded or open as the reader left it; the first time, folded on a narrow screen, where it would cover the picture.
+    let folded = matchMedia('(max-width: 40rem)').matches
+    try {
+      const kept = sessionStorage.getItem(PANEL_KEY)
+      if (kept) folded = kept === 'folded'
+    } catch {
+      // No storage: the default above.
+    }
+    const set = (fold: boolean, keep: boolean) => {
+      panel.toggleAttribute('data-folded', fold)
+      toggle?.setAttribute('aria-expanded', String(!fold))
+      if (!keep) return
+      try {
+        sessionStorage.setItem(PANEL_KEY, fold ? 'folded' : 'open')
+      } catch {
+        // Not remembered.
+      }
+    }
+    set(folded, false)
+    toggle?.addEventListener('click', () => set(!panel.hasAttribute('data-folded'), true))
   }
+
+  private renderPanel(p: Panel): void {
+    const panel = this.panelEl
+    if (!panel) return
+    const where = panel.querySelector<HTMLElement>('[data-panel-where]')
+    if (where) where.textContent = p.trail[p.trail.length - 1].name
+    const body = panel.querySelector<HTMLElement>('[data-panel-body]')
+    if (!body) return
+
+    const trail = el('nav', 'trail')
+    trail.setAttribute('aria-label', '当前位置')
+    p.trail.forEach((step, i) => {
+      if (i) trail.append(el('span', 'sep', '›'))
+      if (i < p.trail.length - 1) {
+        const a = el('a', undefined, step.name)
+        a.href = step.href
+        trail.append(a)
+      } else trail.append(el('strong', undefined, step.name))
+    })
+
+    const parts: Node[] = [trail]
+    if (p.back) {
+      const back = el('a', 'back', `← 回到${p.back.name}`)
+      back.href = p.back.href
+      parts.push(back)
+    }
+    parts.push(...p.info.map((line) => el('p', 'info', line)))
+    if (p.here) parts.push(this.linkList(p.here.title, p.here.links, 'here'))
+    parts.push(this.linkList('去别处', p.places, 'places'))
+    body.replaceChildren(...parts)
+  }
+
+  private linkList(title: string, links: Panel['places'], className: string): HTMLElement {
+    const box = el('section', `links ${className}`)
+    box.append(el('h3', undefined, title))
+    const ul = el('ul')
+    for (const l of links) {
+      const li = el('li')
+      const a = el('a')
+      a.href = l.href
+      if (l.current) a.setAttribute('aria-current', 'true')
+      a.append(el('span', 'name', l.name))
+      if (l.tag) a.append(el('span', 'tag', l.tag))
+      li.append(a)
+      ul.append(li)
+    }
+    box.append(ul)
+    return box
+  }
+
+  // ---------------------------------------------------------------------------
+  // Avatars.
 
   // Puts on `f`'s picture and colours; again when an owner changes them while the student is on the map.
-  private dress(el: HTMLElement, f: Figure): void {
+  private dress(node: HTMLElement, f: Figure): void {
     const l = look(f)
-    el.style.setProperty('--figure-bg', l.background)
-    el.style.setProperty('--figure-border', l.border)
-    const img = el.querySelector('img')
+    node.style.setProperty('--figure-bg', l.background)
+    node.style.setProperty('--figure-border', l.border)
+    const img = node.querySelector('img')
     if (img && img.getAttribute('src') !== l.image) img.src = l.image
   }
 
   private figureEl(f: Figure): HTMLElement {
-    const el = document.createElement('button')
-    el.type = 'button'
-    el.className = 'figure'
-    el.dataset.kind = f.kind
+    const node = el('button', 'figure')
+    node.type = 'button'
+    node.dataset.kind = f.kind
     // Each avatar bobs at its own pace.
-    el.style.setProperty('--bob-delay', `${-Math.random() * 3}s`)
-    el.style.setProperty('--bob-time', `${2.4 + Math.random() * 1.6}s`)
-    const body = document.createElement('span')
-    body.className = 'body'
-    const img = document.createElement('img')
+    node.style.setProperty('--bob-delay', `${-Math.random() * 3}s`)
+    node.style.setProperty('--bob-time', `${2.4 + Math.random() * 1.6}s`)
+    const body = el('span', 'body')
+    const img = el('img')
     img.alt = ''
     img.decoding = 'async'
     body.append(img)
-    el.append(body)
-    this.dress(el, f)
-    el.addEventListener('click', () => this.showCard(el))
-    el.addEventListener('pointerenter', (e) => e.pointerType === 'mouse' && this.showCard(el))
-    el.addEventListener('pointerleave', (e) => e.pointerType === 'mouse' && this.hideCard())
-    el.addEventListener('focus', () => this.showCard(el))
-    el.addEventListener('blur', () => this.hideCard())
-    return el
+    node.append(body)
+    this.dress(node, f)
+    node.addEventListener('click', () => this.showCard(node))
+    node.addEventListener('pointerenter', (e) => e.pointerType === 'mouse' && this.showCard(node))
+    node.addEventListener('pointerleave', (e) => e.pointerType === 'mouse' && this.hideCard())
+    node.addEventListener('focus', () => this.showCard(node))
+    node.addEventListener('blur', () => this.hideCard())
+    return node
   }
 
-  private showCard(el: HTMLElement): void {
-    const m = [...this.mounted.values()].find((x) => x.el === el)
+  private showCard(node: HTMLElement): void {
+    const m = [...this.mounted.values()].find((x) => x.el === node)
     if (!m) return
     const f = m.figure
     this.popover.replaceChildren()
-    const head = document.createElement('p')
-    head.className = 'who'
+    const head = el('p', 'who')
     head.append(document.createTextNode(f.name))
-    if (f.number) {
-      const code = document.createElement('code')
-      code.textContent = f.number
-      head.append(' ', code)
-    }
-    const what = document.createElement('p')
-    what.className = 'what'
-    what.textContent = f.status
-    this.popover.append(head, what)
-    this.popover.style.left = el.style.left
-    this.popover.style.top = el.style.top
+    if (f.number) head.append(' ', el('code', undefined, f.number))
+    this.popover.append(head, el('p', 'what', f.status))
+    this.popover.style.left = node.style.left
+    this.popover.style.top = node.style.top
     this.popover.hidden = false
   }
 
@@ -268,24 +345,51 @@ export class CampusMap {
     this.popover.hidden = true
   }
 
-  // Every couple of seconds a few avatars take a small step within their spot, and at a table someone leans in as if
-  // playing a card. Off when the reader asks for reduced motion.
+  // Every couple of seconds a few avatars move a little: on the campus they take a small step; in a classroom someone
+  // raises a hand or has a "…" over their head; at a table someone leans in as if playing a card, and up close a card
+  // flies to the middle. Off when the reader asks for reduced motion.
   private startFidgeting(): void {
     if (this.fidget !== undefined || this.reduce.matches) return
     this.fidget = window.setInterval(() => {
-      if (document.hidden) return
-      const all = [...this.mounted.values()]
+      if (document.hidden || !this.layout) return
+      const all = [...this.mounted.values()].filter((m) => m.figure.kind !== 'teacher')
+      const view = this.layout.view.kind
       for (let i = 0; i < Math.ceil(all.length / 6); i++) {
         const m = all[Math.floor(Math.random() * all.length)]
-        if (!m || m.figure.kind === 'teacher') continue
-        if (m.figure.tableId && m.figure.status.includes('在打')) {
+        if (!m) continue
+        if (view === 'building') {
+          m.el.dataset.gesture = Math.random() < 0.5 ? 'hand' : 'dots'
+          window.setTimeout(() => m.el.removeAttribute('data-gesture'), 1500)
+        } else if (m.figure.role === 'seated' && m.figure.status.includes('在打')) {
           m.el.dataset.play = ''
           window.setTimeout(() => m.el.removeAttribute('data-play'), 700)
-        } else {
+        } else if (view === 'campus') {
           m.el.style.setProperty('--dx', `${(Math.random() - 0.5) * 0.9}rem`)
           m.el.style.setProperty('--dy', `${(Math.random() - 0.5) * 0.5}rem`)
         }
       }
+      this.tossCard()
     }, 1600)
+  }
+
+  // Up close at a table in play: a card back flies from the next seat to the pile, round the table.
+  private tossCard(): void {
+    const layout = this.layout
+    if (!layout || layout.view.kind !== 'table' || !layout.pile || !layout.playing.length) return
+    const from = layout.playing[this.tossAt++ % layout.playing.length]
+    const card = el('span', 'toss')
+    card.setAttribute('aria-hidden', 'true')
+    card.style.left = `${from[0] * 100}%`
+    card.style.top = `${from[1] * 100}%`
+    this.layer.append(card)
+    const pile = layout.pile
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        card.style.left = `${pile[0] * 100}%`
+        card.style.top = `${pile[1] * 100}%`
+        card.dataset.landed = ''
+      }),
+    )
+    window.setTimeout(() => card.remove(), 1500)
   }
 }

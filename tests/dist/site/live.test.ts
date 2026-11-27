@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { distExists, readPage } from '../helpers'
 
@@ -29,6 +30,20 @@ describe('the live campus page', () => {
     expect(distExists(src.slice(1))).toBe(true)
     expect(map.querySelector('img.scene')?.getAttribute('alt')).not.toBe('')
     expect(map.querySelector('[data-live-figures]')).not.toBeNull()
+  })
+
+  it('has a floating panel over the map that folds away, and serves the room pictures', () => {
+    const frame = doc().querySelector('[data-live-frame]')!
+    const panel = frame.querySelector('[data-live-panel]')!
+    const toggle = panel.querySelector('button[data-panel-toggle]')!
+    expect(toggle.getAttribute('aria-expanded')).toBe('true')
+    expect(toggle.getAttribute('aria-controls')).toBe(panel.querySelector('[data-panel-body]')?.id)
+    expect(frame.querySelector('[data-live-map]')).not.toBeNull()
+    const manifest = JSON.parse(readFileSync('src/data/school-assets.json', 'utf8'))
+    // Every room but the notes ($comment), each picture of each scene.
+    for (const r of Object.values(manifest.rooms).filter((v): v is { scenes: Record<string, { image: string } | null> } => typeof v === 'object' && v !== null)) {
+      for (const s of Object.values(r.scenes)) if (s) expect(distExists(`school-assets/${s.image}`), s.image).toBe(true)
+    }
   })
 
   it('says that anonymous students show no student number', () => {
