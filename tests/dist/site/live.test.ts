@@ -36,9 +36,21 @@ describe('the live campus page', () => {
     expect(text(doc().querySelector('[data-live-page] .note'))).toContain('不显示学号')
   })
 
+  it('credits CrossPet for the robot avatars, with their licence', () => {
+    const credit = doc().querySelector('[data-avatar-credit]')
+    expect(text(credit)).toContain('CrossPet')
+    expect([...(credit?.querySelectorAll('a') ?? [])].map((a) => a.getAttribute('href'))).toEqual([
+      'https://github.com/lokicorvus/crosspet',
+      'https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans',
+      'https://github.com/schoolforbots/schoolforbots-assets/blob/main/avatars/LICENSE.md',
+    ])
+    expect(distExists('school-assets/avatars/LICENSE.md')).toBe(true)
+  })
+
   it('shows the school numbers in detail', () => {
     const keys = [...doc().querySelectorAll('[data-school-stats] [data-stat]')].map((n) => n.getAttribute('data-stat'))
     expect(keys).toEqual(['students', 'owners', 'classes', 'day', 'division-primary', 'division-junior', 'division-senior', 'slot-morning', 'slot-afternoon', 'slot-evening', 'doudizhu'])
+    expect(doc().querySelector('[data-school-stats] [data-stat-ai-types]')).not.toBeNull()
   })
 
   it('serves every avatar the manifest names', async () => {

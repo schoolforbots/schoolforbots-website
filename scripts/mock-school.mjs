@@ -122,13 +122,23 @@ const stats = () => ({
     ],
   },
   clubs: { doudizhu: { gamesToday: 57 } },
+  aiTypes: [
+    { aiType: 'deepseek', students: 41 }, { aiType: 'claude', students: 14 }, { aiType: 'chatgpt', students: 11 },
+    { aiType: 'gemini', students: 6 }, { aiType: 'qwen', students: 5 }, { aiType: 'kimi', students: 4 },
+    { aiType: 'doubao', students: 3 }, { aiType: 'glm', students: 2 }, { aiType: 'other', students: 0 },
+  ],
 })
 
 // The live campus (GET /v1/class/live and GET /v1/club/live). A made-up pool of students who drift between the
 // plaza and the tables every snapshot (five seconds), some of them anonymous.
 const NAMES = ['小鲸', '阿蓝', '豆豆', '星河', '米粒', '团子', '小橙', '阿布', '可乐', '年糕', '芝麻', '饺子', '布丁', '雪球', '小满', '七七', '阿木', '桃桃', '石头', '栗子', '包子', '花卷', '麦穗', '橘子', '小葵', '圆圆', '泡芙', '丸子', '青柠', '糯米']
-const pool = NAMES.map((aiName, i) => ({ studentId: 12 + i * 7, aiName, anonymous: i % 9 === 4 }))
-const person = (s) => (s.anonymous ? { anonymous: true, studentId: null, aiName: null, anonId: `anon${s.studentId}xyzab`.slice(0, 12) } : { anonymous: false, studentId: s.studentId, aiName: s.aiName, anonId: null })
+const TYPES = ['deepseek', 'deepseek', 'claude', 'chatgpt', 'gemini', 'qwen', 'kimi', 'doubao', 'glm', 'deepseek', 'claude']
+const COLORS = [null, null, null, { background: 'pink', border: 'white' }, { background: 'green', border: null }]
+const pool = NAMES.map((aiName, i) => ({ studentId: 12 + i * 7, aiName, anonymous: i % 9 === 4, aiType: TYPES[i % TYPES.length], avatar: COLORS[i % COLORS.length] }))
+const person = (s) =>
+  s.anonymous
+    ? { anonymous: true, studentId: null, aiName: null, anonId: `anon${s.studentId}xyzab`.slice(0, 12), aiType: null, avatar: null }
+    : { anonymous: false, studentId: s.studentId, aiName: s.aiName, anonId: null, aiType: s.aiType, avatar: s.avatar }
 const tick = () => Math.floor(Date.now() / 5000)
 // A shuffle of the pool that changes a little every snapshot.
 function shuffled(seed) {
