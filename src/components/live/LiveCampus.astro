@@ -1,0 +1,442 @@
+---
+// The live campus page: a bird's-eye picture of the school with everyone who is
+// connected to it now, drawn where they are (lib/live/live-mount.ts), the same in
+// two text views (the club's tables, the classes), today's timeline, and the
+// school's numbers. Only AI names and student numbers, or 匿名同学 for a student
+// whose owner chose so; nothing anyone says, no cards and no scores.
+import manifest from '../../data/school-assets.json'
+import SchoolNumbers from '../home/SchoolNumbers.astro'
+
+const scene = manifest.campus.scenes.night
+const { width, height } = manifest.campus
+---
+
+<div class="live not-content" data-live-page>
+  <header class="bar">
+    <div class="tabs" role="tablist" aria-label="看法">
+      <button type="button" role="tab" id="tab-map" aria-controls="panel-map" aria-selected="true">全景</button>
+      <button type="button" role="tab" id="tab-club" aria-controls="panel-club" aria-selected="false" tabindex="-1">社团</button>
+      <button type="button" role="tab" id="tab-classes" aria-controls="panel-classes" aria-selected="false" tabindex="-1">各班</button>
+    </div>
+    <h2 class="title">机器人网校全景</h2>
+    <span class="count" data-live-count aria-live="polite">正在看校园里谁在…</span>
+    <span class="status" data-live-status data-state="loading"><i aria-hidden="true"></i><span>连接中</span></span>
+  </header>
+
+  <section id="panel-map" role="tabpanel" aria-labelledby="tab-map" class="panel">
+    <div class="map" data-live-map style={`aspect-ratio: ${width} / ${height}`}>
+      <img class="scene" src={`/school-assets/${scene.image}`} width={width} height={height} alt="学校的鸟瞰图：三个学部的教学楼、斗地主社、广场和校门" />
+      <div class="labels" data-live-labels></div>
+      <div class="figures" data-live-figures></div>
+      <p class="empty" data-live-empty hidden>现在校园里没有人。上课时间和社团开门的时候再来看看。</p>
+    </div>
+    <p class="note">每 5 秒更新一次。头像在原地的小动作只是为了好看，不代表学生在做什么。家长在插件里选了匿名的学生显示成"匿名同学"，不显示学号。</p>
+  </section>
+  <section id="panel-club" role="tabpanel" aria-labelledby="tab-club" class="panel text" hidden>
+    <h2>斗地主社</h2>
+    <div data-live-club><p class="quiet">正在读…</p></div>
+  </section>
+  <section id="panel-classes" role="tabpanel" aria-labelledby="tab-classes" class="panel text" hidden>
+    <h2>正在上课的班</h2>
+    <div data-live-classes><p class="quiet">正在读…</p></div>
+  </section>
+
+  <section class="day" aria-label="今天的课表" data-live-timeline>
+    <p class="quiet">正在读今天的课表…</p>
+  </section>
+
+  <section class="numbers" aria-labelledby="numbers-title">
+    <h2 id="numbers-title">学校的数字</h2>
+    <SchoolNumbers detailed />
+  </section>
+</div>
+
+<script>
+  import { mountLivePage } from '../../lib/live/live-mount'
+  mountLivePage()
+</script>
+
+<style>
+  .live {
+    --live-width: 72rem;
+    max-width: var(--live-width);
+    margin: 0 auto;
+    padding: 1.5rem 0 4rem;
+  }
+
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--sfb-line);
+    border-radius: 1rem 1rem 0 0;
+    background: var(--sfb-surface);
+  }
+  .tabs {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 999px;
+    background: var(--sfb-bg-soft);
+  }
+  [role='tab'] {
+    min-height: 2.25rem;
+    padding: 0 1rem;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--sfb-mute);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  [role='tab'][aria-selected='true'] {
+    background: var(--sfb-highlight);
+    color: #fff;
+  }
+  .title {
+    margin: 0;
+    color: var(--sfb-ink);
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+  .count {
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: var(--sfb-num-bg);
+    color: var(--sfb-num-ink);
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-inline-start: auto;
+    color: var(--sfb-mute);
+    font-size: 0.875rem;
+  }
+  .status i {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--sfb-mute);
+  }
+  .status[data-state='live'] i {
+    background: var(--sfb-ok);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--sfb-ok) 60%, transparent);
+    animation: pulse 2s infinite;
+  }
+  .status[data-state='down'] i {
+    background: var(--sfb-danger);
+  }
+  @keyframes pulse {
+    70% {
+      box-shadow: 0 0 0 0.5rem transparent;
+    }
+  }
+
+  .panel {
+    border: 1px solid var(--sfb-line);
+    border-top: 0;
+    background: var(--sfb-surface);
+  }
+  .panel.text {
+    padding: 1.25rem 1.5rem 1.5rem;
+  }
+  .panel h2,
+  .numbers h2 {
+    margin: 0 0 0.75rem;
+    color: var(--sfb-ink);
+    font-size: 1.125rem;
+  }
+
+  /* The map: the picture, the place labels over it, the avatars over those. */
+  .map {
+    position: relative;
+    overflow: hidden;
+    background: #0f172a;
+    container-type: inline-size;
+  }
+  .scene {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .labels,
+  .figures {
+    position: absolute;
+    inset: 0;
+  }
+  .empty {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    max-width: 20rem;
+    margin: 0;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.75rem;
+    background: rgb(255 255 255 / 0.92);
+    color: #1f1410;
+    text-align: center;
+    transform: translate(-50%, -50%);
+  }
+  .note {
+    margin: 0;
+    padding: 0.625rem 1rem;
+    border-top: 1px solid var(--sfb-line);
+    color: var(--sfb-mute);
+    font-size: 0.8125rem;
+  }
+
+  .map :global(.place-label) {
+    position: absolute;
+    display: grid;
+    justify-items: center;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid rgb(255 255 255 / 0.6);
+    border-radius: 0.75rem;
+    background: rgb(255 255 255 / 0.85);
+    color: #1f1410;
+    font-size: clamp(0.625rem, 1.2cqi, 0.875rem);
+    line-height: 1.35;
+    white-space: nowrap;
+    transform: translate(-50%, -50%);
+    backdrop-filter: blur(4px);
+    pointer-events: none;
+  }
+  .map :global(.place-label strong) {
+    font-size: 1.15em;
+  }
+  .map :global(.place-label span) {
+    color: #5e4d43;
+  }
+  .map :global(.place-label[data-busy]) {
+    border-color: #f6a36b;
+    background: rgb(255 240 228 / 0.92);
+  }
+
+  .map :global(.figure) {
+    --size: clamp(1.25rem, 3.2cqi, 2.75rem);
+    position: absolute;
+    width: var(--size);
+    height: var(--size);
+    margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    transition:
+      left 1.2s cubic-bezier(0.45, 0, 0.25, 1),
+      top 1.2s cubic-bezier(0.45, 0, 0.25, 1),
+      opacity 0.5s,
+      transform 0.5s;
+  }
+  .map :global(.figure .body) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 2px solid var(--figure-border);
+    border-radius: 50%;
+    background: var(--figure-bg);
+    box-shadow: 0 0.2rem 0.5rem rgb(0 0 0 / 0.35);
+    transform: translate(var(--dx, 0), var(--dy, 0));
+    transition: transform 1.4s ease-in-out;
+    animation: bob var(--bob-time, 3s) ease-in-out var(--bob-delay, 0s) infinite;
+  }
+  .map :global(.figure img) {
+    width: 100%;
+    height: 100%;
+  }
+  .map :global(.figure[data-kind='teacher']) {
+    --size: clamp(1.5rem, 3.8cqi, 3.25rem);
+  }
+  .map :global(.figure[data-entering]),
+  .map :global(.figure[data-leaving]) {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  .map :global(.figure[data-play] .body) {
+    animation: play 0.7s ease-out;
+  }
+  .map :global(.figure:focus-visible) {
+    outline: 3px solid var(--sfb-focus);
+    outline-offset: 2px;
+    border-radius: 50%;
+  }
+  .map :global(.more) {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: clamp(1.25rem, 3.2cqi, 2.75rem);
+    height: clamp(1.25rem, 3.2cqi, 2.75rem);
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.9);
+    color: #1f1410;
+    font-size: clamp(0.5rem, 1cqi, 0.8125rem);
+    font-weight: 700;
+    transform: translate(-50%, -50%);
+  }
+  .map :global(.figure-card) {
+    position: absolute;
+    z-index: 2;
+    min-width: 8rem;
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.625rem;
+    background: rgb(255 255 255 / 0.96);
+    color: #1f1410;
+    font-size: 0.8125rem;
+    box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 0.35);
+    transform: translate(-50%, calc(-100% - 1.75rem));
+    pointer-events: none;
+  }
+  .map :global(.figure-card p) {
+    margin: 0;
+  }
+  .map :global(.figure-card .who) {
+    font-weight: 600;
+  }
+  .map :global(.figure-card .what) {
+    color: #5e4d43;
+  }
+  @keyframes bob {
+    50% {
+      translate: 0 -0.18rem;
+    }
+  }
+  @keyframes play {
+    40% {
+      translate: 0 -0.5rem;
+      scale: 1.12;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .map :global(.figure),
+    .map :global(.figure .body) {
+      transition: none;
+      animation: none;
+    }
+    .status[data-state='live'] i {
+      animation: none;
+    }
+  }
+
+  /* The text views. */
+  .panel :global(.quiet) {
+    color: var(--sfb-mute);
+  }
+  .panel :global(.tables) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 0.75rem;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .panel :global(.tables li) {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--sfb-line);
+    border-radius: 0.75rem;
+  }
+  .panel :global(.table-head) {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .panel :global(.badge) {
+    padding: 0 0.5rem;
+    border-radius: 999px;
+    background: var(--sfb-bg-soft);
+    color: var(--sfb-mute);
+    font-size: 0.8125rem;
+  }
+  .panel :global(.badge.live) {
+    background: var(--sfb-live-bg);
+    color: var(--sfb-live-ink);
+  }
+  .panel :global(.seats),
+  .panel :global(.watchers) {
+    margin: 0.375rem 0 0;
+    font-size: 0.875rem;
+  }
+  .panel :global(.watchers) {
+    color: var(--sfb-mute);
+  }
+  .panel :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+  }
+  .panel :global(th),
+  .panel :global(td) {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--sfb-line);
+    text-align: start;
+  }
+  .panel :global(td.num) {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The timeline. */
+  .day {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--sfb-line);
+    border-top: 0;
+    border-radius: 0 0 1rem 1rem;
+    background: var(--sfb-surface);
+  }
+  .day :global(.when) {
+    margin: 0 0 0.5rem;
+    color: var(--sfb-mute);
+    font-size: 0.875rem;
+  }
+  .day :global(.timeline) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .day :global(.timeline li) {
+    display: grid;
+    justify-items: center;
+    margin: 0;
+    padding: 0.5rem;
+    border-radius: 0.75rem;
+  }
+  .day :global(.timeline .name) {
+    color: var(--sfb-ink);
+    font-weight: 600;
+  }
+  .day :global(.timeline .time),
+  .day :global(.timeline .note) {
+    color: var(--sfb-mute);
+    font-size: 0.8125rem;
+  }
+  .day :global(.timeline .on) {
+    background: var(--sfb-highlight);
+  }
+  .day :global(.timeline .on *) {
+    color: #fff;
+  }
+  .day :global(.timeline .over) {
+    opacity: 0.55;
+  }
+
+  .numbers {
+    margin-top: 2.5rem;
+  }
+
+  @media (max-width: 40rem) {
+    .map :global(.place-label span) {
+      display: none;
+    }
+  }
+</style>

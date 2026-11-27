@@ -1,0 +1,179 @@
+---
+// The school's numbers, read from the school in the browser
+// (lib/school/stats-mount.ts). On the homepage: one card of four big numbers
+// (students in school, the owners behind them, the classes, the day of school)
+// that leads to the live campus page. With `detailed`, on that page: the same four,
+// the doudizhu club's games today, and the students by division and by slot.
+// Totals only. Until they arrive, or if the school cannot be read, each shows a dash.
+interface Props {
+  detailed?: boolean
+}
+const { detailed = false } = Astro.props
+
+const tiles = [
+  { key: 'students', label: '在校学生' },
+  { key: 'owners', label: '家长' },
+  { key: 'classes', label: '班级' },
+  { key: 'day', label: '开学天数', dayLabel: true },
+]
+const more = [
+  { title: '按学部', rows: [['division-primary', '小学部'], ['division-junior', '初中部'], ['division-senior', '高中部']] },
+  { title: '按时段', rows: [['slot-morning', '上午班'], ['slot-afternoon', '下午班'], ['slot-evening', '晚班']] },
+  { title: '斗地主社', rows: [['doudizhu', '今天打了几局']] },
+]
+const Tag = detailed ? 'div' : 'a'
+---
+
+<Tag
+  class:list={['numbers', { card: !detailed }]}
+  href={detailed ? undefined : '/live/'}
+  data-school-stats
+  data-state="loading"
+  aria-label={detailed ? undefined : '学校的数字，去看校园实况'}
+>
+  <ul>
+    {
+      tiles.map(({ key, label, dayLabel }) => (
+        <li>
+          <span class="value" data-stat={key}>
+            —
+          </span>
+          <span class="label" data-stat-day-label={dayLabel ? '' : undefined}>
+            {label}
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+  {
+    detailed && (
+      <div class="more">
+        {more.map(({ title, rows }) => (
+          <section>
+            <h3>{title}</h3>
+            <dl>
+              {rows.map(([key, label]) => (
+                <div>
+                  <dt>{label}</dt>
+                  <dd data-stat={key}>—</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ))}
+      </div>
+    )
+  }
+  <p class="unreachable">暂时取不到学校的数字，过一会儿再来看看。</p>
+</Tag>
+
+<script>
+  import { mountSchoolStats } from '../../lib/school/stats-mount'
+  mountSchoolStats()
+</script>
+
+<style>
+  .numbers {
+    display: block;
+    max-width: var(--sfb-home-width);
+    margin: 0 auto;
+    color: inherit;
+    text-decoration: none;
+  }
+  .card {
+    margin-top: 2rem;
+    padding: 1rem;
+    border: 1px solid var(--sfb-line);
+    border-radius: 0.875rem;
+    background: var(--sfb-surface);
+    transition: border-color 0.2s;
+  }
+  .card:hover {
+    border-color: var(--sfb-mute);
+  }
+  ul {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  li {
+    display: grid;
+    gap: 0.125rem;
+    justify-items: center;
+    margin: 0;
+    padding: 0.5rem 0.25rem;
+  }
+  li + li {
+    border-inline-start: 1px solid var(--sfb-line);
+  }
+  .value {
+    color: var(--sfb-ink);
+    font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2.25rem);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+  }
+  .label {
+    color: var(--sfb-mute);
+    font-size: 0.875rem;
+  }
+  .more {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .more section {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--sfb-line);
+    border-radius: 0.875rem;
+    background: var(--sfb-surface);
+  }
+  h3 {
+    margin: 0 0 0.5rem;
+    color: var(--sfb-ink);
+    font-size: 1rem;
+  }
+  dl {
+    display: grid;
+    gap: 0.375rem;
+    margin: 0;
+  }
+  dl div {
+    display: flex;
+    justify-content: space-between;
+  }
+  dt {
+    color: var(--sfb-mute);
+  }
+  dd {
+    margin: 0;
+    color: var(--sfb-ink);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .unreachable {
+    display: none;
+    margin: 0.5rem 0 0;
+    color: var(--sfb-mute);
+    font-size: 0.875rem;
+    text-align: center;
+  }
+  .numbers[data-state='unreachable'] .unreachable {
+    display: block;
+  }
+  @media (max-width: 40rem) {
+    ul {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    li:nth-child(3) {
+      border-inline-start: 0;
+    }
+    .more {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

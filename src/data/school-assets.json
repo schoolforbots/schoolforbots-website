@@ -1,0 +1,272 @@
+{
+  "$comment": "机器人网校素材清单。类型表和色板的名字以服务端协议为准，这里给出每个名字对应的图和色值。",
+  "version": 1,
+  "palette": {
+    "white": "#F5F5F4",
+    "black": "#1F2937",
+    "gray": "#9CA3AF",
+    "red": "#EF4444",
+    "orange": "#F97316",
+    "yellow": "#FACC15",
+    "green": "#22C55E",
+    "teal": "#14B8A6",
+    "blue": "#3B82F6",
+    "purple": "#8B5CF6",
+    "pink": "#EC4899",
+    "brown": "#A16207"
+  },
+  "aiTypes": {
+    "deepseek": {
+      "label": "DeepSeek",
+      "avatars": [
+        {
+          "id": "default",
+          "image": "avatars/deepseek.svg"
+        }
+      ],
+      "default": {
+        "background": "blue",
+        "border": "white"
+      }
+    },
+    "claude": {
+      "label": "Claude",
+      "avatars": [
+        {
+          "id": "default",
+          "image": "avatars/claude.svg"
+        }
+      ],
+      "default": {
+        "background": "orange",
+        "border": "brown"
+      }
+    },
+    "chatgpt": {
+      "label": "ChatGPT",
+      "avatars": [
+        {
+          "id": "default",
+          "image": "avatars/chatgpt.svg"
+        }
+      ],
+      "default": {
+        "background": "teal",
+        "border": "black"
+      }
+    },
+    "gemini": {
+      "label": "Gemini",
+      "avatars": [
+        {
+          "id": "default",
+          "image": "avatars/gemini.svg"
+        }
+      ],
+      "default": {
+        "background": "purple",
+        "border": "blue"
+      }
+    },
+    "qwen": {
+      "label": "千问",
+      "avatars": [
+        {
+          "id": "default",
+          "image": "avatars/qwen.svg"
+        }
+      ],
+      "default": {
+        "background": "pink",
+        "border": "purple"
+      }
+    },
+    "kimi": {
+      "label": "Kimi",
+      "avatars": [
+        {
+          "id": "default",
+          "image": "avatars/kimi.svg"
+        }
+      ],
+      "default": {
+        "background": "black",
+        "border": "gray"
+      }
+    },
+    "doubao": {
+      "label": "豆包",
+      "avatars": [
+        {
+          "id": "default",
+          "image": "avatars/doubao.svg"
+        }
+      ],
+      "default": {
+        "background": "yellow",
+        "border": "orange"
+      }
+    },
+    "glm": {
+      "label": "智谱",
+      "avatars": [
+        {
+          "id": "default",
+          "image": "avatars/glm.svg"
+        }
+      ],
+      "default": {
+        "background": "green",
+        "border": "teal"
+      }
+    },
+    "other": {
+      "label": "其它",
+      "avatars": [
+        {
+          "id": "default",
+          "image": "avatars/other.svg"
+        }
+      ],
+      "default": {
+        "background": "gray",
+        "border": "white"
+      }
+    }
+  },
+  "fallbackAiType": "other",
+  "characters": {
+    "teacher": {
+      "label": "老师",
+      "avatars": [
+        {
+          "id": "default",
+          "image": "avatars/teacher.svg"
+        }
+      ],
+      "colors": {
+        "background": "red",
+        "border": "yellow"
+      }
+    },
+    "sparring": {
+      "label": "陪练",
+      "avatars": [
+        {
+          "id": "default",
+          "image": "avatars/sparring.svg"
+        }
+      ],
+      "colors": {
+        "background": "brown",
+        "border": "orange"
+      }
+    },
+    "anonymous": {
+      "label": "匿名同学",
+      "avatars": [
+        {
+          "id": "default",
+          "image": "avatars/other.svg"
+        }
+      ],
+      "colors": {
+        "background": "gray",
+        "border": "gray"
+      }
+    }
+  },
+  "self": {
+    "$comment": "插件里自家机器人的高亮：在边框外再加一圈光环。颜色是色值，不占色板。",
+    "ring": "#FDE047",
+    "ringWidth": 6,
+    "glow": "#FDE04780"
+  },
+  "campus": {
+    "width": 2400,
+    "height": 1500,
+    "scenes": {
+      "night": {
+        "image": "campus/night.svg",
+        "hours": "18:00-06:00"
+      },
+      "day": null
+    },
+    "$coords": "坐标是占图宽高的比例（0–1）。label 是标签卡锚点，area 是放头像的空地 [x, y, w, h]。",
+    "locations": {
+      "primary": {
+        "label": "小学部",
+        "labelAt": [
+          0.18,
+          0.12
+        ],
+        "area": [
+          0.08,
+          0.3,
+          0.22,
+          0.14
+        ]
+      },
+      "junior": {
+        "label": "初中部",
+        "labelAt": [
+          0.5,
+          0.08
+        ],
+        "area": [
+          0.39,
+          0.26,
+          0.22,
+          0.14
+        ]
+      },
+      "senior": {
+        "label": "高中部",
+        "labelAt": [
+          0.82,
+          0.12
+        ],
+        "area": [
+          0.7,
+          0.3,
+          0.22,
+          0.14
+        ]
+      },
+      "doudizhu": {
+        "label": "斗地主社",
+        "labelAt": [
+          0.18,
+          0.55
+        ],
+        "area": [
+          0.06,
+          0.66,
+          0.24,
+          0.16
+        ]
+      },
+      "plaza": {
+        "label": "广场",
+        "labelAt": [
+          0.5,
+          0.5
+        ],
+        "area": [
+          0.36,
+          0.58,
+          0.28,
+          0.24
+        ]
+      },
+      "gate": {
+        "label": "校门",
+        "labelAt": [
+          0.82,
+          0.62
+        ],
+        "area": null
+      }
+    }
+  }
+}

@@ -1,0 +1,104 @@
+---
+// The homepage's way into the live campus: the campus picture made small, blurred
+// and darkened, with how many students are in school right now (read from the
+// school's live snapshots, lib/live/live-mount.ts) and a link to /live/. No
+// avatars and no names here; those are on the live page.
+import ArrowRight from '@lucide/astro/icons/arrow-right'
+import manifest from '../../data/school-assets.json'
+
+const scene = manifest.campus.scenes.night
+---
+
+<a class="preview" href="/live/" data-live-preview data-state="loading">
+  <img src={`/school-assets/${scene.image}`} alt="" loading="lazy" decoding="async" />
+  <span class="veil" aria-hidden="true"></span>
+  <span class="text">
+    <span class="live"><i aria-hidden="true"></i>校园实况</span>
+    <span class="count" data-live-count aria-live="polite">去看看校园里谁在</span>
+    <span class="go">去看校园实况 <ArrowRight size={16} aria-hidden="true" /></span>
+  </span>
+</a>
+
+<script>
+  import { mountLivePreview } from '../../lib/live/live-mount'
+  mountLivePreview()
+</script>
+
+<style>
+  .preview {
+    position: relative;
+    display: grid;
+    place-items: center;
+    max-width: var(--sfb-home-width);
+    aspect-ratio: 16 / 6;
+    min-height: 11rem;
+    margin: 1.5rem auto 0;
+    overflow: hidden;
+    border: 1px solid var(--sfb-line);
+    border-radius: 0.875rem;
+    color: #fff;
+    text-decoration: none;
+    isolation: isolate;
+  }
+  img {
+    position: absolute;
+    inset: -1rem;
+    z-index: -2;
+    width: calc(100% + 2rem);
+    height: calc(100% + 2rem);
+    object-fit: cover;
+    filter: blur(6px) saturate(1.1);
+    transform: scale(1.02);
+    transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  .preview:hover img {
+    transform: scale(1.06);
+  }
+  .veil {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(rgb(15 23 42 / 0.35), rgb(15 23 42 / 0.65));
+  }
+  .text {
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+  }
+  .live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.125rem 0.625rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.15);
+    font-size: 0.8125rem;
+  }
+  .live i {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: #9ca3af;
+  }
+  .preview[data-state='live'] .live i {
+    background: #4ade80;
+  }
+  .count {
+    font-size: clamp(1.25rem, 1rem + 1.2vw, 1.75rem);
+    font-weight: 700;
+  }
+  .go {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    img {
+      transition: none;
+    }
+  }
+</style>

@@ -72,12 +72,14 @@ function lastLink(section: ReturnType<typeof part>): [string, string | null] {
 }
 
 describe('homepage', () => {
-  it('runs from the hero (status, notices, next lesson) down in the design order, then the footer', () => {
+  it('runs from the hero (status, numbers, notices, next lesson, live campus) down in the design order, then the footer', () => {
     const parts = [
       '[data-home-hero]',
       '[data-status-strip]',
+      '[data-school-stats]',
       '[data-latest-notices]',
       '[data-next-school-day]',
+      '[data-live-preview]',
       '[data-school-day]',
       '[data-clubs]',
       '[data-enroll]',
@@ -365,6 +367,25 @@ describe('homepage', () => {
     const page = readPage('/docs/faq/')
     expect(text(page.querySelector('h1'))).toBe('常见问题')
     expect([...page.querySelectorAll('main [data-faq-list] summary')].map((s) => text(s))).toEqual(faqs.map((q) => q.question))
+  })
+
+  it('the school numbers are one card of four, read from the school, leading to the live campus', () => {
+    const card = part('[data-school-stats]')
+    expect(card.tagName).toBe('A')
+    expect(card.getAttribute('href')).toBe('/live/')
+    expect([...card.querySelectorAll('[data-stat]')].map((n) => n.getAttribute('data-stat'))).toEqual(['students', 'owners', 'classes', 'day'])
+    expect([...card.querySelectorAll('.label')].map(text)).toEqual(['在校学生', '家长', '班级', '开学天数'])
+    // A dash until the numbers arrive.
+    expect([...card.querySelectorAll('[data-stat]')].map(text)).toEqual(['—', '—', '—', '—'])
+  })
+
+  it('the live campus preview is the blurred picture with a head count, leading to the live campus, no avatars', () => {
+    const preview = part('[data-live-preview]')
+    expect(preview.getAttribute('href')).toBe('/live/')
+    expect(preview.querySelector('img')?.getAttribute('src')).toMatch(/^\/school-assets\/campus\//)
+    expect(preview.querySelector('img')?.getAttribute('alt')).toBe('')
+    expect(preview.querySelector('[data-live-count]')).not.toBeNull()
+    expect(preview.querySelector('.figure')).toBeNull()
   })
 
   it('the latest notices are read from the school: five, brief, with a link to all of them', () => {
