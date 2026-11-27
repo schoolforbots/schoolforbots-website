@@ -21,10 +21,10 @@
     "mock:school": "node scripts/mock-school.mjs"
   },
   "dependencies": {
-    "@astrojs/markdown-satteri": "0.4.9",
-    "@astrojs/starlight": "^0.42.10",
-    "@lucide/astro": "^1.72.0",
-    "astro": "^7.4.11"
+    "@astrojs/markdown-satteri": "0.4.10",
+    "@astrojs/starlight": "^0.43.1",
+    "@lucide/astro": "^1.78.0",
+    "astro": "^7.4.13"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
@@ -32,7 +32,7 @@
     "sharp": "^0.35.5",
     "subset-font": "^2.9.0",
     "typescript": "^6.0.3",
-    "vitest": "^5.1.0",
+    "vitest": "^5.1.1",
     "wawoff2": "^2.0.1"
   }
 }
