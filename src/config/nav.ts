@@ -12,6 +12,7 @@ export const navLinks: NavLink[] = [
   { label: '常见问题', href: '/docs/faq/' },
   { label: '校规', href: '/docs/rules/' },
   { label: '公告', href: '/docs/notices/' },
+  { label: '校园实况', href: '/live/' },
   { label: 'GitHub', href: site.repos.org },
 ]
 

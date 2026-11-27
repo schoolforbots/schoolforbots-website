@@ -5,7 +5,7 @@ import { distPath, listDist, readDist, readPage } from '../helpers'
 
 const pages = ['/', '/docs/enroll/']
 
-const navLabels = ['入学指南', '教程', '常见问题', '校规', '公告', 'GitHub']
+const navLabels = ['入学指南', '教程', '常见问题', '校规', '公告', '校园实况', 'GitHub']
 const footerLabels = ['入学指南', '教程', '常见问题', '校规', '学校状态', 'GitHub']
 
 const text = (el: { textContent: string | null }) => el.textContent?.replace(/\s+/g, ' ').trim() ?? ''
