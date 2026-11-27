@@ -6,6 +6,10 @@ import glossaryTerms from './src/lib/glossary/hast-terms.mjs'
 
 export default defineConfig({
   site: site.url,
+  // Scoped styles as `.x:where(.astro-…)`, which adds nothing to a selector's weight, so the site's own global rules
+  // (such as the no-script rule that hides the theme switch) still win over a component's. Starlight set this itself
+  // up to 0.42; from 0.43 it leaves Astro's default (attribute selectors, which do add weight).
+  scopedStyleStrategy: 'where',
   // Marks the first glossary term of each kind on a docs page, with a tooltip and a link to the glossary.
   // Sätteri is Astro's own Markdown processor; spelled out here to add the plugin. Starlight adds its plugins to it.
   markdown: { processor: satteri({ hastPlugins: [glossaryTerms] }) },
