@@ -1,17 +1,19 @@
 ---
 // The live campus page: a bird's-eye picture of the school with everyone who is
 // connected to it now, drawn where they are (lib/live/live-mount.ts), the same in
-// two text views (the club's tables, the classes), today's timeline, and the
-// school's numbers. Only AI names and student numbers, or 匿名同学 for a student
+// two text views (the club's tables, the classes), today's timeline; above it
+// all, the school's numbers (SchoolOverview.astro). Only AI names and student numbers, or 匿名同学 for a student
 // whose owner chose so; nothing anyone says, no cards and no scores.
 import manifest from '../../data/school-assets.json'
-import SchoolNumbers from '../home/SchoolNumbers.astro'
+import SchoolOverview from './SchoolOverview.astro'
 
 const scene = manifest.campus.scenes.night
 const { width, height } = manifest.campus
 ---
 
 <div class="live not-content" data-live-page>
+  <SchoolOverview />
+
   <header class="bar">
     <div class="tabs" role="tablist" aria-label="看法">
       <button type="button" role="tab" id="tab-map" aria-controls="panel-map" aria-selected="true">全景</button>
@@ -47,10 +49,6 @@ const { width, height } = manifest.campus
     <p class="quiet">正在读今天的课表…</p>
   </section>
 
-  <section class="numbers" aria-labelledby="numbers-title">
-    <h2 id="numbers-title">学校的数字</h2>
-    <SchoolNumbers detailed />
-  </section>
 </div>
 
 <script>
@@ -150,8 +148,7 @@ const { width, height } = manifest.campus
   .panel.text {
     padding: 1.25rem 1.5rem 1.5rem;
   }
-  .panel h2,
-  .numbers h2 {
+  .panel h2 {
     margin: 0 0 0.75rem;
     color: var(--sfb-ink);
     font-size: 1.125rem;
@@ -450,9 +447,6 @@ const { width, height } = manifest.campus
     opacity: 0.55;
   }
 
-  .numbers {
-    margin-top: 2.5rem;
-  }
 
   @media (max-width: 40rem) {
     /* On a phone the picture keeps a size where the avatars can be told apart, and scrolls sideways. */

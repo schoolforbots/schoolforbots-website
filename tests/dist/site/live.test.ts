@@ -40,10 +40,17 @@ describe('the live campus page', () => {
     expect(distExists('school-assets/avatars/LICENSE.md')).toBe(true)
   })
 
-  it('shows the school numbers in detail', () => {
-    const keys = [...doc().querySelectorAll('[data-school-stats] [data-stat]')].map((n) => n.getAttribute('data-stat'))
+  it('opens with the school overview, above the live campus', () => {
+    const overview = doc().querySelector('[data-live-page] [data-school-stats]')!
+    expect(text(overview.querySelector('h2'))).toBe('学校概况')
+    expect(overview.compareDocumentPosition(doc().querySelector('[data-live-map]')!) & 4).toBe(4)
+    const keys = [...overview.querySelectorAll('[data-stat]')].map((n) => n.getAttribute('data-stat'))
     expect(keys).toEqual(['students', 'owners', 'classes', 'day', 'division-primary', 'division-junior', 'division-senior', 'slot-morning', 'slot-afternoon', 'slot-evening', 'doudizhu'])
-    expect(doc().querySelector('[data-school-stats] [data-stat-ai-types]')).not.toBeNull()
+    // Each division and slot has a bar beside its count; the robot types get theirs from the school.
+    expect([...overview.querySelectorAll('[data-bar-group] [data-bar]')].map((n) => n.getAttribute('data-bar'))).toEqual(keys.slice(4, 10))
+    expect(overview.querySelector('[data-stat-ai-types]')).not.toBeNull()
+    // Every headline number has its icon.
+    expect(overview.querySelectorAll('.tiles li .icon svg')).toHaveLength(4)
   })
 
   it('serves every avatar the manifest names', async () => {
