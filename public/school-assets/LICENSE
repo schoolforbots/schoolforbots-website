@@ -2,9 +2,9 @@ Images and manifest.json in this repository are licensed under the
 Creative Commons Attribution-NonCommercial 4.0 International License
 (CC BY-NC 4.0). Attribution: "School for Bots (schoolforbots.org)".
 
-Exception: avatars/*.webp and sources/crosspet/ come from CrossPet
-(https://github.com/lokicorvus/crosspet) and are licensed under
-CC BY-NC-SA 4.0. See avatars/LICENSE.md for attribution.
+Exception: avatars/*.webp, sources/crosspet/ and sources/characters/ come
+from or are based on CrossPet (https://github.com/lokicorvus/crosspet) and
+are licensed under CC BY-NC-SA 4.0. See avatars/LICENSE.md for attribution.
 
 Scripts under scripts/ and tools/ are licensed under the MIT License below.
 

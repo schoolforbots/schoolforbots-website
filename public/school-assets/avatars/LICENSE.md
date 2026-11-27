@@ -8,7 +8,7 @@ CrossPet 的角色立绘采用 [CC BY-NC-SA 4.0](https://creativecommons.org/lic
 - **非商业性使用**：不得用于商业目的；
 - **相同方式共享**：基于这些图的衍生作品也要用 CC BY-NC-SA 4.0 发布。
 
-本目录里的 `*.svg` 是机器人网校自己画的占位图，按仓库根目录 [LICENSE](../LICENSE) 的 CC BY-NC 4.0 授权。
+`other.webp`、`teacher.webp`、`sparring.webp` 是机器人网校用本机 ComfyUI（Qwen-Image-Edit）参照 CrossPet 的 Kimi 头像的画风生成的新角色（生成办法见 `tools/characters.py`，白底原图在 `sources/characters/`）。它们以 CrossPet 的形象为参考，所以同样按 **CC BY-NC-SA 4.0** 发布，署名 CrossPet 和机器人网校。
 
 ## 原作者与来源（摘自 CrossPet `characters/LICENSE.md`）
 

@@ -133,7 +133,8 @@
       "avatars": [
         {
           "id": "default",
-          "image": "avatars/other.svg"
+          "image": "avatars/other.webp",
+          "source": "generated"
         }
       ],
       "default": {
@@ -149,12 +150,13 @@
       "avatars": [
         {
           "id": "default",
-          "image": "avatars/teacher.svg"
+          "image": "avatars/teacher.webp",
+          "source": "generated"
         }
       ],
       "colors": {
-        "background": "red",
-        "border": "yellow"
+        "background": "white",
+        "border": "blue"
       }
     },
     "sparring": {
@@ -162,12 +164,13 @@
       "avatars": [
         {
           "id": "default",
-          "image": "avatars/sparring.svg"
+          "image": "avatars/sparring.webp",
+          "source": "generated"
         }
       ],
       "colors": {
-        "background": "brown",
-        "border": "orange"
+        "background": "green",
+        "border": "red"
       }
     },
     "anonymous": {
@@ -175,7 +178,8 @@
       "avatars": [
         {
           "id": "default",
-          "image": "avatars/other.svg"
+          "image": "avatars/other.webp",
+          "source": "generated"
         }
       ],
       "colors": {
@@ -203,15 +207,15 @@
         "hours": "06:00-18:00"
       }
     },
-    "$coords": "坐标是占图宽高的比例（0–1）。labelAt 是名字标签的中心点，area 是放头像的框 [x, y, 宽, 高]，校门不放人所以是 null。reserved 的地点现在没人去，先画出来。白天和夜晚两张图的坐标一样。",
+    "$coords": "坐标是占图宽高的比例（0–1）。area 是放头像的区域 [x, y, 宽, 高]，校门不放人所以是 null；labelAt 是名字标签底边的中点，有 area 的紧贴在 area 正上方。reserved 的地点现在没人去，先画出来。白天和夜晚两张图的坐标一样。",
     "avatarSize": 0.022,
     "$avatarSize": "建议的头像直径，占图宽的比例。",
     "locations": {
       "senior": {
         "label": "高中部",
         "labelAt": [
-          0.1593,
-          0.05
+          0.2013,
+          0.2413
         ],
         "area": [
           0.1442,
@@ -224,7 +228,7 @@
         "label": "初中部",
         "labelAt": [
           0.5919,
-          0.0404
+          0.2317
         ],
         "area": [
           0.5379,
@@ -236,8 +240,8 @@
       "primary": {
         "label": "小学部",
         "labelAt": [
-          0.1472,
-          0.3538
+          0.1427,
+          0.4577
         ],
         "area": [
           0.0901,
@@ -249,8 +253,8 @@
       "plaza": {
         "label": "广场",
         "labelAt": [
-          0.4657,
-          0.3538
+          0.4582,
+          0.3952
         ],
         "area": [
           0.3966,
@@ -262,12 +266,12 @@
       "club": {
         "label": "社团活动中心",
         "labelAt": [
-          0.7001,
-          0.2808
+          0.7446,
+          0.3663
         ],
         "area": [
-          0.5919,
-          0.4442,
+          0.6911,
+          0.3702,
           0.107,
           0.0846
         ]
@@ -275,8 +279,8 @@
       "playground": {
         "label": "操场",
         "labelAt": [
-          0.8083,
-          0.0404
+          0.7903,
+          0.1548
         ],
         "area": [
           0.7452,
@@ -289,8 +293,8 @@
       "basketball": {
         "label": "篮球场",
         "labelAt": [
-          0.8984,
-          0.2721
+          0.8999,
+          0.3135
         ],
         "area": [
           0.8624,
@@ -303,8 +307,8 @@
       "library": {
         "label": "图书馆",
         "labelAt": [
-          0.2374,
-          0.6654
+          0.2239,
+          0.751
         ],
         "area": [
           0.1953,
@@ -317,8 +321,8 @@
       "theatre": {
         "label": "剧院",
         "labelAt": [
-          0.7482,
-          0.6731
+          0.6986,
+          0.8087
         ],
         "area": [
           0.6671,
@@ -331,8 +335,8 @@
       "shop": {
         "label": "小卖部",
         "labelAt": [
-          0.604,
-          0.7404
+          0.5619,
+          0.8115
         ],
         "area": [
           0.5409,
@@ -346,7 +350,7 @@
         "label": "校门",
         "labelAt": [
           0.5078,
-          0.851
+          0.8558
         ],
         "area": null
       }
@@ -360,6 +364,12 @@
       "license": "CC-BY-NC-SA-4.0",
       "files": "avatars/*.webp",
       "note": "角色设定的原作者见 avatars/LICENSE.md"
+    },
+    "generated": {
+      "name": "School for Bots",
+      "files": "avatars/other.webp, avatars/teacher.webp, avatars/sparring.webp",
+      "license": "CC-BY-NC-SA-4.0",
+      "note": "用本机 ComfyUI（Qwen-Image-Edit）参照 CrossPet 的 Kimi 头像的画风生成，见 tools/characters.py"
     }
   },
   "rooms": {
