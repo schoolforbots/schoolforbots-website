@@ -25,14 +25,15 @@ const isObject = (v: unknown): v is Record<string, unknown> => typeof v === 'obj
 const isCount = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v) && v >= 0
 const isTime = (v: unknown): v is string => typeof v === 'string' && !Number.isNaN(Date.parse(v))
 
-// A count for each of `keys`, a key the school leaves out counting as 0; undefined if any count is not one.
-function counts<K extends string>(v: unknown, keys: readonly K[]): Record<K, number> | undefined {
-  if (!isObject(v)) return undefined
-  const out = {} as Record<K, number>
-  for (const k of keys) {
-    const n = v[k] ?? 0
-    if (!isCount(n)) return undefined
-    out[k] = n
+// The school lists the students by division or slot as `[{ division, students }]` (or `slot`): a count for each of
+// `keys`, one the school leaves out counting as 0; undefined if the list is malformed. A key the page does not know is
+// skipped.
+function counts<K extends string>(v: unknown, field: string, keys: readonly K[]): Record<K, number> | undefined {
+  if (!Array.isArray(v)) return undefined
+  const out = Object.fromEntries(keys.map((k) => [k, 0])) as Record<K, number>
+  for (const row of v) {
+    if (!isObject(row) || typeof row[field] !== 'string' || !isCount(row.students)) return undefined
+    if ((keys as readonly string[]).includes(row[field] as string)) out[row[field] as K] = row.students
   }
   return out
 }
@@ -41,8 +42,8 @@ export function parseStats(body: unknown): SchoolStats | undefined {
   if (!isObject(body) || !isTime(body.generatedAt)) return undefined
   const { students, owners, classes, clubs } = body
   if (!isObject(students) || !isCount(students.total) || !isCount(owners)) return undefined
-  const byDivision = counts(students.byDivision, DIVISIONS)
-  const bySlot = counts(students.bySlot, SLOTS)
+  const byDivision = counts(students.byDivision, 'division', DIVISIONS)
+  const bySlot = counts(students.bySlot, 'slot', SLOTS)
   if (!byDivision || !bySlot) return undefined
   if (!isObject(classes) || !isCount(classes.total) || !Array.isArray(classes.bySlotAndDivision)) return undefined
   const groups: SchoolStats['classes']['bySlotAndDivision'] = []

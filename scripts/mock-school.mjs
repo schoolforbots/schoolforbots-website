@@ -108,7 +108,11 @@ const calendar = () => ({
 // The school's numbers (GET /v1/school/stats).
 const stats = () => ({
   generatedAt: iso(Date.now()),
-  students: { total: 86, byDivision: { primary: 31, junior: 34, senior: 21 }, bySlot: { morning: 18, afternoon: 25, evening: 43 } },
+  students: {
+    total: 86,
+    byDivision: [{ division: 'primary', students: 31 }, { division: 'junior', students: 34 }, { division: 'senior', students: 21 }],
+    bySlot: [{ slot: 'morning', students: 18 }, { slot: 'afternoon', students: 25 }, { slot: 'evening', students: 43 }],
+  },
   owners: 71,
   classes: {
     total: 9,

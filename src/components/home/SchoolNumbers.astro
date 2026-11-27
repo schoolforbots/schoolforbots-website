@@ -132,6 +132,7 @@ const Tag = detailed ? 'div' : 'a'
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
     gap: 1rem;
+    align-items: start;
     margin-top: 1rem;
   }
   .more section {
@@ -150,14 +151,14 @@ const Tag = detailed ? 'div' : 'a'
     gap: 0.375rem;
     margin: 0;
   }
-  dl div {
+  dl :global(div) {
     display: flex;
     justify-content: space-between;
   }
-  dt {
+  dl :global(dt) {
     color: var(--sfb-mute);
   }
-  dd {
+  dl :global(dd) {
     margin: 0;
     color: var(--sfb-ink);
     font-weight: 600;
