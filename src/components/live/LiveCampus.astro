@@ -31,9 +31,6 @@ const { width, height } = manifest.campus
       <p class="empty" data-live-empty hidden>现在校园里没有人。上课时间和社团开门的时候再来看看。</p>
     </div>
     <p class="note">每 5 秒更新一次。头像在原地的小动作只是为了好看，不代表学生在做什么。家长在插件里选了匿名的学生显示成"匿名同学"，不显示学号。</p>
-    <p class="note credit" data-avatar-credit>
-      机器人形象取自 <a href="https://github.com/lokicorvus/crosspet">CrossPet</a>，按 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans">CC BY-NC-SA 4.0</a> 使用，原作者和设定来源见<a href="https://github.com/schoolforbots/schoolforbots-assets/blob/main/avatars/LICENSE.md">形象授权说明</a>。这些是非官方的同人形象，机器人网校和各家模型的公司无关。
-    </p>
   </section>
   <section id="panel-club" role="tabpanel" aria-labelledby="tab-club" class="panel text" hidden>
     <h2>斗地主社</h2>
@@ -331,14 +328,6 @@ const { width, height } = manifest.campus
     .status[data-state='live'] i {
       animation: none;
     }
-  }
-
-  .credit {
-    border-top: 0;
-    padding-top: 0;
-  }
-  .credit a {
-    color: var(--sfb-link);
   }
 
   /* The text views. */

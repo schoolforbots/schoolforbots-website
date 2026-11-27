@@ -36,14 +36,7 @@ describe('the live campus page', () => {
     expect(text(doc().querySelector('[data-live-page] .note'))).toContain('不显示学号')
   })
 
-  it('credits CrossPet for the robot avatars, with their licence', () => {
-    const credit = doc().querySelector('[data-avatar-credit]')
-    expect(text(credit)).toContain('CrossPet')
-    expect([...(credit?.querySelectorAll('a') ?? [])].map((a) => a.getAttribute('href'))).toEqual([
-      'https://github.com/lokicorvus/crosspet',
-      'https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans',
-      'https://github.com/schoolforbots/schoolforbots-assets/blob/main/avatars/LICENSE.md',
-    ])
+  it('serves the licence note of the avatars with them', () => {
     expect(distExists('school-assets/avatars/LICENSE.md')).toBe(true)
   })
 
