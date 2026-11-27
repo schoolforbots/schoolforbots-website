@@ -6,21 +6,33 @@
 // (five seconds) the avatars make small made-up movements so the campus does not
 // look frozen; these say nothing about what the students do.
 import manifest from '../../data/school-assets.json'
-import { placeNames, placeSummary, PLACES, type Figure, type PlaceKey, type Scene } from './live'
+import { placeNames, placeSummary, placeTag, PLACES, type Figure, type PlaceKey, type Scene } from './live'
 
 type Box = [number, number, number, number]
 interface Location {
   label: string
+  /** The centre of the place's name label. */
   labelAt: [number, number]
   area: Box | null
+  /** A place drawn on the picture that no one goes to yet: only its name shows. */
+  reserved?: boolean
 }
 
 const locations = manifest.campus.locations as unknown as Record<string, Location>
 const palette = manifest.palette as Record<string, string>
 const ASSETS = '/school-assets/'
 
-/** At most this many avatars in one place; the rest fold into a "+N". */
-const MAX_PER_PLACE = 40
+/** An avatar's diameter as a share of the picture's width (the assets manifest suggests one). */
+export const AVATAR_SIZE: number = (manifest.campus as { avatarSize?: number }).avatarSize ?? 0.025
+
+/**
+ * How many avatars fit in `area` side by side without overlapping, at `size` (a share of the width) on a picture of
+ * `aspect` (width over height). More than this and the last spot becomes a "+N".
+ */
+export function capacity(area: Box, size: number, aspect: number): number {
+  const [, , w, h] = area
+  return Math.max(1, Math.floor(w / size) * Math.floor((h * aspect) / size))
+}
 
 interface Look {
   image: string
@@ -99,18 +111,24 @@ export class CampusMap {
 
   constructor(root: HTMLElement) {
     this.layer = root.querySelector<HTMLElement>('[data-live-figures]') ?? root
-    for (const key of PLACES) {
-      const loc = locations[key]
-      if (!loc) continue
+    root.style.setProperty('--avatar-size', `${AVATAR_SIZE * 100}cqi`)
+    // Every place on the picture gets its name; the places people go to also say what is going on there.
+    for (const [key, loc] of Object.entries(locations)) {
+      const live = (PLACES as readonly string[]).includes(key) && !loc.reserved
       const label = document.createElement('div')
       label.className = 'place-label'
       label.dataset.place = key
+      if (!live) label.dataset.quiet = ''
       label.style.left = `${loc.labelAt[0] * 100}%`
       label.style.top = `${loc.labelAt[1] * 100}%`
-      label.innerHTML = '<strong></strong><span></span>'
-      label.querySelector('strong')!.textContent = placeNames[key]
+      const name = document.createElement('strong')
+      name.textContent = loc.label || placeNames[key as PlaceKey] || key
+      label.append(name)
+      if (live) {
+        label.append(document.createElement('span'))
+        this.labels.set(key as PlaceKey, label)
+      }
       root.querySelector('[data-live-labels]')?.append(label)
-      this.labels.set(key, label)
     }
     this.popover = document.createElement('div')
     this.popover.className = 'figure-card'
@@ -125,7 +143,13 @@ export class CampusMap {
   /** Shows `scene`, keeping the avatars that stay. */
   render(scene: Scene): void {
     for (const [key, label] of this.labels) {
-      label.querySelector('span')!.textContent = placeSummary(scene, key)
+      // One short line on the map (the name and a count), so the label covers as little as it can; the whole line
+      // on pointing at it.
+      const tag = placeTag(scene, key)
+      const span = label.querySelector('span')!
+      span.textContent = tag
+      span.hidden = tag === ''
+      label.title = `${label.querySelector('strong')!.textContent} · ${placeSummary(scene, key)}`
       const busy = scene.figures.some((f) => f.place === key && f.kind !== 'teacher')
       label.toggleAttribute('data-busy', busy)
     }
@@ -136,7 +160,8 @@ export class CampusMap {
       const area = locations[key]?.area
       if (!area) continue
       const here = arrange(scene.figures.filter((f) => f.place === key))
-      const shown = here.length > MAX_PER_PLACE ? here.slice(0, MAX_PER_PLACE - 1) : here
+      const max = capacity(area as Box, AVATAR_SIZE, this.aspect)
+      const shown = here.length > max ? here.slice(0, max - 1) : here
       const at = slots(area as Box, shown.length + (shown.length < here.length ? 1 : 0), this.aspect)
       shown.forEach((figure, i) => placed.set(figure.key, { figure, at: at[i] }))
       if (shown.length < here.length) extra.set(key, { count: here.length - shown.length, at: at[shown.length] })

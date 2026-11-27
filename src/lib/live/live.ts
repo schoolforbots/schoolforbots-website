@@ -173,8 +173,8 @@ export function parseClubLive(body: unknown): ClubLive | undefined {
 // ---------------------------------------------------------------------------
 // The scene: everyone on the map, and what each place says.
 
-export type PlaceKey = Division | 'doudizhu' | 'plaza'
-export const PLACES: readonly PlaceKey[] = ['primary', 'junior', 'senior', 'doudizhu', 'plaza']
+export type PlaceKey = Division | 'club' | 'plaza'
+export const PLACES: readonly PlaceKey[] = ['primary', 'junior', 'senior', 'club', 'plaza']
 
 export type FigureKind = 'student' | 'anonymous' | 'teacher' | 'sparring'
 
@@ -217,7 +217,7 @@ export const studentNumber = (id: number) => `#${String(id).padStart(4, '0')}`
 
 export const slotNames: Record<Slot, string> = { morning: '上午班', afternoon: '下午班', evening: '晚班' }
 export const divisionNames: Record<Division, string> = { primary: '小学部', junior: '初中部', senior: '高中部' }
-export const placeNames: Record<PlaceKey, string> = { ...divisionNames, doudizhu: '斗地主社', plaza: '广场' }
+export const placeNames: Record<PlaceKey, string> = { ...divisionNames, club: '社团活动中心', plaza: '广场' }
 
 export function stepText(step: Classroom['step'], kind: Classroom['kind']): string {
   switch (step.name) {
@@ -261,11 +261,11 @@ export function buildScene(cls: ClassLive | undefined, club: ClubLive | undefine
     for (const t of tables) {
       const game = t.playing ? `在打第 ${t.gamesPlayed + 1} 局` : '等开局'
       t.seats.forEach((s, i) => {
-        if (s.kind === 'student') figures.push(studentFigure(s.person, 'club', 'doudizhu', s.online ? `${t.table} 号桌 · ${game}` : `${t.table} 号桌 · 暂时离开`, t.tableId))
-        else if (s.kind === 'bot') figures.push({ key: `bot:${t.tableId}:${i}`, kind: 'sparring', place: 'doudizhu', name: s.name, number: null, status: `${t.table} 号桌的陪练 · ${game}`, tableId: t.tableId, aiType: null, avatar: null })
+        if (s.kind === 'student') figures.push(studentFigure(s.person, 'club', 'club', s.online ? `${t.table} 号桌 · ${game}` : `${t.table} 号桌 · 暂时离开`, t.tableId))
+        else if (s.kind === 'bot') figures.push({ key: `bot:${t.tableId}:${i}`, kind: 'sparring', place: 'club', name: s.name, number: null, status: `${t.table} 号桌的陪练 · ${game}`, tableId: t.tableId, aiType: null, avatar: null })
       })
-      for (const p of t.waiting) figures.push(studentFigure(p, 'club', 'doudizhu', `${t.table} 号桌 · 等座位`, t.tableId))
-      for (const p of t.spectators) figures.push(studentFigure(p, 'club', 'doudizhu', `${t.table} 号桌 · 在旁边看`, t.tableId))
+      for (const p of t.waiting) figures.push(studentFigure(p, 'club', 'club', `${t.table} 号桌 · 等座位`, t.tableId))
+      for (const p of t.spectators) figures.push(studentFigure(p, 'club', 'club', `${t.table} 号桌 · 在旁边看`, t.tableId))
     }
   }
   const times = [cls?.generatedAt, club?.generatedAt].filter((t): t is string => t !== undefined)
@@ -281,14 +281,26 @@ export function buildScene(cls: ClassLive | undefined, club: ClubLive | undefine
   }
 }
 
-/** What each place's label says under its name. */
+/**
+ * The few words beside a place's name on the map: how many students are there (nothing when none), 关门 for the club
+ * while lessons are on, — when the place's service cannot be read. The full line is `placeSummary`.
+ */
+export function placeTag(scene: Scene, place: PlaceKey): string {
+  const reached = place === 'club' || place === 'plaza' ? scene.clubReached : scene.classReached
+  if (!reached) return '—'
+  if (place === 'club' && scene.clubOpen === false) return '关门'
+  const here = scene.figures.filter((f) => f.place === place && (f.kind === 'student' || f.kind === 'anonymous')).length
+  return here ? String(here) : ''
+}
+
+/** What is going on at a place, in a line: shown when the reader points at its label. */
 export function placeSummary(scene: Scene, place: PlaceKey): string {
   const here = scene.figures.filter((f) => f.place === place && (f.kind === 'student' || f.kind === 'anonymous')).length
   if (place === 'plaza') {
     if (!scene.clubReached) return '暂时看不到'
     return here ? `${here} 名在闲逛` : '现在没有人'
   }
-  if (place === 'doudizhu') {
+  if (place === 'club') {
     if (!scene.clubReached) return '暂时看不到'
     if (scene.clubOpen === false) return '上课时段关门'
     const playing = scene.tables.filter((t) => t.playing).length

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { buildScene, parseClassLive, parseClubLive, placeSummary, readLive, stepText } from '../../../src/lib/live/live'
-import { look, slots } from '../../../src/lib/live/map'
+import { buildScene, parseClassLive, parseClubLive, placeSummary, placeTag, readLive, stepText } from '../../../src/lib/live/live'
+import { capacity, look, slots } from '../../../src/lib/live/map'
 import manifest from '../../../src/data/school-assets.json'
 import { fakeFetch } from '../school/fixtures'
 
@@ -80,14 +80,24 @@ describe('the live snapshots', () => {
     expect(scene.figures.filter((f) => f.kind === 'anonymous').every((f) => f.number === null && !/#\d/.test(f.status))).toBe(true)
   })
 
+  it('tags each place on the map with a count, 关门 or a dash', () => {
+    const scene = buildScene(parseClassLive(classLive()), parseClubLive(clubLive()))
+    expect(placeTag(scene, 'junior')).toBe('2')
+    expect(placeTag(scene, 'primary')).toBe('')
+    expect(placeTag(scene, 'club')).toBe('2')
+    const closed = buildScene(undefined, parseClubLive(clubLive({ open: false, lobby: [], tables: [] })))
+    expect(placeTag(closed, 'club')).toBe('关门')
+    expect(placeTag(closed, 'senior')).toBe('—')
+  })
+
   it('says what each place is doing', () => {
     const scene = buildScene(parseClassLive(classLive()), parseClubLive(clubLive()))
     expect(placeSummary(scene, 'junior')).toBe('1 个班 · 2 名在上课 · 光的折射')
     expect(placeSummary(scene, 'primary')).toBe('现在没有课')
-    expect(placeSummary(scene, 'doudizhu')).toBe('1 桌在打 · 2 名在社团')
+    expect(placeSummary(scene, 'club')).toBe('1 桌在打 · 2 名在社团')
     expect(placeSummary(scene, 'plaza')).toBe('1 名在闲逛')
     const closed = buildScene(undefined, parseClubLive(clubLive({ open: false, lobby: [], tables: [] })))
-    expect(placeSummary(closed, 'doudizhu')).toBe('上课时段关门')
+    expect(placeSummary(closed, 'club')).toBe('上课时段关门')
     expect(placeSummary(closed, 'junior')).toBe('暂时看不到')
   })
 
@@ -109,6 +119,12 @@ describe('the live snapshots', () => {
 })
 
 describe('laying avatars out', () => {
+  it('fits as many avatars in a place as there is room for side by side', () => {
+    // 0.1 wide and 0.05 high on a 1.6 picture: 5 across, 4 down at 0.02.
+    expect(capacity([0, 0, 0.1, 0.05], 0.02, 1.6)).toBe(20)
+    expect(capacity([0, 0, 0.01, 0.01], 0.02, 1.6)).toBe(1)
+  })
+
   it('keeps every avatar inside its ground, each in its own spot', () => {
     const area: [number, number, number, number] = [0.1, 0.2, 0.3, 0.2]
     for (const n of [1, 2, 7, 23, 40]) {
