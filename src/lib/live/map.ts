@@ -14,6 +14,7 @@
 // say nothing about what the students do.
 import manifest from '../../data/school-assets.json'
 import { placeNames, placeSummary, placeTag, PLACES, type Figure, type PlaceKey, type Scene } from './live'
+import { Camera } from './camera'
 import { depth, focusPoint, layoutFor, panelFor, roomTitle, type Layout, type Panel, type Point, type View } from './rooms'
 
 export { capacity, slots } from './rooms'
@@ -85,6 +86,7 @@ export class LiveMap {
   private readonly picture: HTMLImageElement
   private readonly stage: HTMLElement
   private readonly title: HTMLElement
+  private readonly camera: Camera | null
   private moving = false
   private pending = false
   private readonly labelLayer: HTMLElement
@@ -119,6 +121,14 @@ export class LiveMap {
       if (!(e.target as HTMLElement).closest('.figure')) this.hideCard()
     })
     this.setUpPanel()
+    // Zoom and drag: the camera moves the layer that holds the stage, within the picture's edges. Set up last: it
+    // reports its first position at once, which hides the avatar card.
+    const cameraLayer = root.querySelector<HTMLElement>('[data-live-camera]')
+    this.camera = cameraLayer ? new Camera(root, cameraLayer, () => this.hideCard()) : null
+    const controls = root.closest('[data-live-frame]')?.querySelector<HTMLElement>('[data-zoom-controls]')
+    controls?.querySelector('[data-zoom="in"]')?.addEventListener('click', () => this.camera?.zoomBy(1.5))
+    controls?.querySelector('[data-zoom="out"]')?.addEventListener('click', () => this.camera?.zoomBy(1 / 1.5))
+    controls?.querySelector('[data-zoom="reset"]')?.addEventListener('click', () => this.camera?.reset())
   }
 
   get currentView(): View {
@@ -157,6 +167,8 @@ export class LiveMap {
 
     this.moving = true
     this.hideCard()
+    // Each view starts from its whole picture.
+    this.camera?.reset(false)
     try {
       await this.pose(out, true)
       this.draw(this.scene ?? scene)
@@ -467,8 +479,11 @@ export class LiveMap {
     head.append(document.createTextNode(f.name))
     if (f.number) head.append(' ', el('code', undefined, f.number))
     this.popover.append(head, el('p', 'what', f.status))
-    this.popover.style.left = node.style.left
-    this.popover.style.top = node.style.top
+    // Placed by where the avatar is on screen, which a zoom or drag has moved from its spot on the picture.
+    const r = node.getBoundingClientRect()
+    const frame = this.root.getBoundingClientRect()
+    this.popover.style.left = `${r.left + r.width / 2 - frame.left}px`
+    this.popover.style.top = `${r.top + r.height / 2 - frame.top}px`
     this.popover.hidden = false
   }
 
