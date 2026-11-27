@@ -8,7 +8,7 @@ import { site } from '../../config/site'
 import { fetchJson } from '../status/fetch-json'
 import { parseCalendar } from '../status/parse'
 import type { Division, Slot } from './next-school-day'
-import { resolveStats, schoolDayNumber, type SchoolStats } from './stats'
+import { resolveStats, schoolDays, type SchoolDays, type SchoolStats } from './stats'
 
 const REFRESH_MS = 5 * 60 * 1000
 const DIVISIONS: readonly Division[] = ['primary', 'junior', 'senior']
@@ -16,8 +16,8 @@ const SLOTS: readonly Slot[] = ['morning', 'afternoon', 'evening']
 
 export interface StatsReading {
   stats: SchoolStats | null
-  /** The day of school, 1 on the opening day; null before it, with no opening day set, or when unknown. */
-  day: number | null
+  /** How long the school has been open, or how long until it opens; null when the calendar cannot be read. */
+  days: SchoolDays | null
 }
 
 const number = (n: number) => n.toLocaleString('zh-CN')
@@ -29,7 +29,7 @@ export function statValues(r: StatsReading): Record<string, number | null> {
     students: s ? s.students.total : null,
     owners: s ? s.owners : null,
     classes: s ? s.classes.total : null,
-    day: r.day,
+    day: r.days?.kind === 'open' || r.days?.kind === 'before' ? r.days.days : null,
     doudizhu: s ? s.clubs.doudizhu.gamesToday : null,
   }
   for (const d of DIVISIONS) out[`division-${d}`] = s ? s.students.byDivision[d] : null
@@ -82,6 +82,13 @@ function typeRow(aiType: string, students: number): HTMLElement {
   return li
 }
 
+/** The words of the days tile: the line over the number, the number when it is not a count, and the unit after it. */
+export function dayWords(days: SchoolDays | null): { label: string; value: string | null; unit: string } {
+  if (days === null) return { label: '已经开学', value: null, unit: '天' }
+  if (days.kind === 'unset') return { label: '开学日期', value: '待定', unit: '' }
+  return { label: days.kind === 'open' ? '已经开学' : '离开学还有', value: null, unit: '天' }
+}
+
 export function renderStats(root: HTMLElement, r: StatsReading): void {
   const texts = statTexts(r)
   const values = statValues(r)
@@ -106,10 +113,11 @@ export function renderStats(root: HTMLElement, r: StatsReading): void {
     list.replaceChildren(...rows.map((t) => typeRow(t.aiType, t.students)))
     setBars([...list.querySelectorAll<HTMLElement>('.bar')].map((el) => ({ el, value: Number(el.dataset.value) })))
   }
-  // The day of school has its own wording before the opening day.
-  for (const el of root.querySelectorAll<HTMLElement>('[data-stat-day-label]')) {
-    el.textContent = r.day === null ? '还没开学' : '开学天数'
-  }
+  // The days tile reads 已经开学 9 天, or 离开学还有 2 天 before the opening day, or 开学日期 待定 with none set.
+  const day = dayWords(r.days)
+  for (const el of root.querySelectorAll<HTMLElement>('[data-stat-label="day"]')) el.textContent = day.label
+  for (const el of root.querySelectorAll<HTMLElement>('[data-stat-unit="day"]')) el.textContent = day.unit
+  if (day.value !== null) for (const el of root.querySelectorAll<HTMLElement>('[data-stat="day"]')) el.textContent = day.value
 }
 
 export async function readStats(deps: { api: string; timeoutMs: number; fetch: typeof fetch }): Promise<StatsReading> {
@@ -120,7 +128,7 @@ export async function readStats(deps: { api: string; timeoutMs: number; fetch: t
   const cal = calendar.kind === 'ok' ? parseCalendar(calendar.body) : null
   return {
     stats: view.kind === 'stats' ? view.stats : null,
-    day: cal ? schoolDayNumber(cal.openingDay, cal.today) : null,
+    days: cal ? schoolDays(cal.openingDay, cal.today) : null,
   }
 }
 

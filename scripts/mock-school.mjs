@@ -100,7 +100,8 @@ const calendar = () => ({
   state: 'in_term',
   breakName: null,
   reopensOn: null,
-  openingDay: '2026-11-01',
+  // MOCK_OPENING_DAY=2026-12-01 shows the days left before the opening; MOCK_OPENING_DAY=none, an opening day not set.
+  openingDay: process.env.MOCK_OPENING_DAY === 'none' ? null : (process.env.MOCK_OPENING_DAY ?? '2026-11-01'),
   maintenance: null,
 })
 

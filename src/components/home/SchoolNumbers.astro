@@ -1,27 +1,34 @@
 ---
 // The homepage's card of the school's numbers, read from the school in the browser
 // (lib/school/stats-mount.ts): students in school, the owners behind them, the
-// classes, the day of school. It leads to the live campus page, which has them all
+// classes, and how long the school has been open (or until it opens). It leads to the live campus page, which has them all
 // (components/live/SchoolOverview.astro). Totals only. Until they arrive, or if the
 // school cannot be read, each shows a dash.
+// Each reads as a phrase: 在校学生 45 名, 注册家长 45 位, 开放班级 4 个, 已经开学 9 天 (离开学还有 2 天 before the
+// opening day; the script sets that tile's words).
 const tiles = [
-  { key: 'students', label: '在校学生' },
-  { key: 'owners', label: '家长' },
-  { key: 'classes', label: '班级' },
-  { key: 'day', label: '开学天数', dayLabel: true },
+  { key: 'students', label: '在校学生', unit: '名' },
+  { key: 'owners', label: '注册家长', unit: '位' },
+  { key: 'classes', label: '开放班级', unit: '个' },
+  { key: 'day', label: '已经开学', unit: '天' },
 ]
 ---
 
 <a class="numbers card" href="/live/" data-school-stats data-state="loading" aria-label="学校的数字，去看校园实况">
   <ul>
     {
-      tiles.map(({ key, label, dayLabel }) => (
+      tiles.map(({ key, label, unit }) => (
         <li>
-          <span class="value" data-stat={key}>
-            —
-          </span>
-          <span class="label" data-stat-day-label={dayLabel ? '' : undefined}>
+          <span class="label" data-stat-label={key}>
             {label}
+          </span>
+          <span class="figure">
+            <span class="value" data-stat={key}>
+              —
+            </span>
+            <span class="unit" data-stat-unit={key}>
+              {unit}
+            </span>
           </span>
         </li>
       ))
@@ -82,6 +89,18 @@ const tiles = [
   .label {
     color: var(--sfb-mute);
     font-size: 0.875rem;
+  }
+  .figure {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.25rem;
+  }
+  .unit {
+    color: var(--sfb-mute);
+    font-size: 0.9375rem;
+  }
+  .unit:empty {
+    display: none;
   }
   .unreachable {
     display: none;

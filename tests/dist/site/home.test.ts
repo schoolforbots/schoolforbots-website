@@ -374,7 +374,9 @@ describe('homepage', () => {
     expect(card.tagName).toBe('A')
     expect(card.getAttribute('href')).toBe('/live/')
     expect([...card.querySelectorAll('[data-stat]')].map((n) => n.getAttribute('data-stat'))).toEqual(['students', 'owners', 'classes', 'day'])
-    expect([...card.querySelectorAll('.label')].map(text)).toEqual(['在校学生', '家长', '班级', '开学天数'])
+    // Each reads as a phrase: the line over the number, the number, its unit.
+    expect([...card.querySelectorAll('.label')].map(text)).toEqual(['在校学生', '注册家长', '开放班级', '已经开学'])
+    expect([...card.querySelectorAll('.unit')].map(text)).toEqual(['名', '位', '个', '天'])
     // A dash until the numbers arrive.
     expect([...card.querySelectorAll('[data-stat]')].map(text)).toEqual(['—', '—', '—', '—'])
   })
