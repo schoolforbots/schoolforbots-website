@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import manifest from '../../../src/data/school-assets.json'
 import { buildScene, parseClassLive, parseClubLive } from '../../../src/lib/live/live'
-import { classroomSeats, hashOf, HALL_TABLES, layoutFor, panelFor, parseHash, pictureFor, type View } from '../../../src/lib/live/rooms'
+import { classroomSeats, depth, focusPoint, hashOf, HALL_TABLES, layoutFor, panelFor, parseHash, pictureFor, type View } from '../../../src/lib/live/rooms'
 
 const named = (studentId: number, aiName = `机器人${studentId}`) => ({ anonymous: false, studentId, aiName, anonId: null, aiType: 'claude', avatar: null })
 const anon = (anonId: string) => ({ anonymous: true, studentId: null, aiName: null, anonId, aiType: null, avatar: null })
@@ -170,5 +170,19 @@ describe('pictures for the hour', () => {
     expect(pictureFor(r, new Date('2026-11-27T01:00:00Z')).image).toBe('/school-assets/a.webp')
     expect(pictureFor(r, new Date('2026-11-27T15:00:00Z')).image).toBe('/school-assets/b.webp')
     expect(pictureFor(r, new Date('2026-11-27T06:00:00Z')).image).toBe('/school-assets/a.webp')
+  })
+})
+
+describe('going in and out', () => {
+  it('knows how deep each view is', () => {
+    expect([{ kind: 'campus' }, { kind: 'building', division: 'junior', room: null }, { kind: 'hall' }, { kind: 'table', tableId: 'x' }].map((v) => depth(v as View))).toEqual([0, 1, 1, 2])
+  })
+
+  it('zooms towards the building on the campus, and towards the table in the hall', () => {
+    const s = scene([], [table(1), table(2)])
+    const area = manifest.campus.locations.junior.area as number[]
+    expect(focusPoint({ kind: 'campus' }, { kind: 'building', division: 'junior', room: null }, s)).toEqual([area[0] + area[2] / 2, area[1] + area[3] / 2])
+    expect(focusPoint({ kind: 'hall' }, { kind: 'table', tableId: 't2' }, s)).toEqual(manifest.rooms.clubHall.tables[1].center)
+    expect(focusPoint({ kind: 'hall' }, { kind: 'table', tableId: 'gone' }, s)).toEqual([0.5, 0.5])
   })
 })

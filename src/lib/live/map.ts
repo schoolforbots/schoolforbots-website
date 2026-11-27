@@ -6,12 +6,15 @@
 //
 // From one snapshot to the next the avatars that stay are kept: one who moves
 // slides to the new spot, newcomers fade in, those who left fade out. Changing the
-// view starts the picture afresh. Between snapshots (five seconds) the avatars make
+// view starts the picture afresh, with a move between the two: going in, the
+// picture zooms towards the building or table and blurs away, and the room comes
+// into focus; coming out, the room shrinks and blurs away, and the outer picture
+// comes into focus from close on the place just left. Between snapshots (five seconds) the avatars make
 // small made-up movements, and at a table up close cards fly to the middle; these
 // say nothing about what the students do.
 import manifest from '../../data/school-assets.json'
 import { placeNames, placeSummary, placeTag, PLACES, type Figure, type PlaceKey, type Scene } from './live'
-import { layoutFor, panelFor, type Layout, type Panel, type Point, type View } from './rooms'
+import { depth, focusPoint, layoutFor, panelFor, type Layout, type Panel, type Point, type View } from './rooms'
 
 export { capacity, slots } from './rooms'
 
@@ -61,8 +64,28 @@ interface Mounted {
   figure: Figure
 }
 
+const MOVE_MS = 420
+const EASE = 'cubic-bezier(0.45, 0, 0.25, 1)'
+
+/** The key of what a view shows: a new one means a new picture. */
+function shownKey(view: View): string {
+  return view.kind === 'table' ? `table:${view.tableId}` : view.kind === 'building' ? `building:${view.room}` : view.kind
+}
+
+/** How the stage looks: its zoom, around which point, its blur and how opaque. */
+interface Pose {
+  scale: number
+  at: Point
+  blur: number
+  opacity: number
+}
+const SHARP: Pose = { scale: 1, at: [0.5, 0.5], blur: 0, opacity: 1 }
+
 export class LiveMap {
   private readonly picture: HTMLImageElement
+  private readonly stage: HTMLElement
+  private moving = false
+  private pending = false
   private readonly labelLayer: HTMLElement
   private readonly layer: HTMLElement
   private readonly panelEl: HTMLElement | null
@@ -78,6 +101,7 @@ export class LiveMap {
 
   constructor(private readonly root: HTMLElement) {
     this.picture = root.querySelector<HTMLImageElement>('img.scene')!
+    this.stage = root.querySelector<HTMLElement>('[data-live-stage]') ?? root
     this.labelLayer = root.querySelector<HTMLElement>('[data-live-labels]') ?? root
     this.layer = root.querySelector<HTMLElement>('[data-live-figures]') ?? root
     this.panelEl = root.closest('[data-live-frame]')?.querySelector<HTMLElement>('[data-live-panel]') ?? null
@@ -95,18 +119,84 @@ export class LiveMap {
     return this.layout?.view ?? this.view
   }
 
-  /** Goes to `view`; the next render draws it. */
-  setView(view: View): void {
+  /** Goes to `view`, with a move from the one shown when there is something to move from. */
+  async go(view: View): Promise<void> {
+    const from = this.layout?.view
     this.view = view
-    if (this.scene) this.render(this.scene)
+    const scene = this.scene
+    if (!scene || !from || this.moving) {
+      if (scene && !this.moving) this.render(scene)
+      return
+    }
+    const next = layoutFor(scene, view, new Date())
+    if (shownKey(next.view) === this.shownKind || this.reduce.matches) {
+      this.render(scene)
+      return
+    }
+    // In: zoom towards the place in the picture shown, then the room comes up from a little close. Out: the room
+    // shrinks away, then the outer picture comes from close on the place left. Across: a short blur over.
+    const step = Math.sign(depth(next.view) - depth(from))
+    const out: Pose =
+      step > 0
+        ? { scale: 2.4, at: focusPoint(from, next.view, scene), blur: 8, opacity: 0 }
+        : step < 0
+          ? { scale: 0.8, at: [0.5, 0.5], blur: 8, opacity: 0 }
+          : { scale: 1.04, at: [0.5, 0.5], blur: 6, opacity: 0 }
+    const into: Pose =
+      step > 0
+        ? { scale: 1.15, at: [0.5, 0.5], blur: 8, opacity: 0 }
+        : step < 0
+          ? { scale: 2.4, at: focusPoint(next.view, from, scene), blur: 8, opacity: 0 }
+          : { scale: 0.97, at: [0.5, 0.5], blur: 6, opacity: 0 }
+
+    this.moving = true
+    this.hideCard()
+    try {
+      await this.pose(out, true)
+      this.draw(this.scene ?? scene)
+      await this.pose(into, false)
+      // The new picture loaded before it shows, or it would come up blank.
+      await Promise.race([this.picture.decode().catch(() => undefined), new Promise((r) => setTimeout(r, 1500))])
+      await this.pose(SHARP, true)
+    } finally {
+      this.stage.style.transition = ''
+      this.moving = false
+    }
+    if (this.pending && this.scene) {
+      this.pending = false
+      this.render(this.scene)
+    }
   }
 
-  /** Shows `scene` in the current view, keeping the avatars that stay. */
+  // Puts the stage in `p`, moving there (and waiting for it) or at once.
+  private pose(p: Pose, move: boolean): Promise<void> {
+    const s = this.stage.style
+    s.transition = move ? `transform ${MOVE_MS}ms ${EASE}, filter ${MOVE_MS}ms ${EASE}, opacity ${MOVE_MS}ms ${EASE}` : 'none'
+    s.transformOrigin = `${p.at[0] * 100}% ${p.at[1] * 100}%`
+    s.transform = p.scale === 1 ? '' : `scale(${p.scale})`
+    s.filter = p.blur ? `blur(${p.blur}px)` : ''
+    s.opacity = p.opacity === 1 ? '' : String(p.opacity)
+    if (!move) {
+      void this.stage.offsetWidth
+      return Promise.resolve()
+    }
+    return new Promise((resolve) => setTimeout(resolve, MOVE_MS + 30))
+  }
+
+  /** Shows `scene` in the current view, keeping the avatars that stay; while moving between views, after the move. */
   render(scene: Scene): void {
     this.scene = scene
+    if (this.moving) {
+      this.pending = true
+      return
+    }
+    this.draw(scene)
+  }
+
+  private draw(scene: Scene): void {
     const layout = layoutFor(scene, this.view, new Date())
     this.layout = layout
-    const kind = layout.view.kind === 'table' ? `table:${layout.view.tableId}` : layout.view.kind === 'building' ? `building:${layout.view.room}` : layout.view.kind
+    const kind = shownKey(layout.view)
     if (kind !== this.shownKind) this.changePicture(layout, kind)
     if (layout.view.kind === 'campus') this.campusLabels(scene)
     else this.marks(layout)

@@ -31,9 +31,11 @@ const { width, height } = manifest.campus
     <div class="frame" data-live-frame>
       <div class="map-scroll">
         <div class="map" data-live-map style={`aspect-ratio: ${width} / ${height}`}>
-          <img class="scene" src={`/school-assets/${scene.image}`} width={width} height={height} alt="学校的鸟瞰图：三个学部的教学楼、社团活动中心、广场和校门" />
-          <div class="labels" data-live-labels></div>
-          <div class="figures" data-live-figures></div>
+          <div class="stage" data-live-stage>
+            <img class="scene" src={`/school-assets/${scene.image}`} width={width} height={height} alt="学校的鸟瞰图：三个学部的教学楼、社团活动中心、广场和校门" />
+            <div class="labels" data-live-labels></div>
+            <div class="figures" data-live-figures></div>
+          </div>
           <p class="empty" data-live-empty hidden>现在校园里没有人。上课时间和社团开门的时候再来看看。</p>
         </div>
       </div>
@@ -313,7 +315,13 @@ const { width, height } = manifest.campus
   .map {
     position: relative;
     overflow: hidden;
-    background: #0f172a;
+    background: var(--sfb-bg-soft);
+    container-type: inline-size;
+  }
+  /* The picture, labels and avatars move together between views (map.ts). */
+  .stage {
+    position: absolute;
+    inset: 0;
     container-type: inline-size;
   }
   .scene {
