@@ -6,7 +6,11 @@ import { fakeFetch } from './fixtures'
 
 const stats = (over: Record<string, unknown> = {}) => ({
   generatedAt: '2026-11-27T12:00:00.000Z',
-  students: { total: 86, byDivision: { primary: 31, junior: 34, senior: 21 }, bySlot: { morning: 18, afternoon: 25, evening: 43 } },
+  students: {
+    total: 86,
+    byDivision: [{ division: 'primary', students: 31 }, { division: 'junior', students: 34 }, { division: 'senior', students: 21 }],
+    bySlot: [{ slot: 'morning', students: 18 }, { slot: 'afternoon', students: 25 }, { slot: 'evening', students: 43 }],
+  },
   owners: 71,
   classes: { total: 9, bySlotAndDivision: [{ slot: 'evening', division: 'senior', classes: 2, students: 21 }] },
   clubs: { doudizhu: { gamesToday: 57 } },
@@ -18,7 +22,9 @@ describe('the school numbers', () => {
   it('reads the numbers and refuses malformed answers', () => {
     expect(parseStats(stats())?.students.total).toBe(86)
     // A division or slot the school leaves out counts as none.
-    expect(parseStats(stats({ students: { total: 3, byDivision: { junior: 3 }, bySlot: {} } }))?.students.byDivision.primary).toBe(0)
+    expect(parseStats(stats({ students: { total: 3, byDivision: [{ division: 'junior', students: 3 }], bySlot: [] } }))?.students.byDivision.primary).toBe(0)
+    // The counts come as a list, as the school sends them.
+    expect(parseStats(stats({ students: { total: 3, byDivision: { junior: 3 }, bySlot: [] } }))).toBeUndefined()
     expect(parseStats(stats({ owners: -1 }))).toBeUndefined()
     expect(parseStats(stats({ owners: 1.5 }))).toBeUndefined()
     expect(parseStats(stats({ classes: { total: 1, bySlotAndDivision: [{ slot: 'night', division: 'senior', classes: 1, students: 1 }] } }))).toBeUndefined()
