@@ -465,6 +465,10 @@ const { width, height } = manifest.campus
     font-size: clamp(0.5625rem, 1cqi, 0.75rem);
     opacity: 0.85;
   }
+  /* On the campus a label grows up from its point, so it never covers the avatars below it. */
+  .map :global(.place-label[data-anchor='bottom']) {
+    transform: translate(-50%, -100%);
+  }
   .map :global(a.place-label) {
     text-decoration: none;
     pointer-events: auto;

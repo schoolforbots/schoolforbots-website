@@ -239,6 +239,8 @@ export class LiveMap {
         const label = enter ? el('a', 'place-label') : el('div', 'place-label')
         if (enter) (label as HTMLAnchorElement).href = key === 'club' ? '#club' : `#${key}`
         label.dataset.place = key
+        // labelAt is the middle of the label's bottom edge: the label sits just above the place's ground.
+        label.dataset.anchor = 'bottom'
         if (!live) label.dataset.quiet = ''
         label.style.left = `${loc.labelAt[0] * 100}%`
         label.style.top = `${loc.labelAt[1] * 100}%`
