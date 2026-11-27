@@ -10,7 +10,7 @@ const scene = manifest.campus.scenes.night
 ---
 
 <a class="preview" href="/live/" data-live-preview data-state="loading">
-  <img src={`/school-assets/${scene.image}`} alt="" loading="lazy" decoding="async" />
+  <img data-campus-scene src={`/school-assets/${scene.image}`} alt="" loading="lazy" decoding="async" />
   <span class="veil" aria-hidden="true"></span>
   <span class="text">
     <span class="live"><i aria-hidden="true"></i>校园实况</span>
@@ -21,6 +21,8 @@ const scene = manifest.campus.scenes.night
 
 <script>
   import { mountLivePreview } from '../../lib/live/live-mount'
+  import { mountCampusScenes } from '../../lib/live/scene'
+  mountCampusScenes()
   mountLivePreview()
 </script>
 
