@@ -24,11 +24,13 @@ const { width, height } = manifest.campus
   </header>
 
   <section id="panel-map" role="tabpanel" aria-labelledby="tab-map" class="panel">
+    <div class="map-scroll">
     <div class="map" data-live-map style={`aspect-ratio: ${width} / ${height}`}>
-      <img class="scene" data-campus-scene src={`/school-assets/${scene.image}`} width={width} height={height} alt="学校的鸟瞰图：三个学部的教学楼、斗地主社、广场和校门" />
+      <img class="scene" data-campus-scene src={`/school-assets/${scene.image}`} width={width} height={height} alt="学校的鸟瞰图：三个学部的教学楼、社团活动中心、广场和校门" />
       <div class="labels" data-live-labels></div>
       <div class="figures" data-live-figures></div>
       <p class="empty" data-live-empty hidden>现在校园里没有人。上课时间和社团开门的时候再来看看。</p>
+    </div>
     </div>
     <p class="note">每 5 秒更新一次。头像在原地的小动作只是为了好看，不代表学生在做什么。家长在插件里选了匿名的学生显示成"匿名同学"，不显示学号。</p>
   </section>
@@ -197,9 +199,10 @@ const { width, height } = manifest.campus
 
   .map :global(.place-label) {
     position: absolute;
-    display: grid;
-    justify-items: center;
-    padding: 0.3rem 0.8rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.4em;
+    padding: 0.2rem 0.65rem;
     border: 1px solid rgb(255 255 255 / 0.6);
     border-radius: 0.75rem;
     background: rgb(255 255 255 / 0.85);
@@ -212,18 +215,31 @@ const { width, height } = manifest.campus
     pointer-events: none;
   }
   .map :global(.place-label strong) {
-    font-size: 1.15em;
+    font-size: 1.1em;
   }
   .map :global(.place-label span) {
-    color: #5e4d43;
+    color: #9a3412;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .map :global(.place-label span[hidden]) {
+    display: none;
+  }
+  /* The places no one goes to yet: just their name, smaller and fainter. */
+  .map :global(.place-label[data-quiet]) {
+    padding: 0.15rem 0.6rem;
+    background: rgb(255 255 255 / 0.6);
+    font-size: clamp(0.5625rem, 1cqi, 0.75rem);
+    opacity: 0.85;
   }
   .map :global(.place-label[data-busy]) {
     border-color: #f6a36b;
     background: rgb(255 240 228 / 0.92);
   }
 
+  /* As small as the picture suggests (--avatar-size, a share of its width), but never too small to make out. */
   .map :global(.figure) {
-    --size: clamp(1.25rem, 3.2cqi, 2.75rem);
+    --size: max(1.125rem, var(--avatar-size, 2.2cqi));
     position: absolute;
     width: var(--size);
     height: var(--size);
@@ -257,7 +273,7 @@ const { width, height } = manifest.campus
     object-fit: cover;
   }
   .map :global(.figure[data-kind='teacher']) {
-    --size: clamp(1.5rem, 3.8cqi, 3.25rem);
+    --size: max(1.375rem, calc(var(--avatar-size, 2.2cqi) * 1.2));
   }
   .map :global(.figure[data-entering]),
   .map :global(.figure[data-leaving]) {
@@ -276,8 +292,8 @@ const { width, height } = manifest.campus
     position: absolute;
     display: grid;
     place-items: center;
-    width: clamp(1.25rem, 3.2cqi, 2.75rem);
-    height: clamp(1.25rem, 3.2cqi, 2.75rem);
+    width: max(1.125rem, var(--avatar-size, 2.2cqi));
+    height: max(1.125rem, var(--avatar-size, 2.2cqi));
     border-radius: 50%;
     background: rgb(255 255 255 / 0.9);
     color: #1f1410;
@@ -439,8 +455,13 @@ const { width, height } = manifest.campus
   }
 
   @media (max-width: 40rem) {
-    .map :global(.place-label span) {
-      display: none;
+    /* On a phone the picture keeps a size where the avatars can be told apart, and scrolls sideways. */
+    .map-scroll {
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+    }
+    .map {
+      min-width: 46rem;
     }
   }
 </style>
