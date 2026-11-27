@@ -10,6 +10,7 @@ const stats = (over: Record<string, unknown> = {}) => ({
   owners: 71,
   classes: { total: 9, bySlotAndDivision: [{ slot: 'evening', division: 'senior', classes: 2, students: 21 }] },
   clubs: { doudizhu: { gamesToday: 57 } },
+  aiTypes: [{ aiType: 'deepseek', students: 60 }, { aiType: 'claude', students: 26 }, { aiType: 'other', students: 0 }],
   ...over,
 })
 
@@ -23,6 +24,19 @@ describe('the school numbers', () => {
     expect(parseStats(stats({ classes: { total: 1, bySlotAndDivision: [{ slot: 'night', division: 'senior', classes: 1, students: 1 }] } }))).toBeUndefined()
     expect(parseStats(stats({ clubs: {} }))).toBeUndefined()
     expect(parseStats({})).toBeUndefined()
+    expect(parseStats(stats())?.aiTypes).toHaveLength(3)
+    // A school that does not count by type yet has none; a malformed count is refused.
+    expect(parseStats({ ...stats(), aiTypes: undefined })?.aiTypes).toEqual([])
+    expect(parseStats(stats({ aiTypes: [{ aiType: 'claude', students: -2 }] }))).toBeUndefined()
+  })
+
+  it('lists the robot types with students, by their names', () => {
+    const root = document.createElement('div')
+    root.innerHTML = '<dl data-stat-ai-types></dl>'
+    renderStats(root, { stats: parseStats(stats())!, day: 1 })
+    expect([...root.querySelectorAll('[data-stat-ai-types] > div')].map((d) => d.textContent)).toEqual(['DeepSeek60', 'Claude26'])
+    renderStats(root, { stats: null, day: null })
+    expect(root.querySelector('[data-stat-ai-types]')?.textContent).toBe('—')
   })
 
   it('tells numbers from an unreachable school', async () => {

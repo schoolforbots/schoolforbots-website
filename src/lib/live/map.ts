@@ -28,16 +28,27 @@ interface Look {
   border: string
 }
 
-function look(kind: Figure['kind']): Look {
-  const ch = manifest.characters as Record<string, { avatars: { image: string }[]; colors: { background: string; border: string } }>
-  if (kind === 'teacher' || kind === 'sparring' || kind === 'anonymous') {
-    const c = ch[kind]
+type Character = { avatars: { image: string }[]; colors: { background: string; border: string } }
+type AiTypeLook = { avatars: { image: string }[]; default: { background: string; border: string } }
+
+/**
+ * A figure's picture and colours. Teachers, sparring bots and anonymous students wear their fixed character; a named
+ * student wears their robot type's first avatar (an unknown type the fallback type's), in the colours their owner
+ * chose, each one the page does not know falling back to the type's default.
+ */
+export function look(f: Pick<Figure, 'kind' | 'aiType' | 'avatar'>): Look {
+  if (f.kind !== 'student') {
+    const c = (manifest.characters as Record<string, Character>)[f.kind]
     return { image: ASSETS + c.avatars[0].image, background: palette[c.colors.background], border: palette[c.colors.border] }
   }
-  // Until the school tells each robot's type, every student wears the default type's look.
-  const types = manifest.aiTypes as Record<string, { avatars: { image: string }[]; default: { background: string; border: string } }>
-  const t = types.deepseek ?? types[manifest.fallbackAiType]
-  return { image: ASSETS + t.avatars[0].image, background: palette[t.default.background], border: palette[t.default.border] }
+  const types = manifest.aiTypes as Record<string, AiTypeLook>
+  const t = types[f.aiType ?? ''] ?? types[manifest.fallbackAiType]
+  const color = (chosen: string | null | undefined, fallback: string) => palette[chosen ?? ''] ?? palette[fallback]
+  return {
+    image: ASSETS + t.avatars[0].image,
+    background: color(f.avatar?.background, t.default.background),
+    border: color(f.avatar?.border, t.default.border),
+  }
 }
 
 /** The order inside a place: teachers first, then each table's people together, then everyone else as they came. */
@@ -150,6 +161,7 @@ export class CampusMap {
         requestAnimationFrame(() => requestAnimationFrame(() => el.removeAttribute('data-entering')))
       }
       m.figure = figure
+      this.dress(m.el, figure)
       m.el.dataset.place = figure.place
       m.el.setAttribute('aria-label', this.describe(figure))
       m.el.style.left = `${at[0] * 100}%`
@@ -172,25 +184,31 @@ export class CampusMap {
     return [f.name, f.number, f.status].filter(Boolean).join(' · ')
   }
 
+  // Puts on `f`'s picture and colours; again when an owner changes them while the student is on the map.
+  private dress(el: HTMLElement, f: Figure): void {
+    const l = look(f)
+    el.style.setProperty('--figure-bg', l.background)
+    el.style.setProperty('--figure-border', l.border)
+    const img = el.querySelector('img')
+    if (img && img.getAttribute('src') !== l.image) img.src = l.image
+  }
+
   private figureEl(f: Figure): HTMLElement {
-    const l = look(f.kind)
     const el = document.createElement('button')
     el.type = 'button'
     el.className = 'figure'
     el.dataset.kind = f.kind
-    el.style.setProperty('--figure-bg', l.background)
-    el.style.setProperty('--figure-border', l.border)
     // Each avatar bobs at its own pace.
     el.style.setProperty('--bob-delay', `${-Math.random() * 3}s`)
     el.style.setProperty('--bob-time', `${2.4 + Math.random() * 1.6}s`)
     const body = document.createElement('span')
     body.className = 'body'
     const img = document.createElement('img')
-    img.src = l.image
     img.alt = ''
     img.decoding = 'async'
     body.append(img)
     el.append(body)
+    this.dress(el, f)
     el.addEventListener('click', () => this.showCard(el))
     el.addEventListener('pointerenter', (e) => e.pointerType === 'mouse' && this.showCard(el))
     el.addEventListener('pointerleave', (e) => e.pointerType === 'mouse' && this.hideCard())

@@ -21,7 +21,8 @@
       "avatars": [
         {
           "id": "default",
-          "image": "avatars/deepseek.svg"
+          "image": "avatars/deepseek.webp",
+          "source": "crosspet"
         }
       ],
       "default": {
@@ -34,7 +35,8 @@
       "avatars": [
         {
           "id": "default",
-          "image": "avatars/claude.svg"
+          "image": "avatars/claude.webp",
+          "source": "crosspet"
         }
       ],
       "default": {
@@ -47,7 +49,8 @@
       "avatars": [
         {
           "id": "default",
-          "image": "avatars/chatgpt.svg"
+          "image": "avatars/chatgpt.webp",
+          "source": "crosspet"
         }
       ],
       "default": {
@@ -60,7 +63,8 @@
       "avatars": [
         {
           "id": "default",
-          "image": "avatars/gemini.svg"
+          "image": "avatars/gemini.webp",
+          "source": "crosspet"
         }
       ],
       "default": {
@@ -73,7 +77,8 @@
       "avatars": [
         {
           "id": "default",
-          "image": "avatars/qwen.svg"
+          "image": "avatars/qwen.webp",
+          "source": "crosspet"
         }
       ],
       "default": {
@@ -86,7 +91,8 @@
       "avatars": [
         {
           "id": "default",
-          "image": "avatars/kimi.svg"
+          "image": "avatars/kimi.webp",
+          "source": "crosspet"
         }
       ],
       "default": {
@@ -99,7 +105,8 @@
       "avatars": [
         {
           "id": "default",
-          "image": "avatars/doubao.svg"
+          "image": "avatars/doubao.webp",
+          "source": "crosspet"
         }
       ],
       "default": {
@@ -112,7 +119,8 @@
       "avatars": [
         {
           "id": "default",
-          "image": "avatars/glm.svg"
+          "image": "avatars/glm.webp",
+          "source": "crosspet"
         }
       ],
       "default": {
@@ -267,6 +275,16 @@
         ],
         "area": null
       }
+    }
+  },
+  "credits": {
+    "crosspet": {
+      "name": "CrossPet",
+      "url": "https://github.com/lokicorvus/crosspet",
+      "commit": "50691433a7da3a23fdba9a780f7e94378b377f4a",
+      "license": "CC-BY-NC-SA-4.0",
+      "files": "avatars/*.webp",
+      "note": "角色设定的原作者见 avatars/LICENSE.md"
     }
   }
 }

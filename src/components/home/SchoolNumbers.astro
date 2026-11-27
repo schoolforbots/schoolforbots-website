@@ -3,7 +3,7 @@
 // (lib/school/stats-mount.ts). On the homepage: one card of four big numbers
 // (students in school, the owners behind them, the classes, the day of school)
 // that leads to the live campus page. With `detailed`, on that page: the same four,
-// the doudizhu club's games today, and the students by division and by slot.
+// the doudizhu club's games today, and the students by division, by slot and by robot type.
 // Totals only. Until they arrive, or if the school cannot be read, each shows a dash.
 interface Props {
   detailed?: boolean
@@ -61,6 +61,14 @@ const Tag = detailed ? 'div' : 'a'
             </dl>
           </section>
         ))}
+        <section>
+          <h3>按机器人类型</h3>
+          <dl data-stat-ai-types>
+            <div>
+              <dt>—</dt>
+            </div>
+          </dl>
+        </section>
       </div>
     )
   }
@@ -122,7 +130,7 @@ const Tag = detailed ? 'div' : 'a'
   }
   .more {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
     gap: 1rem;
     margin-top: 1rem;
   }

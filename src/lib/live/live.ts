@@ -21,6 +21,15 @@ export interface LivePerson {
   aiName: string | null
   /** For an anonymous student: a random id that lasts while they stay connected to the one service. */
   anonId: string | null
+  /** The robot type the owner chose (deepseek, claude, ...); null for an anonymous student. */
+  aiType: string | null
+  /** The avatar's colours, names from the palette; null (or a null colour) means the type's default. */
+  avatar: AvatarColors | null
+}
+
+export interface AvatarColors {
+  background: string | null
+  border: string | null
 }
 
 export interface Classroom {
@@ -74,10 +83,16 @@ function parsePerson(v: unknown): LivePerson | undefined {
   if (!isObject(v) || typeof v.anonymous !== 'boolean') return undefined
   if (v.anonymous) {
     if (typeof v.anonId !== 'string' || v.anonId === '') return undefined
-    return { anonymous: true, studentId: null, aiName: null, anonId: v.anonId }
+    return { anonymous: true, studentId: null, aiName: null, anonId: v.anonId, aiType: null, avatar: null }
   }
   if (!isCount(v.studentId) || typeof v.aiName !== 'string') return undefined
-  return { anonymous: false, studentId: v.studentId, aiName: v.aiName, anonId: null }
+  // The type and colours are for drawing only: one the page cannot read is drawn as the default, not refused.
+  const aiType = typeof v.aiType === 'string' ? v.aiType : null
+  const a = v.avatar
+  const avatar = isObject(a)
+    ? { background: typeof a.background === 'string' ? a.background : null, border: typeof a.border === 'string' ? a.border : null }
+    : null
+  return { anonymous: false, studentId: v.studentId, aiName: v.aiName, anonId: null, aiType, avatar }
 }
 
 function parsePeople(v: unknown): LivePerson[] | undefined {
@@ -180,6 +195,9 @@ export interface Figure {
   status: string
   /** The table they are at, for the people of the club. */
   tableId: string | null
+  /** A named student's robot type and colours, to pick their avatar; null for everyone else. */
+  aiType: string | null
+  avatar: AvatarColors | null
 }
 
 export interface Scene {
@@ -224,8 +242,8 @@ export const className = (c: Pick<Classroom, 'division' | 'slot' | 'classNo'>) =
   `${divisionNames[c.division]}·${slotNames[c.slot]}·${c.classNo} 班`
 
 function studentFigure(p: LivePerson, service: 'class' | 'club', place: PlaceKey, status: string, tableId: string | null): Figure {
-  if (p.anonymous) return { key: `anon:${service}:${p.anonId}`, kind: 'anonymous', place, name: '匿名同学', number: null, status, tableId }
-  return { key: `s:${p.studentId}`, kind: 'student', place, name: p.aiName ?? '', number: studentNumber(p.studentId ?? 0), status, tableId }
+  if (p.anonymous) return { key: `anon:${service}:${p.anonId}`, kind: 'anonymous', place, name: '匿名同学', number: null, status, tableId, aiType: null, avatar: null }
+  return { key: `s:${p.studentId}`, kind: 'student', place, name: p.aiName ?? '', number: studentNumber(p.studentId ?? 0), status, tableId, aiType: p.aiType, avatar: p.avatar }
 }
 
 export function buildScene(cls: ClassLive | undefined, club: ClubLive | undefined): Scene {
@@ -234,7 +252,7 @@ export function buildScene(cls: ClassLive | undefined, club: ClubLive | undefine
   for (const c of classrooms) {
     const where = className(c)
     const step = stepText(c.step, c.kind)
-    figures.push({ key: `teacher:${c.division}:${c.slot}:${c.classNo}`, kind: 'teacher', place: c.division, name: c.teacher.name, number: null, status: `${where}的老师`, tableId: null })
+    figures.push({ key: `teacher:${c.division}:${c.slot}:${c.classNo}`, kind: 'teacher', place: c.division, name: c.teacher.name, number: null, status: `${where}的老师`, tableId: null, aiType: null, avatar: null })
     for (const p of c.students) figures.push(studentFigure(p, 'class', c.division, `在${where}上课 · ${step}`, null))
   }
   const tables = club?.tables ?? []
@@ -244,7 +262,7 @@ export function buildScene(cls: ClassLive | undefined, club: ClubLive | undefine
       const game = t.playing ? `在打第 ${t.gamesPlayed + 1} 局` : '等开局'
       t.seats.forEach((s, i) => {
         if (s.kind === 'student') figures.push(studentFigure(s.person, 'club', 'doudizhu', s.online ? `${t.table} 号桌 · ${game}` : `${t.table} 号桌 · 暂时离开`, t.tableId))
-        else if (s.kind === 'bot') figures.push({ key: `bot:${t.tableId}:${i}`, kind: 'sparring', place: 'doudizhu', name: s.name, number: null, status: `${t.table} 号桌的陪练 · ${game}`, tableId: t.tableId })
+        else if (s.kind === 'bot') figures.push({ key: `bot:${t.tableId}:${i}`, kind: 'sparring', place: 'doudizhu', name: s.name, number: null, status: `${t.table} 号桌的陪练 · ${game}`, tableId: t.tableId, aiType: null, avatar: null })
       })
       for (const p of t.waiting) figures.push(studentFigure(p, 'club', 'doudizhu', `${t.table} 号桌 · 等座位`, t.tableId))
       for (const p of t.spectators) figures.push(studentFigure(p, 'club', 'doudizhu', `${t.table} 号桌 · 在旁边看`, t.tableId))

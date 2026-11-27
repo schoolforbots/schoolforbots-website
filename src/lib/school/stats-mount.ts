@@ -3,6 +3,7 @@
 // GET /v1/school-calendar). Each number sits in a [data-stat="..."] element;
 // a block shows the ones it has room for. Read once when the page opens and
 // again every few minutes while it stays open.
+import manifest from '../../data/school-assets.json'
 import { site } from '../../config/site'
 import { fetchJson } from '../status/fetch-json'
 import { parseCalendar } from '../status/parse'
@@ -42,6 +43,30 @@ export function renderStats(root: HTMLElement, r: StatsReading): void {
   for (const el of root.querySelectorAll<HTMLElement>('[data-stat]')) {
     const text = texts[el.dataset.stat ?? '']
     el.textContent = text ?? '—'
+  }
+  // Students by robot type: one row for each type with anyone, named as in the assets manifest.
+  const labels = manifest.aiTypes as Record<string, { label: string }>
+  for (const list of root.querySelectorAll<HTMLElement>('[data-stat-ai-types]')) {
+    const rows = (r.stats?.aiTypes ?? []).filter((t) => t.students > 0)
+    if (!rows.length) {
+      const empty = document.createElement('div')
+      const dt = document.createElement('dt')
+      dt.textContent = '—'
+      empty.append(dt)
+      list.replaceChildren(empty)
+      continue
+    }
+    list.replaceChildren(
+      ...rows.map((t) => {
+        const row = document.createElement('div')
+        const dt = document.createElement('dt')
+        dt.textContent = labels[t.aiType]?.label ?? labels[manifest.fallbackAiType]?.label ?? t.aiType
+        const dd = document.createElement('dd')
+        dd.textContent = number(t.students)
+        row.append(dt, dd)
+        return row
+      }),
+    )
   }
   // The day of school has its own wording before the opening day.
   for (const el of root.querySelectorAll<HTMLElement>('[data-stat-day-label]')) {

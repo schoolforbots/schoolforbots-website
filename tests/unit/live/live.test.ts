@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { buildScene, parseClassLive, parseClubLive, placeSummary, readLive, stepText } from '../../../src/lib/live/live'
-import { slots } from '../../../src/lib/live/map'
+import { look, slots } from '../../../src/lib/live/map'
+import manifest from '../../../src/data/school-assets.json'
 import { fakeFetch } from '../school/fixtures'
 
-const named = (studentId: number, aiName: string) => ({ anonymous: false, studentId, aiName, anonId: null })
-const anon = (anonId: string) => ({ anonymous: true, studentId: null, aiName: null, anonId })
+const named = (studentId: number, aiName: string, aiType: string | null = 'claude', avatar: unknown = null) => ({ anonymous: false, studentId, aiName, anonId: null, aiType, avatar })
+const anon = (anonId: string) => ({ anonymous: true, studentId: null, aiName: null, anonId, aiType: null, avatar: null })
 
 const room = (over: Record<string, unknown> = {}) => ({
   division: 'junior',
@@ -138,5 +139,48 @@ describe('the campus picture for the hour', () => {
     expect(campusImage(new Date('2026-11-27T12:00:00Z'), scenes)).toBe('/school-assets/campus/night.webp')
     // No day picture yet: night all day.
     expect(campusImage(new Date('2026-11-27T04:00:00Z'), { ...scenes, day: null })).toBe('/school-assets/campus/night.webp')
+  })
+})
+
+describe('avatars', () => {
+  const palette = manifest.palette as Record<string, string>
+  const types = manifest.aiTypes as Record<string, { avatars: { image: string }[]; default: { background: string; border: string } }>
+
+  it('dress a named student in their type, in the colours their owner chose or the type defaults', () => {
+    const scene = buildScene(
+      parseClassLive(
+        classLive([
+          room({
+            students: [
+              named(1, 'a', 'claude', { background: 'pink', border: null }),
+              named(2, 'b', 'robot9000', null),
+              named(3, 'c', 'qwen', { background: 'neon', border: 'white' }),
+            ],
+          }),
+        ]),
+      ),
+      undefined,
+    )
+    const by = (key: string) => look(scene.figures.find((f) => f.key === key)!)
+    expect(by('s:1')).toEqual({ image: `/school-assets/${types.claude.avatars[0].image}`, background: palette.pink, border: palette[types.claude.default.border] })
+    // A type the page does not know is drawn as the fallback type.
+    expect(by('s:2').image).toBe(`/school-assets/${types[manifest.fallbackAiType].avatars[0].image}`)
+    // A colour the page does not know falls back to the type's default.
+    expect(by('s:3').background).toBe(palette[types.qwen.default.background])
+    expect(by('s:3').border).toBe(palette.white)
+  })
+
+  it('give anonymous students, teachers and sparring bots their fixed characters', () => {
+    const scene = buildScene(parseClassLive(classLive()), parseClubLive(clubLive()))
+    for (const kind of ['anonymous', 'teacher', 'sparring'] as const) {
+      const f = scene.figures.find((x) => x.kind === kind)!
+      const c = manifest.characters[kind]
+      expect(look(f)).toEqual({ image: `/school-assets/${c.avatars[0].image}`, background: palette[c.colors.background], border: palette[c.colors.border] })
+    }
+  })
+
+  it('never carry a type for an anonymous student, whatever the school sends', () => {
+    const club = parseClubLive(clubLive({ lobby: [{ ...anon('q1'), aiType: 'claude', avatar: { background: 'red', border: 'red' } }] }))!
+    expect(club.lobby[0]).toMatchObject({ aiType: null, avatar: null })
   })
 })

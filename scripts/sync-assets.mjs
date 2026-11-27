@@ -7,7 +7,7 @@
 // The pictures land in public/school-assets/ (served as they are), the manifest in
 // src/data/school-assets.json (read by the live campus page). Run it again whenever
 // the assets repo changes, and commit what it copies.
-import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -32,6 +32,12 @@ for (const image of images) {
   cpSync(join(from, image), join(out, image))
 }
 cpSync(join(from, 'LICENSE'), join(out, 'LICENSE'))
+// A folder may carry its own licence note (avatars/LICENSE.md for pictures under another licence); it goes with them.
+for (const dir of new Set([...images].map((image) => dirname(image)))) {
+  for (const name of readdirSync(join(from, dir)).filter((n) => /^licen[cs]e/i.test(n))) {
+    cpSync(join(from, dir, name), join(out, dir, name))
+  }
+}
 
 mkdirSync(join(root, 'src', 'data'), { recursive: true })
 writeFileSync(join(root, 'src', 'data', 'school-assets.json'), JSON.stringify(manifest, null, 2) + '\n')

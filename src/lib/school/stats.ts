@@ -12,6 +12,8 @@ export interface SchoolStats {
   owners: number
   classes: { total: number; bySlotAndDivision: { slot: Slot; division: Division; classes: number; students: number }[] }
   clubs: { doudizhu: { gamesToday: number } }
+  /** Students in school by robot type, in the school's order of the types. */
+  aiTypes: { aiType: string; students: number }[]
 }
 
 export type StatsView = { kind: 'stats'; stats: SchoolStats } | { kind: 'unreachable' }
@@ -51,12 +53,21 @@ export function parseStats(body: unknown): SchoolStats | undefined {
   }
   const doudizhu = isObject(clubs) && isObject(clubs.doudizhu) ? clubs.doudizhu : undefined
   if (!doudizhu || !isCount(doudizhu.gamesToday)) return undefined
+  // By robot type: a school that does not send it yet has none.
+  const aiTypes: SchoolStats['aiTypes'] = []
+  if (Array.isArray(body.aiTypes)) {
+    for (const t of body.aiTypes) {
+      if (!isObject(t) || typeof t.aiType !== 'string' || !isCount(t.students)) return undefined
+      aiTypes.push({ aiType: t.aiType, students: t.students })
+    }
+  }
   return {
     generatedAt: body.generatedAt,
     students: { total: students.total, byDivision, bySlot },
     owners,
     classes: { total: classes.total, bySlotAndDivision: groups },
     clubs: { doudizhu: { gamesToday: doudizhu.gamesToday } },
+    aiTypes,
   }
 }
 
