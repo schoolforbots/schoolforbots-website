@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import manifest from '../../../src/data/school-assets.json'
 import { buildScene, parseClassLive, parseClubLive } from '../../../src/lib/live/live'
-import { classroomSeats, depth, focusPoint, hashOf, HALL_TABLES, layoutFor, panelFor, parseHash, pictureFor, type View } from '../../../src/lib/live/rooms'
+import { classroomSeats, depth, focusPoint, hashOf, HALL_TABLES, layoutFor, panelFor, parseHash, pictureFor, roomTitle, type View } from '../../../src/lib/live/rooms'
 
 const named = (studentId: number, aiName = `机器人${studentId}`) => ({ anonymous: false, studentId, aiName, anonId: null, aiType: 'claude', avatar: null })
 const anon = (anonId: string) => ({ anonymous: true, studentId: null, aiName: null, anonId, aiType: null, avatar: null })
@@ -48,7 +48,8 @@ describe('the views in the address', () => {
       { kind: 'campus' },
       { kind: 'building', division: 'junior', room: null },
       { kind: 'building', division: 'senior', room: 'senior-evening-2' },
-      { kind: 'hall' },
+      { kind: 'hall', page: 1 },
+      { kind: 'hall', page: 3 },
       { kind: 'table', tableId: 'Ab3_x' },
     ]
     for (const v of views) expect(parseHash(hashOf(v))).toEqual(v)
@@ -92,7 +93,7 @@ describe('inside a classroom', () => {
 describe('in the club', () => {
   it('seats each player in their seat of the hall, the onlookers beside, a label over each table', () => {
     const s = scene([], [table(1), table(2)])
-    const layout = layoutFor(s, { kind: 'hall' }, NOON)
+    const layout = layoutFor(s, { kind: 'hall', page: 1 }, NOON)
     const spot = manifest.rooms.clubHall.tables[0]
     expect(layout.placed.find((p) => p.figure.key === 's:103')?.at).toEqual(spot.seats[0])
     expect(layout.placed.find((p) => p.figure.kind === 'sparring')?.at).toEqual(spot.seats[1])
@@ -108,14 +109,28 @@ describe('in the club', () => {
     ])
   })
 
-  it('draws as many tables as the hall has, and the panel lists them all', () => {
-    const tables = Array.from({ length: HALL_TABLES + 2 }, (_, i) => table(i + 1))
+  it('draws six tables a page, the panel listing that page and turning the pages', () => {
+    const tables = Array.from({ length: HALL_TABLES * 2 + 1 }, (_, i) => table(i + 1))
     const s = scene([], tables)
-    const layout = layoutFor(s, { kind: 'hall' }, NOON)
-    expect(layout.marks).toHaveLength(HALL_TABLES)
-    const panel = panelFor(s, layout)
-    expect(panel.here?.links).toHaveLength(HALL_TABLES + 2)
-    expect(panel.info.join('')).toContain('还有 2 桌')
+    const first = layoutFor(s, { kind: 'hall', page: 1 }, NOON)
+    expect(first.marks.map((m) => m.name)).toEqual(Array.from({ length: HALL_TABLES }, (_, i) => `${i + 1} 号桌`))
+    const p1 = panelFor(s, first)
+    expect(p1.here?.links).toHaveLength(HALL_TABLES)
+    expect(p1.here?.count).toBe(`共 ${HALL_TABLES * 2 + 1} 张 · 第 1/3 页`)
+    expect(p1.pager).toEqual({ page: 1, pages: 3, prev: null, next: '#club/page/2' })
+    // The last page has the one table left; a page past the end shows the last.
+    const last = layoutFor(s, { kind: 'hall', page: 9 }, NOON)
+    expect(last.view).toEqual({ kind: 'hall', page: 3 })
+    expect(last.marks.map((m) => m.name)).toEqual([`${HALL_TABLES * 2 + 1} 号桌`])
+    expect(panelFor(s, last).pager).toEqual({ page: 3, pages: 3, prev: '#club/page/2', next: null })
+    // Up close, the panel shows the table's page, and the way back is to it.
+    const id = `t${HALL_TABLES + 2}`
+    const close = panelFor(s, layoutFor(s, { kind: 'table', tableId: id }, NOON))
+    expect(close.back?.href).toBe('#club/page/2')
+    expect(close.here?.links.find((l) => l.current)?.href).toBe(`#club/${id}`)
+    // The zoom goes towards the table only from the page it is on.
+    expect(focusPoint({ kind: 'hall', page: 2 }, { kind: 'table', tableId: id }, s)).toEqual(manifest.rooms.clubHall.tables[1].center)
+    expect(focusPoint({ kind: 'hall', page: 1 }, { kind: 'table', tableId: id }, s)).toEqual([0.5, 0.5])
   })
 
   it('shows a table up close, its seats in play throwing to the pile; a table that is gone falls back to the hall', () => {
@@ -124,7 +139,19 @@ describe('in the club', () => {
     expect(close.placed.find((p) => p.figure.key === 's:103')?.at).toEqual(manifest.rooms.clubTable.seats[0])
     expect(close.pile).toEqual(manifest.rooms.clubTable.pile)
     expect(close.playing).toHaveLength(2)
-    expect(layoutFor(s, { kind: 'table', tableId: 'gone' }, NOON).view).toEqual({ kind: 'hall' })
+    expect(layoutFor(s, { kind: 'table', tableId: 'gone' }, NOON).view).toEqual({ kind: 'hall', page: 1 })
+  })
+})
+
+describe('the title over a room', () => {
+  it('names the class, the page of the hall and the table, and nothing on the campus', () => {
+    const s = scene([room(2, [named(1)])], Array.from({ length: HALL_TABLES + 1 }, (_, i) => table(i + 1)))
+    const title = (v: View) => roomTitle(s, layoutFor(s, v, NOON))
+    expect(title({ kind: 'building', division: 'junior', room: null })).toBe('初中部·晚班·2 班')
+    expect(title({ kind: 'building', division: 'primary', room: null })).toBe('小学部 · 现在没有课')
+    expect(title({ kind: 'hall', page: 2 })).toBe('社团活动中心 · 第 2/2 页')
+    expect(title({ kind: 'table', tableId: 't3' })).toBe('斗地主社 · 3 号桌')
+    expect(title({ kind: 'campus' })).toBeNull()
   })
 })
 
@@ -157,7 +184,7 @@ describe('the panel', () => {
 
   it('says when the club is closed', () => {
     const s = scene([], [], false)
-    const panel = panelFor(s, layoutFor(s, { kind: 'hall' }, NOON))
+    const panel = panelFor(s, layoutFor(s, { kind: 'hall', page: 1 }, NOON))
     expect(panel.info).toEqual(['斗地主社在上课的时段关门，下课以后再开。'])
     expect(panel.places.find((p) => p.name === '社团活动中心')?.tag).toBe('关门')
   })
@@ -175,14 +202,14 @@ describe('pictures for the hour', () => {
 
 describe('going in and out', () => {
   it('knows how deep each view is', () => {
-    expect([{ kind: 'campus' }, { kind: 'building', division: 'junior', room: null }, { kind: 'hall' }, { kind: 'table', tableId: 'x' }].map((v) => depth(v as View))).toEqual([0, 1, 1, 2])
+    expect([{ kind: 'campus' }, { kind: 'building', division: 'junior', room: null }, { kind: 'hall', page: 1 }, { kind: 'table', tableId: 'x' }].map((v) => depth(v as View))).toEqual([0, 1, 1, 2])
   })
 
   it('zooms towards the building on the campus, and towards the table in the hall', () => {
     const s = scene([], [table(1), table(2)])
     const area = manifest.campus.locations.junior.area as number[]
     expect(focusPoint({ kind: 'campus' }, { kind: 'building', division: 'junior', room: null }, s)).toEqual([area[0] + area[2] / 2, area[1] + area[3] / 2])
-    expect(focusPoint({ kind: 'hall' }, { kind: 'table', tableId: 't2' }, s)).toEqual(manifest.rooms.clubHall.tables[1].center)
-    expect(focusPoint({ kind: 'hall' }, { kind: 'table', tableId: 'gone' }, s)).toEqual([0.5, 0.5])
+    expect(focusPoint({ kind: 'hall', page: 1 }, { kind: 'table', tableId: 't2' }, s)).toEqual(manifest.rooms.clubHall.tables[1].center)
+    expect(focusPoint({ kind: 'hall', page: 1 }, { kind: 'table', tableId: 'gone' }, s)).toEqual([0.5, 0.5])
   })
 })

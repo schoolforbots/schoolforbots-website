@@ -181,6 +181,12 @@ function clubLive() {
     { tableId: 'tQ2m', table: 2, playing: t % 4 !== 0, gamesPlayed: 1 + (Math.floor(t / 30) % 7), seats: [seat(free[5], 0), bot(1, '一号'), bot(2, '二号')], waiting: [], spectators: [] },
     { tableId: 'tZ7k', table: 3, playing: false, gamesPlayed: 0, seats: [seat(free[6], 0), { seat: 1, player: null, online: false }, { seat: 2, player: null, online: false }], waiting: [], spectators: [] },
   ]
+  // MOCK_TABLES=20: more tables than the hall shows at once, to page through.
+  const more = Number(process.env.MOCK_TABLES ?? 0)
+  for (let n = tables.length + 1; n <= more; n++) {
+    const p = (k) => pool[(n * 3 + k) % pool.length]
+    tables.push({ tableId: `tx${n}`, table: n, playing: n % 3 !== 0, gamesPlayed: n % 5, seats: [seat(p(0), 0), seat(p(1), 1), bot(2, '三号')], waiting: [], spectators: n % 2 ? [person(p(2))] : [] })
+  }
   return { generatedAt: iso(now), open: true, lobby: free.slice(7).map(person), tables }
 }
 
