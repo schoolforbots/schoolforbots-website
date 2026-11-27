@@ -25,7 +25,7 @@ const { width, height } = manifest.campus
 
   <section id="panel-map" role="tabpanel" aria-labelledby="tab-map" class="panel">
     <div class="map" data-live-map style={`aspect-ratio: ${width} / ${height}`}>
-      <img class="scene" src={`/school-assets/${scene.image}`} width={width} height={height} alt="学校的鸟瞰图：三个学部的教学楼、斗地主社、广场和校门" />
+      <img class="scene" data-campus-scene src={`/school-assets/${scene.image}`} width={width} height={height} alt="学校的鸟瞰图：三个学部的教学楼、斗地主社、广场和校门" />
       <div class="labels" data-live-labels></div>
       <div class="figures" data-live-figures></div>
       <p class="empty" data-live-empty hidden>现在校园里没有人。上课时间和社团开门的时候再来看看。</p>
@@ -53,6 +53,8 @@ const { width, height } = manifest.campus
 
 <script>
   import { mountLivePage } from '../../lib/live/live-mount'
+  import { mountCampusScenes } from '../../lib/live/scene'
+  mountCampusScenes()
   mountLivePage()
 </script>
 

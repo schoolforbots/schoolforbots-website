@@ -124,3 +124,19 @@ describe('laying avatars out', () => {
     expect(slots(area, 0, 1.6)).toEqual([])
   })
 })
+
+describe('the campus picture for the hour', () => {
+  it('runs a scene past midnight and falls back to night', async () => {
+    const { inHours, campusImage } = await import('../../../src/lib/live/scene')
+    expect(inHours('18:00-06:00', 23 * 60)).toBe(true)
+    expect(inHours('18:00-06:00', 5 * 60 + 59)).toBe(true)
+    expect(inHours('18:00-06:00', 6 * 60)).toBe(false)
+    expect(inHours('06:00-18:00', 12 * 60)).toBe(true)
+    const scenes = { night: { image: 'campus/night.webp', hours: '18:00-06:00' }, day: { image: 'campus/day.webp', hours: '06:00-18:00' } }
+    // 12:00 and 20:00 in Beijing.
+    expect(campusImage(new Date('2026-11-27T04:00:00Z'), scenes)).toBe('/school-assets/campus/day.webp')
+    expect(campusImage(new Date('2026-11-27T12:00:00Z'), scenes)).toBe('/school-assets/campus/night.webp')
+    // No day picture yet: night all day.
+    expect(campusImage(new Date('2026-11-27T04:00:00Z'), { ...scenes, day: null })).toBe('/school-assets/campus/night.webp')
+  })
+})
