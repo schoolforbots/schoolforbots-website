@@ -27,9 +27,9 @@ const table = (over: Record<string, unknown> = {}) => ({
   playing: true,
   gamesPlayed: 3,
   seats: [
-    { seat: 0, person: named(19, '豆豆'), online: true },
-    { seat: 1, person: { bot: true, name: '陪练一号' }, online: true },
-    { seat: 2, person: null, online: false },
+    { seat: 0, player: { bot: false, person: named(19, '豆豆') }, online: true },
+    { seat: 1, player: { bot: true, name: '陪练一号' }, online: true },
+    { seat: 2, player: null, online: false },
   ],
   waiting: [],
   spectators: [anon('zz1')],
@@ -58,6 +58,8 @@ describe('the live snapshots', () => {
     expect(club.tables[0].seats.map((s) => s.kind)).toEqual(['student', 'bot', 'empty'])
     expect(parseClubLive(clubLive({ tables: [table({ tableId: 4 })] }))).toBeUndefined()
     expect(parseClubLive(clubLive({ open: 'yes' }))).toBeUndefined()
+    // A student's seat says bot: false and carries the person.
+    expect(parseClubLive(clubLive({ tables: [table({ seats: [{ seat: 0, player: named(1, 'x'), online: true }] })] }))).toBeUndefined()
   })
 
   it('puts everyone where they are, anonymous students without a number', () => {
@@ -92,6 +94,8 @@ describe('the live snapshots', () => {
     expect(stepText({ name: 'doors', segment: null, segments: null }, 'lesson')).toBe('等上课')
     expect(stepText({ name: 'call_on', segment: null, segments: null }, 'lesson')).toBe('点名回答')
     expect(stepText({ name: 'segment', segment: 1, segments: 3 }, 'study')).toBe('自习')
+    expect(stepText({ name: 'segment', segment: 2, segments: 4 }, 'lesson')).toBe('讲第 2/4 段')
+    expect(stepText({ name: 'segment', segment: 0, segments: 0 }, 'study')).toBe('自习')
   })
 
   it('shows what one service says when the other does not answer', async () => {

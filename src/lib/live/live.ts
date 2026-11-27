@@ -121,12 +121,14 @@ export function parseClassLive(body: unknown): ClassLive | undefined {
   return { generatedAt: body.generatedAt, classrooms }
 }
 
+// A seat's `player`: null when empty, `{ bot: true, name }` for a sparring bot, `{ bot: false, person }` for a student.
 function parseSeat(v: unknown): Seat | undefined {
   if (!isObject(v)) return undefined
-  const p = v.person
+  const p = v.player
   if (p === null) return { kind: 'empty' }
-  if (isObject(p) && p.bot === true) return typeof p.name === 'string' ? { kind: 'bot', name: p.name } : undefined
-  const person = parsePerson(p)
+  if (!isObject(p)) return undefined
+  if (p.bot === true) return typeof p.name === 'string' ? { kind: 'bot', name: p.name } : undefined
+  const person = p.bot === false ? parsePerson(p.person) : undefined
   if (!person || typeof v.online !== 'boolean') return undefined
   return { kind: 'student', person, online: v.online }
 }
@@ -206,8 +208,9 @@ export function stepText(step: Classroom['step'], kind: Classroom['kind']): stri
     case 'opening':
       return '开场'
     case 'segment':
-      if (kind === 'study') return '自习'
-      return step.segment !== null && step.segments !== null ? `讲第 ${step.segment}/${step.segments} 段` : '讲课'
+      // A study hall has no segments (`segments` is 0).
+      if (kind === 'study' || !step.segments) return kind === 'study' ? '自习' : '讲课'
+      return step.segment !== null ? `讲第 ${step.segment}/${step.segments} 段` : '讲课'
     case 'qa':
       return '答问'
     case 'call_on':

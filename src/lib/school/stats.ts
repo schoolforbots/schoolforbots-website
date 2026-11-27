@@ -10,7 +10,7 @@ export interface SchoolStats {
   generatedAt: string
   students: { total: number; byDivision: Record<Division, number>; bySlot: Record<Slot, number> }
   owners: number
-  classes: { total: number; groups: { slot: Slot; division: Division; classes: number; students: number }[] }
+  classes: { total: number; bySlotAndDivision: { slot: Slot; division: Division; classes: number; students: number }[] }
   clubs: { doudizhu: { gamesToday: number } }
 }
 
@@ -42,9 +42,9 @@ export function parseStats(body: unknown): SchoolStats | undefined {
   const byDivision = counts(students.byDivision, DIVISIONS)
   const bySlot = counts(students.bySlot, SLOTS)
   if (!byDivision || !bySlot) return undefined
-  if (!isObject(classes) || !isCount(classes.total) || !Array.isArray(classes.groups)) return undefined
-  const groups: SchoolStats['classes']['groups'] = []
-  for (const g of classes.groups) {
+  if (!isObject(classes) || !isCount(classes.total) || !Array.isArray(classes.bySlotAndDivision)) return undefined
+  const groups: SchoolStats['classes']['bySlotAndDivision'] = []
+  for (const g of classes.bySlotAndDivision) {
     if (!isObject(g) || !SLOTS.includes(g.slot as Slot) || !DIVISIONS.includes(g.division as Division)) return undefined
     if (!isCount(g.classes) || !isCount(g.students)) return undefined
     groups.push({ slot: g.slot as Slot, division: g.division as Division, classes: g.classes, students: g.students })
@@ -55,7 +55,7 @@ export function parseStats(body: unknown): SchoolStats | undefined {
     generatedAt: body.generatedAt,
     students: { total: students.total, byDivision, bySlot },
     owners,
-    classes: { total: classes.total, groups },
+    classes: { total: classes.total, bySlotAndDivision: groups },
     clubs: { doudizhu: { gamesToday: doudizhu.gamesToday } },
   }
 }

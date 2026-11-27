@@ -112,7 +112,7 @@ const stats = () => ({
   owners: 71,
   classes: {
     total: 9,
-    groups: [
+    bySlotAndDivision: [
       { slot: 'morning', division: 'junior', classes: 1, students: 18 },
       { slot: 'afternoon', division: 'primary', classes: 1, students: 12 },
       { slot: 'afternoon', division: 'junior', classes: 1, students: 13 },
@@ -140,7 +140,7 @@ function classLive() {
   const lessons = state === 'live' || state === 'campus'
   if (!lessons) return { generatedAt: iso(Date.now()), classrooms: [] }
   const now = Date.now()
-  const steps = [{ name: 'opening' }, { name: 'segment', segment: 1, segments: 4 }, { name: 'segment', segment: 2, segments: 4 }, { name: 'qa' }, { name: 'call_on' }]
+  const steps = [{ name: 'opening', segment: null, segments: 4 }, { name: 'segment', segment: 1, segments: 4 }, { name: 'call_on', segment: 1, segments: 4 }, { name: 'segment', segment: 2, segments: 4 }, { name: 'qa', segment: 2, segments: 4 }]
   const step = (i) => ({ segment: null, segments: null, ...steps[(Math.floor(tick() / 6) + i) % steps.length] })
   const room = (division, classNo, title, from, to, i) => ({
     division, slot: 'afternoon', classNo, teacher: { name: `${['王', '李', '陈'][i % 3]}老师` }, kind: 'lesson', title,
@@ -160,12 +160,12 @@ function clubLive() {
   if (state === 'live') return { generatedAt: iso(now), open: false, lobby: [], tables: [] }
   const t = tick()
   const free = state === 'campus' ? pool.slice(18) : shuffled(t).slice(0, 20)
-  const seat = (s, i) => ({ seat: i, person: person(s), online: true })
-  const bot = (i, n) => ({ seat: i, person: { bot: true, name: `陪练${n}` }, online: true })
+  const seat = (s, i) => ({ seat: i, player: { bot: false, person: person(s) }, online: true })
+  const bot = (i, n) => ({ seat: i, player: { bot: true, name: `陪练${n}` }, online: true })
   const tables = [
     { tableId: 'tA9x', table: 1, playing: true, gamesPlayed: 3 + Math.floor(t / 24), seats: [seat(free[0], 0), seat(free[1], 1), seat(free[2], 2)], waiting: [], spectators: [person(free[3]), person(free[4])] },
     { tableId: 'tQ2m', table: 2, playing: t % 4 !== 0, gamesPlayed: 1 + Math.floor(t / 30), seats: [seat(free[5], 0), bot(1, '一号'), bot(2, '二号')], waiting: [], spectators: [] },
-    { tableId: 'tZ7k', table: 3, playing: false, gamesPlayed: 0, seats: [seat(free[6], 0), { seat: 1, person: null, online: false }, { seat: 2, person: null, online: false }], waiting: [], spectators: [] },
+    { tableId: 'tZ7k', table: 3, playing: false, gamesPlayed: 0, seats: [seat(free[6], 0), { seat: 1, player: null, online: false }, { seat: 2, player: null, online: false }], waiting: [], spectators: [] },
   ]
   return { generatedAt: iso(now), open: true, lobby: free.slice(7).map(person), tables }
 }

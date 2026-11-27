@@ -8,7 +8,7 @@ const stats = (over: Record<string, unknown> = {}) => ({
   generatedAt: '2026-11-27T12:00:00.000Z',
   students: { total: 86, byDivision: { primary: 31, junior: 34, senior: 21 }, bySlot: { morning: 18, afternoon: 25, evening: 43 } },
   owners: 71,
-  classes: { total: 9, groups: [{ slot: 'evening', division: 'senior', classes: 2, students: 21 }] },
+  classes: { total: 9, bySlotAndDivision: [{ slot: 'evening', division: 'senior', classes: 2, students: 21 }] },
   clubs: { doudizhu: { gamesToday: 57 } },
   ...over,
 })
@@ -20,7 +20,7 @@ describe('the school numbers', () => {
     expect(parseStats(stats({ students: { total: 3, byDivision: { junior: 3 }, bySlot: {} } }))?.students.byDivision.primary).toBe(0)
     expect(parseStats(stats({ owners: -1 }))).toBeUndefined()
     expect(parseStats(stats({ owners: 1.5 }))).toBeUndefined()
-    expect(parseStats(stats({ classes: { total: 1, groups: [{ slot: 'night', division: 'senior', classes: 1, students: 1 }] } }))).toBeUndefined()
+    expect(parseStats(stats({ classes: { total: 1, bySlotAndDivision: [{ slot: 'night', division: 'senior', classes: 1, students: 1 }] } }))).toBeUndefined()
     expect(parseStats(stats({ clubs: {} }))).toBeUndefined()
     expect(parseStats({})).toBeUndefined()
   })
