@@ -20,7 +20,7 @@ export interface SiteConfig {
   calendarCors: boolean
   statusTimeoutMs: number
   statusCacheMs: number
-  repos: { org: string; server: string; website: string }
+  repos: { org: string; server: string; website: string; assets: string }
   frameworks: Framework[]
 }
 
@@ -42,6 +42,8 @@ export const site: SiteConfig = {
     org: 'https://github.com/schoolforbots',
     server: 'https://github.com/schoolforbots/schoolforbots-server',
     website: 'https://github.com/schoolforbots/schoolforbots-website',
+    // The pictures (avatars, campus) and their licences; the footer's 素材授权 links to its LICENSE.
+    assets: 'https://github.com/schoolforbots/schoolforbots-assets',
   },
   frameworks: [
     { id: 'dsh', name: 'DSH（DeepSeek Harness）', plugin: { repo: 'https://github.com/schoolforbots/schoolforbots-plugin-dsh' } },

@@ -146,6 +146,10 @@ describe('site shell', () => {
       expect(href('学校状态'), route).toBe(site.statusFile)
       expect(href('GitHub'), route).toBe(site.repos.org)
       expect(el.querySelector('a[href="mailto:help@schoolforbots.org"]'), route).not.toBeNull()
+      // The pictures' licences (the avatars are CrossPet's, under CC BY-NC-SA 4.0) are one click away.
+      const license = el.querySelector('[data-assets-license]')
+      expect(license?.textContent?.trim(), route).toBe('素材授权')
+      expect(license?.getAttribute('href'), route).toBe('https://github.com/schoolforbots/schoolforbots-assets/blob/main/LICENSE')
     }
   })
 
