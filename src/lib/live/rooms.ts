@@ -5,12 +5,13 @@
 //   buildings, the club centre, the plaza);
 // - a classroom: one class, the teacher at the lectern and the students in the
 //   seats, by student number from the front rows back (anonymous students after);
-// - the club hall: up to six tables, each player in their seat, the ones waiting
-//   and watching beside the table;
+// - the club hall: six tables at a time (more are paged through), each player in
+//   their seat, the ones waiting and watching beside the table;
 // - one table up close: its three seats, the pile in the middle, the onlookers.
 //
 // The views are named in the page's address (#junior/junior-evening-2, #club,
-// #club/<tableId>), so a view can be shared and the browser's back button leaves it.
+// #club/page/2, #club/<tableId>), so a view can be shared and the browser's back
+// button leaves it.
 import manifest from '../../data/school-assets.json'
 import type { Division } from '../school/next-school-day'
 import { inHours } from './scene'
@@ -23,16 +24,20 @@ export type View =
   | { kind: 'campus' }
   /** A division's building: one of its classes, or the first one when `room` is null or gone. */
   | { kind: 'building'; division: Division; room: string | null }
-  | { kind: 'hall' }
+  /** The club hall, its tables `page` at a time (1 is the first six). */
+  | { kind: 'hall'; page: number }
   | { kind: 'table'; tableId: string }
 
 const DIVISIONS: readonly Division[] = ['primary', 'junior', 'senior']
 
 /** The view an address names; anything it does not name is the campus. */
 export function parseHash(hash: string): View {
-  const [where, which] = decodeURIComponent(hash.replace(/^#\/?/, '')).split('/')
+  const [where, which, page] = decodeURIComponent(hash.replace(/^#\/?/, '')).split('/')
   if ((DIVISIONS as readonly string[]).includes(where)) return { kind: 'building', division: where as Division, room: which || null }
-  if (where === 'club') return which ? { kind: 'table', tableId: which } : { kind: 'hall' }
+  if (where === 'club') {
+    if (which === 'page') return { kind: 'hall', page: Math.max(1, Number.parseInt(page ?? '1', 10) || 1) }
+    return which ? { kind: 'table', tableId: which } : { kind: 'hall', page: 1 }
+  }
   return { kind: 'campus' }
 }
 
@@ -43,7 +48,7 @@ export function hashOf(view: View): string {
     case 'building':
       return view.room ? `#${view.division}/${view.room}` : `#${view.division}`
     case 'hall':
-      return '#club'
+      return view.page > 1 ? `#club/page/${view.page}` : '#club'
     case 'table':
       return `#club/${encodeURIComponent(view.tableId)}`
   }
@@ -224,15 +229,29 @@ const tablesInOrder = (scene: Scene) => [...scene.tables].sort((a, b) => a.table
 
 export const HALL_TABLES = rooms.clubHall.tables.length
 
+/** How many pages of tables the hall has (one even when there are none). */
+export const hallPages = (scene: Scene) => Math.max(1, Math.ceil(scene.tables.length / HALL_TABLES))
+
+/** The page of the hall a table is on; 1 for a table that is gone. */
+export function pageOf(scene: Scene, tableId: string): number {
+  const i = tablesInOrder(scene).findIndex((t) => t.tableId === tableId)
+  return i < 0 ? 1 : Math.floor(i / HALL_TABLES) + 1
+}
+
+/** The tables on a page of the hall, the page kept within the pages there are. */
+function onPage(scene: Scene, page: number): { page: number; tables: Table[] } {
+  const p = Math.min(Math.max(1, page), hallPages(scene))
+  return { page: p, tables: tablesInOrder(scene).slice((p - 1) * HALL_TABLES, p * HALL_TABLES) }
+}
+
 export function tableTag(t: Table): string {
   return t.playing ? `第 ${t.gamesPlayed + 1} 局` : '等开局'
 }
 
-export function layoutHall(scene: Scene, now: Date): Layout {
-  const layout = empty({ kind: 'hall' }, pictureFor(rooms.clubHall, now))
-  tablesInOrder(scene)
-    .slice(0, HALL_TABLES)
-    .forEach((t, i) => {
+export function layoutHall(scene: Scene, page: number, now: Date): Layout {
+  const shown = onPage(scene, page)
+  const layout = empty({ kind: 'hall', page: shown.page }, pictureFor(rooms.clubHall, now))
+  shown.tables.forEach((t, i) => {
       const spot = rooms.clubHall.tables[i]
       const here = scene.figures.filter((f) => f.tableId === t.tableId)
       for (const f of here) if (f.role === 'seated' && f.seat !== null && spot.seats[f.seat]) layout.placed.push({ figure: f, at: spot.seats[f.seat] })
@@ -274,9 +293,9 @@ export function layoutFor(scene: Scene, view: View, now: Date): Layout {
     case 'building':
       return layoutClassroom(scene, view, now)
     case 'hall':
-      return layoutHall(scene, now)
+      return layoutHall(scene, view.page, now)
     case 'table':
-      return scene.tables.some((t) => t.tableId === view.tableId) ? layoutTable(scene, view.tableId, now) : layoutHall(scene, now)
+      return scene.tables.some((t) => t.tableId === view.tableId) ? layoutTable(scene, view.tableId, now) : layoutHall(scene, 1, now)
   }
 }
 
@@ -297,8 +316,10 @@ export interface Panel {
   back: { name: string; href: string } | null
   /** Every place one can go into, with how many students are there. */
   places: PanelLink[]
-  /** What there is to see here: the division's classes, or the club's tables. */
-  here: { title: string; links: PanelLink[] } | null
+  /** What there is to see here: the division's classes, or the club's tables on this page of the hall. */
+  here: { title: string; count: string; links: PanelLink[] } | null
+  /** Turning the hall's pages, when it has more than one. */
+  pager: { page: number; pages: number; prev: string | null; next: string | null } | null
   /** A line or two about what is shown. */
   info: string[]
 }
@@ -317,7 +338,7 @@ export function panelFor(scene: Scene, layout: Layout): Panel {
       current: view.kind === 'building' && view.division === d,
     })),
     {
-      href: hashOf({ kind: 'hall' }),
+      href: hashOf({ kind: 'hall', page: 1 }),
       name: '社团活动中心',
       tag: !scene.clubReached ? '—' : scene.clubOpen === false ? '关门' : String(count(scene, 'club') || ''),
       current: view.kind === 'hall' || view.kind === 'table',
@@ -325,7 +346,7 @@ export function panelFor(scene: Scene, layout: Layout): Panel {
   ]
 
   if (view.kind === 'campus') {
-    return { trail: [campusStep], back: null, places, here: null, info: ['点一栋楼或社团活动中心，进去看看。'] }
+    return { trail: [campusStep], back: null, places, here: null, pager: null, info: ['点一栋楼或社团活动中心，进去看看。'] }
   }
 
   if (view.kind === 'building') {
@@ -335,6 +356,7 @@ export function panelFor(scene: Scene, layout: Layout): Panel {
     const here = classes.length
       ? {
           title: '这个学部正在上课的班',
+          count: `共 ${classes.length} 个`,
           links: classes.map((x) => ({
             href: hashOf({ kind: 'building', division: view.division, room: classKey(x) }),
             name: `${slotNames[x.slot]}·${x.classNo} 班`,
@@ -353,19 +375,38 @@ export function panelFor(scene: Scene, layout: Layout): Panel {
       back: { name: '全景', href: campusStep.href },
       places,
       here,
+      pager: null,
       info,
     }
   }
 
-  const hallStep = { name: '社团活动中心', href: hashOf({ kind: 'hall' }) }
+  // The hall, or a table up close: the tables of the page it is on, and the pages.
   const tables = tablesInOrder(scene)
-  const tableLinks = tables.map((t) => ({
-    href: hashOf({ kind: 'table', tableId: t.tableId }),
-    name: `${t.table} 号桌`,
-    tag: `${tableTag(t)} · ${t.spectators.length + t.waiting.length} 人观战`,
-    current: view.kind === 'table' && view.tableId === t.tableId,
-  }))
-  const here = tables.length ? { title: '牌桌', links: tableLinks } : null
+  const page = view.kind === 'hall' ? view.page : pageOf(scene, view.tableId)
+  const shown = onPage(scene, page)
+  const pages = hallPages(scene)
+  const hallStep = { name: '社团活动中心', href: hashOf({ kind: 'hall', page: shown.page }) }
+  const here = tables.length
+    ? {
+        title: '牌桌',
+        count: pages > 1 ? `共 ${tables.length} 张 · 第 ${shown.page}/${pages} 页` : `共 ${tables.length} 张`,
+        links: shown.tables.map((t) => ({
+          href: hashOf({ kind: 'table', tableId: t.tableId }),
+          name: `${t.table} 号桌`,
+          tag: `${tableTag(t)} · ${t.spectators.length + t.waiting.length} 人观战`,
+          current: view.kind === 'table' && view.tableId === t.tableId,
+        })),
+      }
+    : null
+  const pager =
+    pages > 1
+      ? {
+          page: shown.page,
+          pages,
+          prev: shown.page > 1 ? hashOf({ kind: 'hall', page: shown.page - 1 }) : null,
+          next: shown.page < pages ? hashOf({ kind: 'hall', page: shown.page + 1 }) : null,
+        }
+      : null
 
   if (view.kind === 'table') {
     const t = tables.find((x) => x.tableId === view.tableId)!
@@ -374,19 +415,40 @@ export function panelFor(scene: Scene, layout: Layout): Panel {
       back: { name: '社团活动中心', href: hallStep.href },
       places,
       here,
+      pager,
       info: [`斗地主 · ${tableTag(t)}${t.gamesPlayed ? ` · 已经打完 ${t.gamesPlayed} 局` : ''}`, `${t.spectators.length} 名在旁边看${t.waiting.length ? `，${t.waiting.length} 名等座位` : ''}`],
     }
   }
 
-  const hidden = Math.max(0, tables.length - HALL_TABLES)
   const info = !scene.clubReached
     ? ['暂时看不到社团的情况。']
     : scene.clubOpen === false
       ? ['斗地主社在上课的时段关门，下课以后再开。']
       : tables.length
-        ? [`${tables.length} 张牌桌 · ${count(scene, 'club')} 名在社团`, ...(hidden ? [`大厅里摆得下 ${HALL_TABLES} 张，还有 ${hidden} 桌在面板里看。`] : [])]
+        ? [`${tables.length} 张牌桌 · ${count(scene, 'club')} 名在社团`, ...(pages > 1 ? [`大厅一次摆 ${HALL_TABLES} 张，翻页看其余的。`] : [])]
         : ['开着门，还没有人开桌。']
-  return { trail: [campusStep, hallStep], back: { name: '全景', href: campusStep.href }, places, here, info }
+  return { trail: [campusStep, hallStep], back: { name: '全景', href: campusStep.href }, places, here, pager, info }
+}
+
+/**
+ * The title over a room, so rooms drawn on the same picture can be told apart: the class (初中部·晚班·2 班), the hall
+ * (with its page when it has several), the table. None on the campus, and none for a building with no class on.
+ */
+export function roomTitle(scene: Scene, layout: Layout): string | null {
+  const view = layout.view
+  if (view.kind === 'building') {
+    const c = classFor(scene, view)
+    return c ? className(c) : `${divisionNames[view.division]} · 现在没有课`
+  }
+  if (view.kind === 'hall') {
+    const pages = hallPages(scene)
+    return pages > 1 ? `社团活动中心 · 第 ${view.page}/${pages} 页` : '社团活动中心'
+  }
+  if (view.kind === 'table') {
+    const t = scene.tables.find((x) => x.tableId === view.tableId)
+    return t ? `斗地主社 · ${t.table} 号桌` : '斗地主社'
+  }
+  return null
 }
 
 // ---------------------------------------------------------------------------
@@ -411,7 +473,8 @@ export function focusPoint(outer: View, inner: View, scene: Scene): Point {
   }
   if (outer.kind === 'hall' && inner.kind === 'table') {
     const i = tablesInOrder(scene).findIndex((t) => t.tableId === inner.tableId)
-    const spot = rooms.clubHall.tables[i]
+    // Only a table on the page the hall shows has a spot in it.
+    const spot = i >= 0 && Math.floor(i / HALL_TABLES) + 1 === outer.page ? rooms.clubHall.tables[i % HALL_TABLES] : undefined
     return spot ? spot.center : [0.5, 0.5]
   }
   return [0.5, 0.5]

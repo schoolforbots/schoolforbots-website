@@ -14,7 +14,7 @@
 // say nothing about what the students do.
 import manifest from '../../data/school-assets.json'
 import { placeNames, placeSummary, placeTag, PLACES, type Figure, type PlaceKey, type Scene } from './live'
-import { depth, focusPoint, layoutFor, panelFor, type Layout, type Panel, type Point, type View } from './rooms'
+import { depth, focusPoint, layoutFor, panelFor, roomTitle, type Layout, type Panel, type Point, type View } from './rooms'
 
 export { capacity, slots } from './rooms'
 
@@ -84,6 +84,7 @@ const SHARP: Pose = { scale: 1, at: [0.5, 0.5], blur: 0, opacity: 1 }
 export class LiveMap {
   private readonly picture: HTMLImageElement
   private readonly stage: HTMLElement
+  private readonly title: HTMLElement
   private moving = false
   private pending = false
   private readonly labelLayer: HTMLElement
@@ -102,6 +103,11 @@ export class LiveMap {
   constructor(private readonly root: HTMLElement) {
     this.picture = root.querySelector<HTMLImageElement>('img.scene')!
     this.stage = root.querySelector<HTMLElement>('[data-live-stage]') ?? root
+    // The title over a room, at the top middle of the picture; it moves with the picture.
+    this.title = el('p', 'room-title')
+    this.title.hidden = true
+    this.title.setAttribute('aria-live', 'polite')
+    this.stage.append(this.title)
     this.labelLayer = root.querySelector<HTMLElement>('[data-live-labels]') ?? root
     this.layer = root.querySelector<HTMLElement>('[data-live-figures]') ?? root
     this.panelEl = root.closest('[data-live-frame]')?.querySelector<HTMLElement>('[data-live-panel]') ?? null
@@ -201,6 +207,9 @@ export class LiveMap {
     if (layout.view.kind === 'campus') this.campusLabels(scene)
     else this.marks(layout)
     this.place(layout)
+    const title = roomTitle(scene, layout)
+    this.title.hidden = title === null
+    this.title.textContent = title ?? ''
     this.renderPanel(panelFor(scene, layout))
     this.root.dataset.view = layout.view.kind
     this.startFidgeting()
@@ -353,21 +362,51 @@ export class LiveMap {
       } else trail.append(el('strong', undefined, step.name))
     })
 
-    const parts: Node[] = [trail]
+    // Each part in a block of its own: where and the way back; what is shown; what there is to see here (and the pages);
+    // the places to go.
+    const head = el('div', 'block where-block')
+    head.append(trail)
     if (p.back) {
-      const back = el('a', 'back', `← 回到${p.back.name}`)
+      const back = el('a', 'button back', `← 回到${p.back.name}`)
       back.href = p.back.href
-      parts.push(back)
+      head.append(back)
     }
-    parts.push(...p.info.map((line) => el('p', 'info', line)))
-    if (p.here) parts.push(this.linkList(p.here.title, p.here.links, 'here'))
-    parts.push(this.linkList('去别处', p.places, 'places'))
+    const info = el('div', 'block info-card')
+    info.append(...p.info.map((line, i) => el('p', i ? 'info more' : 'info', line)))
+    const parts: Node[] = [head, info]
+    if (p.here) {
+      const here = this.linkList(p.here.title, p.here.count, p.here.links, 'here')
+      if (p.pager) here.append(this.pager(p.pager))
+      parts.push(here)
+    }
+    parts.push(this.linkList('去别处', '', p.places, 'places'))
     body.replaceChildren(...parts)
   }
 
-  private linkList(title: string, links: Panel['places'], className: string): HTMLElement {
-    const box = el('section', `links ${className}`)
-    box.append(el('h3', undefined, title))
+  private pager(p: NonNullable<Panel['pager']>): HTMLElement {
+    const nav = el('nav', 'pager')
+    nav.setAttribute('aria-label', '翻页')
+    const step = (href: string | null, text: string, label: string) => {
+      if (!href) {
+        const off = el('span', 'button off', text)
+        off.setAttribute('aria-hidden', 'true')
+        return off
+      }
+      const a = el('a', 'button', text)
+      a.href = href
+      a.setAttribute('aria-label', label)
+      return a
+    }
+    nav.append(step(p.prev, '‹', '上一页'), el('span', 'page', `${p.page} / ${p.pages}`), step(p.next, '›', '下一页'))
+    return nav
+  }
+
+  private linkList(title: string, count: string, links: Panel['places'], className: string): HTMLElement {
+    const box = el('section', `block links ${className}`)
+    const h = el('h3')
+    h.append(el('span', undefined, title))
+    if (count) h.append(el('span', 'count', count))
+    box.append(h)
     const ul = el('ul')
     for (const l of links) {
       const li = el('li')
