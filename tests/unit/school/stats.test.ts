@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from 'vitest'
-import { parseStats, resolveStats, schoolDayNumber } from '../../../src/lib/school/stats'
+import { parseStats, resolveStats, schoolDays } from '../../../src/lib/school/stats'
 import { renderStats } from '../../../src/lib/school/stats-mount'
 import { fakeFetch } from './fixtures'
 
@@ -39,7 +39,7 @@ describe('the school numbers', () => {
   it('lists the robot types with students, each with its avatar and a bar against the largest', () => {
     const root = document.createElement('div')
     root.innerHTML = '<ul data-stat-ai-types></ul>'
-    renderStats(root, { stats: parseStats(stats())!, day: 1 })
+    renderStats(root, { stats: parseStats(stats())!, days: { kind: 'open', days: 1 } })
     const rows = [...root.querySelectorAll('[data-stat-ai-types] > li')]
     expect(rows.map((li) => [li.querySelector('.name')?.textContent, li.querySelector('.count')?.textContent])).toEqual([
       ['DeepSeek', '60'],
@@ -47,17 +47,17 @@ describe('the school numbers', () => {
     ])
     expect(rows[0].querySelector('.avatar img')?.getAttribute('src')).toMatch(/^\/school-assets\/avatars\/deepseek\./)
     expect(rows.map((li) => (li.querySelector('.bar') as HTMLElement).style.width)).toEqual(['100%', `${(26 / 60) * 100}%`])
-    renderStats(root, { stats: null, day: null })
+    renderStats(root, { stats: null, days: null })
     expect(root.querySelector('[data-stat-ai-types]')?.textContent).toBe('—')
   })
 
   it('draws each bar as its share of the largest in its group, and none without numbers', () => {
     const root = document.createElement('div')
     root.innerHTML = '<ul data-bar-group><span data-bar="division-primary"></span><span data-bar="division-junior"></span><span data-bar="division-senior"></span></ul>'
-    renderStats(root, { stats: parseStats(stats())!, day: 1 })
+    renderStats(root, { stats: parseStats(stats())!, days: { kind: 'open', days: 1 } })
     const widths = () => [...root.querySelectorAll<HTMLElement>('[data-bar]')].map((b) => b.style.width)
     expect(widths()).toEqual([`${(31 / 34) * 100}%`, '100%', `${(21 / 34) * 100}%`])
-    renderStats(root, { stats: null, day: null })
+    renderStats(root, { stats: null, days: null })
     for (const w of widths()) expect(w).toMatch(/^0(px)?$/)
   })
 
@@ -69,22 +69,35 @@ describe('the school numbers', () => {
     expect((await read({ nope: true })).kind).toBe('unreachable')
   })
 
-  it('counts the day of school from the opening day', () => {
-    expect(schoolDayNumber('2026-11-01', '2026-11-01')).toBe(1)
-    expect(schoolDayNumber('2026-11-01', '2026-11-27')).toBe(27)
-    expect(schoolDayNumber('2026-12-01', '2026-11-27')).toBeNull()
-    expect(schoolDayNumber(null, '2026-11-27')).toBeNull()
+  it('counts the days the school has been open, or until it opens', () => {
+    expect(schoolDays('2026-11-01', '2026-11-01')).toEqual({ kind: 'open', days: 1 })
+    expect(schoolDays('2026-11-01', '2026-11-27')).toEqual({ kind: 'open', days: 27 })
+    expect(schoolDays('2026-11-30', '2026-11-28')).toEqual({ kind: 'before', days: 2 })
+    expect(schoolDays(null, '2026-11-27')).toEqual({ kind: 'unset' })
+  })
+
+  it('reads each tile as a phrase: 已经开学 9 天, 离开学还有 2 天, 开学日期 待定', () => {
+    const root = document.createElement('div')
+    root.innerHTML = '<span data-stat-label="day"></span><span data-stat="day"></span><span data-stat-unit="day"></span>'
+    const read = () => ['label', '', 'unit'].map((k) => root.querySelector(k ? `[data-stat-${k}="day"]` : '[data-stat="day"]')?.textContent)
+    renderStats(root, { stats: parseStats(stats())!, days: { kind: 'open', days: 9 } })
+    expect(read()).toEqual(['已经开学', '9', '天'])
+    renderStats(root, { stats: parseStats(stats())!, days: { kind: 'before', days: 2 } })
+    expect(read()).toEqual(['离开学还有', '2', '天'])
+    renderStats(root, { stats: parseStats(stats())!, days: { kind: 'unset' } })
+    expect(read()).toEqual(['开学日期', '待定', ''])
+    renderStats(root, { stats: null, days: null })
+    expect(read()).toEqual(['已经开学', '—', '天'])
   })
 
   it('fills each number in, or a dash when the school cannot be read', () => {
     const root = document.createElement('div')
-    root.innerHTML = '<span data-stat="students"></span><span data-stat="division-junior"></span><span data-stat="day"></span><span data-stat-day-label></span>'
-    renderStats(root, { stats: parseStats(stats())!, day: 27 })
+    root.innerHTML = '<span data-stat="students"></span><span data-stat="division-junior"></span><span data-stat="day"></span>'
+    renderStats(root, { stats: parseStats(stats())!, days: { kind: 'open', days: 27 } })
     expect([...root.querySelectorAll('[data-stat]')].map((n) => n.textContent)).toEqual(['86', '34', '27'])
     expect(root.dataset.state).toBe('ready')
-    renderStats(root, { stats: null, day: null })
+    renderStats(root, { stats: null, days: null })
     expect([...root.querySelectorAll('[data-stat]')].map((n) => n.textContent)).toEqual(['—', '—', '—'])
-    expect(root.querySelector('[data-stat-day-label]')?.textContent).toBe('还没开学')
     expect(root.dataset.state).toBe('unreachable')
   })
 })

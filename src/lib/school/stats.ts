@@ -79,12 +79,16 @@ export async function resolveStats(src: { url: string; timeoutMs: number; fetch:
   return stats ? { kind: 'stats', stats } : { kind: 'unreachable' }
 }
 
+/** Where the school stands against its opening day. */
+export type SchoolDays = { kind: 'open'; days: number } | { kind: 'before'; days: number } | { kind: 'unset' }
+
 /**
- * Which day of school `today` is, the opening day being day 1; null before the opening day or when the school has
- * none set. Both are dates in Beijing time (YYYY-MM-DD).
+ * How long the school has been open, the opening day counting as day 1; or, before it, how many days are left until
+ * it; or that it has no opening day yet. Both dates are in Beijing time (YYYY-MM-DD).
  */
-export function schoolDayNumber(openingDay: string | null, today: string): number | null {
-  if (openingDay === null) return null
-  const days = Math.round((Date.parse(`${today}T00:00:00Z`) - Date.parse(`${openingDay}T00:00:00Z`)) / 86_400_000)
-  return Number.isNaN(days) || days < 0 ? null : days + 1
+export function schoolDays(openingDay: string | null, today: string): SchoolDays {
+  if (openingDay === null) return { kind: 'unset' }
+  const diff = Math.round((Date.parse(`${today}T00:00:00Z`) - Date.parse(`${openingDay}T00:00:00Z`)) / 86_400_000)
+  if (Number.isNaN(diff)) return { kind: 'unset' }
+  return diff >= 0 ? { kind: 'open', days: diff + 1 } : { kind: 'before', days: -diff }
 }

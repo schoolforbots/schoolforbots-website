@@ -20,10 +20,10 @@ import Club from '@lucide/astro/icons/club'
 import Clock from '@lucide/astro/icons/clock'
 
 const tiles = [
-  { key: 'students', label: '在校学生', Icon: Users },
-  { key: 'owners', label: '家长', Icon: HeartHandshake },
-  { key: 'classes', label: '班级', Icon: School },
-  { key: 'day', label: '开学天数', Icon: CalendarDays, dayLabel: true },
+  { key: 'students', label: '在校学生', unit: '名', Icon: Users },
+  { key: 'owners', label: '注册家长', unit: '位', Icon: HeartHandshake },
+  { key: 'classes', label: '开放班级', unit: '个', Icon: School },
+  { key: 'day', label: '已经开学', unit: '天', Icon: CalendarDays },
 ]
 const divisions = [
   ['division-primary', '小学部'],
@@ -45,16 +45,21 @@ const slots = [
 
   <ul class="tiles">
     {
-      tiles.map(({ key, label, Icon, dayLabel }) => (
+      tiles.map(({ key, label, unit, Icon }) => (
         <li>
           <span class="icon" aria-hidden="true">
             <Icon size={20} />
           </span>
-          <span class="value" data-stat={key}>
-            —
-          </span>
-          <span class="label" data-stat-day-label={dayLabel ? '' : undefined}>
+          <span class="label" data-stat-label={key}>
             {label}
+          </span>
+          <span class="figure">
+            <span class="value" data-stat={key}>
+              —
+            </span>
+            <span class="unit" data-stat-unit={key}>
+              {unit}
+            </span>
           </span>
         </li>
       ))
@@ -202,6 +207,18 @@ const slots = [
   .tiles .label {
     color: var(--sfb-mute);
     font-size: 0.875rem;
+  }
+  .tiles .figure {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.25rem;
+  }
+  .tiles .unit {
+    color: var(--sfb-mute);
+    font-size: 0.9375rem;
+  }
+  .tiles .unit:empty {
+    display: none;
   }
 
   .cards {
